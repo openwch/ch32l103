@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/01/18
+ * Date               : 2024/03/19
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -293,7 +293,7 @@ void I2C1_EV_IRQHandler(void )
 #endif
    else{
        printf( "unknown i2c event \n" );
-       printf("sr1 %x \nsr2 %x \n",I2C1->STAR1,I2C1->STAR2);
+       printf("star1 %x \nstar2 %x \n",I2C1->STAR1,I2C1->STAR2);
    }
 }
 

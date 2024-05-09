@@ -2,7 +2,7 @@
  * File Name          : ch32l103_opa.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/03/15
  * Description        : This file contains all the functions prototypes for the
  *                      OPA firmware library.
  *********************************************************************************
@@ -190,6 +190,17 @@ typedef struct
     CMP_PSEL_TypeDef   PSEL;     /* Specifies the positive channel of CMP */
 } CMP_InitTypeDef;
 
+/* Current channel for OPA polling enumeration */
+typedef enum
+{
+    O1P0 = 0,
+    O1P1,
+    O1P2,
+    O1P3,
+    O1P4,
+    O1P5,
+} OPA_POLL_NUM_TypeDef;
+
 /* OPA_flags_definition */
 #define OPA_FLAG_OUT_OPA1                  ((uint16_t)0x1000)
 #define OPA_FLAG_OUT_CNT                   ((uint16_t)0x4000)
@@ -212,6 +223,7 @@ void       OPA_CMP_LP_Cmd(CMP_Num_TypeDef CMP_NUM, FunctionalState NewState);
 void       OPA_CMP_WakeUp_ModeConfig(uint32_t CMP_WakeUP_Mode);
 FlagStatus OPA_GetFlagStatus( uint16_t OPA_FLAG);
 void       OPA_ClearFlag(uint16_t OPA_FLAG);
+OPA_POLL_NUM_TypeDef OPA_POLL_CNT(void);
 
 #ifdef __cplusplus
 }

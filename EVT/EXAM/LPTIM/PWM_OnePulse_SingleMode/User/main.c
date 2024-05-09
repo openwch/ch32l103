@@ -16,6 +16,8 @@
  * PB15 is output pin .
  * ETR trigger is PB14
  * TAMP trigger is PC13
+ * NOTE:If you do not need to generate PWM waveforms by triggering, you need to set the LPTIM External Trigger Polarity parameter to off.
+ *      for example,LPTIM_TimeBaseInitStruct.LPTIM_ExTriggerPolarity = LPTIM_ExTriggerPolarity_Disable.
  */
 
 #include "debug.h"

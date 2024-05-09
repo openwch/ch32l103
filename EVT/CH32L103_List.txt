@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2024.01
+南京沁恒微电子股份有限公司 2024.05
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -70,9 +70,15 @@ https://wch.cn
   |      |      |      |      |-- Stop_Mode：低功耗，停机模式例程
   |      |      |      |      |-- Standby_RAM_LV_Mode：待机模式开启LV时，RAM 2K、30K低功耗数据保持例程
   |      |      |      |      |-- Standby_RAM_Mode：待机模式不开启LV时，RAM 2K、30K低功耗数据保持例程
+  |      |      |      |      |-- PVD_Wakeup：STOP模式PVD中断唤醒例程
+  |      |      |      |      |-- PVD_VoltageJudger：PVD电压判定例程
+  |      |      |      |-- PMP
+  |      |      |      |      |-- PMP：物理内存保护例程
   |      |      |      |-- RCC
   |      |      |      |      |-- Get_CLK：获取system-HCLK-HB1-HB2时钟例程   
   |      |      |      |      |-- MCO：MCO引脚时钟输出例程
+  |      |      |      |      |-- HSI_Calibration：HSI校准例程  
+  |      |      |      |      |-- LSI_Calibration：LSI校准例程
   |      |      |      |-- RTC：日历例程  
   |      |      |      |-- RT-Thread：RT-Thread移植例程 
   |      |      |      |-- RunInRam_LP
@@ -109,6 +115,7 @@ https://wch.cn
   |      |      |      |      |-- Synchro_ExtTrigger：从模式例程，包括复位模式、门控模式、触发模式
   |      |      |      |      |-- Synchro_Timer：定时器同步模式
   |      |      |      |      |-- TIM_DMA：定时器使用DMA例程
+  |      |      |      |      |-- Encoder：定时器编码器例程
   |      |      |      |-- TOUCHKEY：TouchKey检测例程 
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA：USART使用DMA，Master/Slave 模式收发例程

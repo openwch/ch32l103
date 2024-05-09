@@ -130,24 +130,3 @@ int main(void)
         printf("\r\n ########## \r\n");
     }
 }
-
-
-void EXTI2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-
-
-/*********************************************************************
- * @fn      EXTI2_IRQHandler
- *
- * @brief   This function handles EXTI2 exception.
- *
- * @return  none
- */
-void EXTI2_IRQHandler(void)
-{
-  if(EXTI_GetITStatus(EXTI_Line2)!=RESET)
-  {
-        SystemInit();
-    printf("EXTI2 Wake_up\r\n");
-    EXTI_ClearITPendingBit(EXTI_Line2);     /* Clear Flag */
-  }
-}

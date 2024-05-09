@@ -139,6 +139,8 @@ int main(void)
     ADC_Function_Init();
     while(1)
     {
+        while(OPA_POLL_CNT() != O1P2)
+            ;
         adc_val= Get_ADC_Val(ADC_Channel_3);
         printf("adc_val  %d\r\n",adc_val);
         Delay_Ms(100);

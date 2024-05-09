@@ -2,7 +2,7 @@
  * File Name          : ch32l103_it.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/02/21
  * Description        : Main Interrupt Service Routines.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -10,10 +10,12 @@
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
 #include "ch32l103_it.h"
+#include "ch32l103_rtc.h"
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
+u8 RTC_Get(void);
 /*********************************************************************
  * @fn      NMI_Handler
  *
@@ -42,5 +44,6 @@ void HardFault_Handler(void)
     {
     }
 }
+
 
 
