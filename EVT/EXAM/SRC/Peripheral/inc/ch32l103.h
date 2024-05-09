@@ -2,7 +2,7 @@
  * File Name          : ch32l103.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/05/06
  * Description        : CH32L103 Device Peripheral Access Layer Header File.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -27,7 +27,7 @@ extern "C" {
 
 /* Standard Peripheral Library version number */
 #define __CH32L103_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32L103_STDPERIPH_VERSION_SUB    (0x00) /* [7:0] sub version */
+#define __CH32L103_STDPERIPH_VERSION_SUB    (0x01) /* [7:0] sub version */
 #define __CH32L103_STDPERIPH_VERSION        ((__CH32L103_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32L103_STDPERIPH_VERSION_SUB << 0))
 
@@ -94,7 +94,7 @@ typedef enum IRQn
     LPTIM_IRQn = 63,           /* LPTIM global Interrupt                               */
     OPA_IRQn = 64,             /* OPA global Interrupt                                 */
     USBPD_IRQn = 65,           /* USBPD global Interrupt                               */
-    TKeyWakeUp_IRQn = 66,      /* TKey WakeUp Interrupt                                */
+
     USBPDWakeUp_IRQn = 67,     /* USBPD WakeUp Interrupt                               */
     CMPWakeUp_IRQn = 68,       /* CMP WakeUp Interrupt                                 */
 
@@ -166,13 +166,7 @@ typedef struct
     __IO uint16_t TPCTLR;
     uint16_t      RESERVED12;
     __IO uint16_t TPCSR;
-    uint16_t      RESERVED13[5];
-    __IO uint16_t DATAR11;
-    uint16_t      RESERVED14;
-    __IO uint16_t DATAR12;
-    uint16_t      RESERVED15;
-    __IO uint16_t DATAR13;
-    uint16_t      RESERVED16;
+    uint16_t      RESERVED13;
 } BKP_TypeDef;
 
 /* Controller Area Network TxMailBox */
@@ -1277,15 +1271,6 @@ typedef struct
 
 /*******************  Bit definition for BKP_DATAR10 register  *******************/
 #define BKP_DATAR10_D                           ((uint16_t)0xFFFF) /* Backup data */
-
-/*******************  Bit definition for BKP_DATAR11 register  *******************/
-#define BKP_DATAR11_D                           ((uint16_t)0xFFFF) /* Backup data */
-
-/*******************  Bit definition for BKP_DATAR12 register  *******************/
-#define BKP_DATAR12_D                           ((uint16_t)0xFFFF) /* Backup data */
-
-/*******************  Bit definition for BKP_DATAR13 register  *******************/
-#define BKP_DATAR13_D                           ((uint16_t)0xFFFF) /* Backup data */
 
 /******************  Bit definition for BKP_OCTLR register  *******************/
 #define BKP_CAL                                 ((uint16_t)0x007F) /* Calibration value */
@@ -4643,6 +4628,7 @@ typedef struct
 /*******************  Bit definition for OPA_CFGR2 register  *******************/
 #define OPA_CFGR2_POLL_VLU                      ((uint32_t)0x000001FF)
 #define OPA_CFGR2_POLL_NUM                      ((uint32_t)0x00000E00)
+#define OPA_CFGR2_POLL_CNT                      ((uint32_t)0x00007000)
 
 /*******************  Bit definition for OPA_CTLR1 register  *******************/
 #define OPA_CTLR1_EN1                           ((uint32_t)0x00000001)

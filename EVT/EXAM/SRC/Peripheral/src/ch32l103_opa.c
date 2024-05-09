@@ -15,7 +15,11 @@
 #define OPCM_KEY1                 ((uint32_t)0x45670123)
 #define OPCM_KEY2                 ((uint32_t)0xCDEF89AB)
 
+/* mask definition*/
+#define POLL_CNT_MASK             ((uint16_t)0x7000)
+
 volatile uint32_t CTLR2_tmp = 0;
+
 
 /********************************************************************************
  * @fn      OPCM_Unlock
@@ -320,4 +324,20 @@ void OPA_ClearFlag(uint16_t OPA_FLAG)
     OPA->CFGR1 &= (uint16_t)~OPA_FLAG;
 }
 
-
+/*********************************************************************
+ * @fn      OPA_POLL_CNT
+ *
+ * @brief   Displays the current channel being polled by the OPA
+ *
+ * @param   none
+ *
+ * @return  OPA_POLL_NUM_TypeDef - Current channel for OPA polling
+ */
+OPA_POLL_NUM_TypeDef OPA_POLL_CNT(void)
+{
+    uint16_t tmp1 = 0;
+    tmp1 = OPA->CFGR2;
+    tmp1 &= POLL_CNT_MASK;
+    tmp1 = tmp1 >> 12;
+    return tmp1;
+}

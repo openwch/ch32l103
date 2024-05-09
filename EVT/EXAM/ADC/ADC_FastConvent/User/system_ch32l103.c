@@ -2,7 +2,7 @@
  * File Name          : system_ch32l103.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/01/22
+ * Date               : 2024/02/27
  * Description        : Device Peripheral Access Layer System Source File.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -22,8 +22,8 @@
 //#define SYSCLK_FREQ_72MHz_HSE  72000000
 //#define SYSCLK_FREQ_96MHz_HSE  96000000
 //#define SYSCLK_FREQ_HSI    HSI_VALUE
-//#define SYSCLK_FREQ_48MHz_HSI  48000000
-#define SYSCLK_FREQ_56MHz_HSI  56000000
+#define SYSCLK_FREQ_48MHz_HSI  48000000
+//#define SYSCLK_FREQ_56MHz_HSI  56000000
 //#define SYSCLK_FREQ_72MHz_HSI  72000000
 //#define SYSCLK_FREQ_96MHz_HSI  96000000
 //#define SYSCLK_FREQ_HSI_LP   HSI_LP_VALUE                      /* Baud rate support less than 62.5Kbps when using UART */

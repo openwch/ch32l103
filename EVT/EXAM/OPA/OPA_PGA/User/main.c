@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/12/26
+ * Date               : 2024/02/27
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -43,10 +43,6 @@ void OPA1_Init(void)
     OPA_InitStructure.NSEL = CHN_PGA_8xIN;
     OPA_InitStructure.FB = FB_ON;
     OPA_InitStructure.Mode = OUT_IO_OUT0;
-    OPA_InitStructure.OPA_POLL_Interval = 0x50;
-    OPA_InitStructure.BKIN_EN = BKIN_OPA1_ON;
-    OPA_InitStructure.PSEL_POLL = CHP_OPA1_ON;
-    OPA_InitStructure.FB = FB_ON;
 
     OPA_Init(&OPA_InitStructure);
     OPA_Cmd(OPA1,ENABLE);

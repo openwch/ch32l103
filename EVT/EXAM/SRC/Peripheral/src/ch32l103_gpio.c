@@ -2,7 +2,7 @@
  * File Name          : ch32l103_gpio.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/05/06
  * Description        : This file provides all the GPIO firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -625,11 +625,14 @@ void GPIO_IPD_Unused(void)
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
             GPIO_Init(GPIOA, &GPIO_InitStructure);
-            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2|GPIO_Pin_3\
+            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3\
                                           |GPIO_Pin_4|GPIO_Pin_5\
                                           |GPIO_Pin_8|GPIO_Pin_9\
                                           |GPIO_Pin_12;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+            GPIO_Init(GPIOB, &GPIO_InitStructure);
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
             GPIO_Init(GPIOB, &GPIO_InitStructure);
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13|GPIO_Pin_14\
                                           |GPIO_Pin_15;
@@ -640,33 +643,16 @@ void GPIO_IPD_Unused(void)
             GPIO_Init(GPIOD, &GPIO_InitStructure);
             break;
         }
-        case 0x10370700:     //CH32L103F7P6
-        {
-            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8|GPIO_Pin_9\
-                                          |GPIO_Pin_10|GPIO_Pin_15;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-            GPIO_Init(GPIOA, &GPIO_InitStructure);
-            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_2\
-                                          |GPIO_Pin_3|GPIO_Pin_4\
-                                          |GPIO_Pin_5|GPIO_Pin_9\
-                                          |GPIO_Pin_10|GPIO_Pin_11\
-                                          |GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14\
-                                          |GPIO_Pin_15;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-            GPIO_Init(GPIOB, &GPIO_InitStructure);
-            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13|GPIO_Pin_14\
-                                          |GPIO_Pin_15;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-            GPIO_Init(GPIOC, &GPIO_InitStructure);
-            break;
-        }
         case 0x103B0700:     //CH32L103G8R6
         {
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
             GPIO_Init(GPIOA, &GPIO_InitStructure);
-            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2|GPIO_Pin_9;
+            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+            GPIO_Init(GPIOB, &GPIO_InitStructure);
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
             GPIO_Init(GPIOB, &GPIO_InitStructure);
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13|GPIO_Pin_14\
                                           |GPIO_Pin_15;
@@ -682,7 +668,7 @@ void GPIO_IPD_Unused(void)
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
             GPIO_Init(GPIOA, &GPIO_InitStructure);
-            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_2\
+            GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0\
                                           |GPIO_Pin_3|GPIO_Pin_4\
                                           |GPIO_Pin_5|GPIO_Pin_6\
                                           |GPIO_Pin_7 |GPIO_Pin_8\
@@ -690,6 +676,9 @@ void GPIO_IPD_Unused(void)
                                           |GPIO_Pin_11|GPIO_Pin_12;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
             GPIO_Init(GPIOB, &GPIO_InitStructure);
+			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+			GPIO_Init(GPIOB, &GPIO_InitStructure);			
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13|GPIO_Pin_14\
                                           |GPIO_Pin_15;
             GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -700,10 +689,6 @@ void GPIO_IPD_Unused(void)
             break;
         }
         case 0x10310700:     //CH32L103C8T6
-        {
-            break;
-        }
-        case 0x10300700:     //CH32L103C8U6
         {
             break;
         }

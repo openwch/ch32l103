@@ -6,6 +6,10 @@ EN | [中文](README_zh.md)
 ### Overview
 CH32L103 is an industrial-grade low-power general-purpose microcontroller designed based on barley RISC-V core.CH32L103 built-in USB and PD PHY, support for PDUSB, including USB Host host and USB Device device function, USB PD and Type-C fast charging function, built-in low-power timer, provides a group of OPA op-amps, 3 groups of CMP voltage comparator, 4 groups of USART serial interface, 2 I2C interfaces, 2 SPI interfaces, 1 CAN interface, multiple timers, 12-bit ADC, 10-way Touchkey and other rich peripheral resources.
 
+### System Block Diagram
+
+![image-20240509144136485](C:\Users\DZG\AppData\Roaming\Typora\typora-user-images\image-20240509144136485.png)
+
 
 ### Features
 - Barley 32-bit RISC-V4C core

@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/12/26
+ * Date               : 2024/02/27
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -61,6 +61,24 @@ void EXTI0_INT_INIT(void)
 }
 
 /*********************************************************************
+ * @fn      GPIO_Toggle_INIT
+ *
+ * @brief   Initializes GPIOB pin6,pin7.
+ *
+ * @return  none
+ */
+void GPIO_Toggle_INIT(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOB, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+}
+
+/*********************************************************************
  * @fn      main
  *
  * @brief   Main program.
@@ -77,6 +95,13 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     printf("Sleep Mode Test\r\n");
     EXTI0_INT_INIT();
+
+    /*set cc1,cc2 pin mode to pull-up */
+    GPIO_Toggle_INIT();
+
+    /*close cc1,cc2 pull-down resistors */
+    USBPD->PORT_CC1 &= ~(0x01<<1);
+    USBPD->PORT_CC2 &= ~(0x01<<1);
 
     printf("\r\n ********** \r\n");
     if(((RCC->CFGR0 & RCC_SWS)==0x04)||((RCC->CFGR0 & RCC_PLLSRC) == RCC_PLLSRC))

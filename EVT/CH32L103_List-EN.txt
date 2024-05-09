@@ -1,5 +1,5 @@
 
-Nanjing Qinheng Microelectronics Co., Ltd. 2024.01
+Nanjing Qinheng Microelectronics Co., Ltd. 2024.05
 Please check our website for the latest information.
 https://wch-ic.com
 
@@ -70,9 +70,15 @@ Directory
   |      |      |      |      |-- Stop_Mode：low power consumption, stop mode routine
   |      |      |      |      |-- Standby_RAM_LV_Mode：When LV is enabled in standby mode, RAM2K, 30K low power data holding routines
   |      |      |      |      |-- Standby_RAM_Mode：When LV is not enabled in standby mode, RAM2K, 30K low power data holding routines
+  |      |      |      |      |-- PVD_Wakeup：STOP mode PVD wakeup MCU Routine
+  |      |      |      |      |-- PVD_VoltageJudger：PVD voltage Judger Routine
+  |      |      |      |-- PMP
+  |      |      |      |      |-- PMP：Physical memory protection Routine
   |      |      |      |-- RCC
   |      |      |      |      |-- Get_CLK：get system-HCLK-HB1-HB2 clock routine   
   |      |      |      |      |-- MCO：MCO pin clock output routine
+  |      |      |      |      |-- HSI_Calibration：HSI calibrate routine
+  |      |      |      |      |-- LSI_Calibration：LSI calibrate routine
   |      |      |      |-- RTC：calendar routine  
   |      |      |      |-- RT-Thread：RT-Thread migration routine  
   |      |      |      |-- RunInRam_LP
@@ -109,6 +115,7 @@ Directory
   |      |      |      |      |-- Synchro_ExtTrigger：slave mode routine, including reset mode, gating mode and trigger mode
   |      |      |      |      |-- Synchro_Timer：timer synchronization mode
   |      |      |      |      |-- TIM_DMA：the timer uses DMA routines
+  |      |      |      |      |-- Encode:Timer encoder mode routines
   |      |      |      |-- TOUCHKEY：touchkey detection routine
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA：USART uses DMA, master / slave mode transceiver routine

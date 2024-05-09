@@ -6,6 +6,10 @@
 
 CH32L103是基于青稞RISC-V内核设计的工业级低功耗通用微控制器。CH32L103内置USB和PD PHY，支持PDUSB，包括USB Host主机和USB Device设备功能、USB PD及Type-C快充功能，内置低功耗定时器，提供了1组OPA运放、3组CMP电压比较器、4组USART串口、2个I2C接口、2个SPI接口、1组CAN接口、多组定时器、12位ADC、10路Touchkey等丰富外设资源。
 
+### 系统框图
+
+![image-20240509144156279](C:\Users\DZG\AppData\Roaming\Typora\typora-user-images\image-20240509144156279.png)
+
 ### 产品特点
 
 - 青稞32位RISC-V4C内核
