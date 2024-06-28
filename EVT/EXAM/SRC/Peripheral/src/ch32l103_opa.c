@@ -2,7 +2,7 @@
  * File Name          : ch32l103_opa.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/05/23
  * Description        : This file provides all the OPA firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -209,7 +209,7 @@ void OPA_CMP_StructInit(CMP_InitTypeDef *CMP_InitStruct)
     CMP_InitStruct->CMP_NUM = CMP1;
     CMP_InitStruct->Mode = OUT_IO0;
     CMP_InitStruct->NSEL = CMP_CHN0;
-    CMP_InitStruct->PSEL = CMP_CHP1;
+    CMP_InitStruct->PSEL = CMP_CHP_0;
 }
 
 /*********************************************************************

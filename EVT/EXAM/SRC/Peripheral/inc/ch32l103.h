@@ -27,7 +27,7 @@ extern "C" {
 
 /* Standard Peripheral Library version number */
 #define __CH32L103_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32L103_STDPERIPH_VERSION_SUB    (0x01) /* [7:0] sub version */
+#define __CH32L103_STDPERIPH_VERSION_SUB    (0x02) /* [7:0] sub version */
 #define __CH32L103_STDPERIPH_VERSION        ((__CH32L103_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32L103_STDPERIPH_VERSION_SUB << 0))
 
