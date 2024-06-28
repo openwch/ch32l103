@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/05/23
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -12,7 +12,7 @@
 
 /*
  *@Note
- * CMP1_P1--PA2
+ * CMP1_P0--PA2
  * CMP1_N0--PB1
  * CMP1_OUT--TIM2_CH1
  * In this example, PA2 and PB1 are postive and negative input, when output is high
@@ -59,7 +59,7 @@ void CMP_Init( void )
     CMP_InitTypeDef.CMP_NUM = CMP1;
     CMP_InitTypeDef.Mode = OUT_IO_TIM2;
     CMP_InitTypeDef.NSEL = CMP_CHN0;
-    CMP_InitTypeDef.PSEL = CMP_CHP1;
+    CMP_InitTypeDef.PSEL = CMP_CHP_0;
     OPA_CMP_Init(&CMP_InitTypeDef);
     OPA_CMP_Cmd(CMP1,ENABLE);
 }

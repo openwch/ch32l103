@@ -2,7 +2,7 @@
  * File Name          : ch32l103_opa.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/03/15
+ * Date               : 2024/05/23
  * Description        : This file contains all the functions prototypes for the
  *                      OPA firmware library.
  *********************************************************************************
@@ -177,9 +177,12 @@ typedef enum
 /* CMP_PSEL_enumeration */
 typedef enum
 {
-    CMP_CHP1 = 0,
-    CMP_CHP2,
+    CMP_CHP_0 = 0,
+    CMP_CHP_1,
 } CMP_PSEL_TypeDef;
+
+#define CMP_CHP1 CMP_CHP_0
+#define CMP_CHP2 CMP_CHP_1
 
 /* CMP Init Structure definition */
 typedef struct
