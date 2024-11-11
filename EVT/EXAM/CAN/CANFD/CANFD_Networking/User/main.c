@@ -85,7 +85,7 @@ void CAN_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 fdtsjw, u8 fdtbs2, u8 
     CANFD_InitTypeDef       CANFD_InitSturcture = {0};
     CAN_FilterInitTypeDef   CAN_FilterInitSturcture = {0};
 
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOA | RCC_PB2Periph_GPIOB, ENABLE);
+    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOA , ENABLE);
     RCC_PB1PeriphClockCmd( RCC_PB1Periph_CAN1, ENABLE);
 
     GPIO_InitSturcture.GPIO_Pin = GPIO_Pin_12;

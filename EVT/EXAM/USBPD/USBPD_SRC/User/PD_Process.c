@@ -2,7 +2,7 @@
 * File Name          : PD_process.c
 * Author             : WCH
 * Version            : V1.0.0
-* Date               : 2023/07/12
+* Date               : 2024/11/06
 * Description        : This file provides all the PD firmware functions.
 *********************************************************************************
 * Copyright (c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -188,9 +188,21 @@ void PD_Init( void )
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOB, ENABLE);
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_AFIO, ENABLE);
     RCC_HBPeriphClockCmd(RCC_HBPeriph_USBPD, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 ;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    if((CHIPID&0xF0)==0x10)
+    if( ((CHIPID & 0xF0) == 0x10) || ( ((CHIPID & 0xF0) == 0x20) && (((USBPD_CFG & 0x0F) == ((~(USBPD_CFG >> 4)) & 0x0F)) && ((USBPD_CFG & 0xF) == 0x01)) ))
+    {
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //The chip with the 4th digit of CHIPID being 1 supports this function
+    }
+    else
+    {
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    }
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    if( ((CHIPID & 0xF0) == 0x10) || ( ((CHIPID & 0xF0) == 0x20) && (((USBPD_CFG & 0x0F00) == ((~(USBPD_CFG >> 4)) & 0x0F00)) && ((USBPD_CFG & 0x0F00) == 0x0100)) ))
     {
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //The chip with the 4th digit of CHIPID being 1 supports this function
     }
@@ -660,6 +672,15 @@ void PD_Main_Proc( )
     {
         case STA_DISCONNECT:
             printf("Disconnect\r\n");
+#if(Lowpower==LowpowerON)
+            EXTI_ClearITPendingBit(EXTI_Line6);
+            EXTI_ClearITPendingBit(EXTI_Line7);
+            NVIC_EnableIRQ(EXTI9_5_IRQn);
+            printf("Fell sleep\r\n");
+            Delay_Ms(100);
+            __WFI();
+#elif(Lowpower==LowpowerOff)
+#endif
             PD_PHY_Reset( );
             break;
 

@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Date               : 2024/11/04
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -13,7 +13,7 @@
 /*
  *@Note
  *CAN test mode, including silent mode, loopback mode and loopback silent mode:
- *CAN_Tx(PB9),CAN_Rx(PB8)
+ *CAN_Tx(PA12),CAN_Rx(PA11)
  *Standard_Frame:Including one 32bit filter mask bit pattern.
  *
  */
@@ -54,19 +54,17 @@ void CAN_Test_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode)
     CAN_InitTypeDef       CAN_InitSturcture = {0};
     CAN_FilterInitTypeDef CAN_FilterInitSturcture = {0};
 
-    RCC_PB2PeriphClockCmd(RCC_PB2Periph_AFIO | RCC_PB2Periph_GPIOB, ENABLE);
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA, ENABLE);
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_CAN1, ENABLE);
 
-    GPIO_PinRemapConfig(GPIO_Remap1_CAN1, ENABLE);
-
-    GPIO_InitSturcture.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitSturcture.GPIO_Pin = GPIO_Pin_12;
     GPIO_InitSturcture.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitSturcture.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitSturcture);
+    GPIO_Init(GPIOA, &GPIO_InitSturcture);
 
-    GPIO_InitSturcture.GPIO_Pin = GPIO_Pin_8;
+    GPIO_InitSturcture.GPIO_Pin = GPIO_Pin_11;
     GPIO_InitSturcture.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOB, &GPIO_InitSturcture);
+    GPIO_Init(GPIOA, &GPIO_InitSturcture);
 
     CAN_InitSturcture.CAN_TTCM = DISABLE;
     CAN_InitSturcture.CAN_ABOM = DISABLE;

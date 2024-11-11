@@ -1,5 +1,5 @@
 
-Nanjing Qinheng Microelectronics Co., Ltd. 2024.06
+Nanjing Qinheng Microelectronics Co., Ltd. 2024.11
 Please check our website for the latest information.
 https://wch-ic.com
 
@@ -29,7 +29,8 @@ Directory
   |      |      |      |      |-- CANFD：CANFD normal mode, standard frame, and extended frame data routines
   |      |      |      |      |-- Networking：CAN routines: normal mode, standard frame and extended frame data transceiver
   |      |      |      |      |-- TestMode：test mode, including silent mode, loopback mode, loopback silent mode
-  |      |      |      |      |-- Time-triggered：time-triggered communication mode   
+  |      |      |      |      |-- Time-triggered：time-triggered communication mode
+  |      |      |      |      |-- CAN_Wakeup:CAN wake_up routine   
   |      |      |      |-- CRC：CRC routine  
   |      |      |      |-- DMA
   |      |      |      |      |-- DMA_MEM2MEM：memory to memory mode routine
@@ -72,6 +73,7 @@ Directory
   |      |      |      |      |-- Standby_RAM_Mode：When LV is not enabled in standby mode, RAM2K, 30K low power data holding routines
   |      |      |      |      |-- PVD_Wakeup：STOP mode PVD wakeup MCU Routine
   |      |      |      |      |-- PVD_VoltageJudger：PVD voltage Judger Routine
+  |      |      |      |      |-- Standby_RAM_Application：Standby mode RAM data hold Routine
   |      |      |      |-- PMP
   |      |      |      |      |-- PMP：Physical memory protection Routine
   |      |      |      |-- RCC
@@ -116,6 +118,7 @@ Directory
   |      |      |      |      |-- Synchro_Timer：timer synchronization mode
   |      |      |      |      |-- TIM_DMA：the timer uses DMA routines
   |      |      |      |      |-- Encode:Timer encoder mode routines
+  |      |      |      |      |-- TIM_INT:Timer interrupt routines
   |      |      |      |-- TOUCHKEY：touchkey detection routine
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA：USART uses DMA, master / slave mode transceiver routine
@@ -127,6 +130,7 @@ Directory
   |      |      |      |      |-- USART_Printf：USART Print debugging routine
   |      |      |      |      |-- USART_SynchronousMode：synchronous mode, master / slave mode, transceiver routine
   |      |      |      |      |-- USART_Idle_Recv: Serial port using DMA for indeterminate length reception routine
+  |      |      |      |      |-- USART_SmartCard: Serial port smart card routine
   |      |      |      |-- USB
   |      |      |      |      |-- USBFS
   |      |      |      |      |      |-- DEVICE

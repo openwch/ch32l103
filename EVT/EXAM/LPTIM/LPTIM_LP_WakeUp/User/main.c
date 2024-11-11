@@ -3,7 +3,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/01/18
+ * Date               : 2024/11/05
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -50,9 +50,16 @@
 void LPTIM_Init(u16 arr)
 {
     NVIC_InitTypeDef NVIC_InitStructure = {0};
+	EXTI_InitTypeDef EXTI_InitStructure = {0};
     LPTIM_TimeBaseInitTypeDef   LPTIM_TimeBaseInitStruct = {0};
-    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOB, ENABLE);
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOB|RCC_PB2Periph_AFIO, ENABLE);
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_LPTIM, ENABLE);
+	
+	EXTI_InitStructure.EXTI_Line = EXTI_Line21;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
 
     NVIC_InitStructure.NVIC_IRQChannel = LPTIM_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
@@ -82,9 +89,9 @@ void LPTIM_Init(u16 arr)
     LPTIM_TimeBaseInitStruct.LPTIM_ClockSampleTime = LPTIM_ClockSampleTime_0T;
     LPTIM_TimeBaseInitStruct.LPTIM_TriggerSampleTime = LPTIM_TriggerSampleTime_0T;
     LPTIM_TimeBaseInitStruct.LPTIM_ExTriggerPolarity = LPTIM_ExTriggerPolarity_Disable;
-    LPTIM_TimeBaseInitStruct.LPTIM_TimeOut = DISABLE;
-    LPTIM_TimeBaseInitStruct.LPYIM_OutputPolarity = LPYIM_OutputPolarity_High;
-    LPTIM_TimeBaseInitStruct.LPYIM_UpdateMode = LPYIM_UpdateMode0;
+    LPTIM_TimeBaseInitStruct.LPTIM_TimeOut = ENABLE;
+    LPTIM_TimeBaseInitStruct.LPTIM_OutputPolarity = LPTIM_OutputPolarity_High;
+    LPTIM_TimeBaseInitStruct.LPTIM_UpdateMode = LPTIM_UpdateMode0;
     LPTIM_TimeBaseInitStruct.LPTIM_Encoder = DISABLE;
     LPTIM_TimeBaseInitStruct.LPTIM_ForceOutHigh = DISABLE;
     LPTIM_TimeBaseInitStruct.LPTIM_SingleMode = DISABLE;

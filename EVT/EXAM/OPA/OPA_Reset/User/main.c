@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/04/06
+ * Date               : 2024/11/05
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -38,9 +38,6 @@ void OPA1_Init( void )
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15|GPIO_Pin_11;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init( GPIOB, &GPIO_InitStructure );
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-    GPIO_Init( GPIOA, &GPIO_InitStructure );
 
     OPA_InitStructure.OPA_NUM = OPA1;
     OPA_InitStructure.NSEL = CHN0;

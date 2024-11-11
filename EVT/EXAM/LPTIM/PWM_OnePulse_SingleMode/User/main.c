@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2023/12/26
+ * Date               : 2024/07/15
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -153,8 +153,8 @@ void LPTIM_Init(u16 cmp,u16 arr)
 #endif
     LPTIM_TimeBaseInitStruct.LPTIM_ExTriggerPolarity = LPTIM_ExTriggerPolarity_Rising;
     LPTIM_TimeBaseInitStruct.LPTIM_TimeOut = DISABLE;
-    LPTIM_TimeBaseInitStruct.LPYIM_OutputPolarity = LPYIM_OutputPolarity_High;
-    LPTIM_TimeBaseInitStruct.LPYIM_UpdateMode = LPYIM_UpdateMode0;
+    LPTIM_TimeBaseInitStruct.LPTIM_OutputPolarity = LPTIM_OutputPolarity_High;
+    LPTIM_TimeBaseInitStruct.LPTIM_UpdateMode = LPTIM_UpdateMode0;
     LPTIM_TimeBaseInitStruct.LPTIM_CountSource = LPTIM_CountSource_Internal;
     LPTIM_TimeBaseInitStruct.LPTIM_Encoder = DISABLE;
     LPTIM_TimeBaseInitStruct.LPTIM_InClockSource = LPTIM_InClockSource_PCLK1;

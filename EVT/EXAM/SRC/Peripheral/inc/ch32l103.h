@@ -2,7 +2,7 @@
  * File Name          : ch32l103.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/05/06
+ * Date               : 2024/11/06
  * Description        : CH32L103 Device Peripheral Access Layer Header File.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -16,7 +16,9 @@
 extern "C" {
 #endif
 
+#ifndef HSE_VALUE
 #define HSE_VALUE    ((uint32_t)8000000) /* Value of the External oscillator in Hz */
+#endif
 
 /* In the following line adjust the External High Speed oscillator (HSE) Startup Timeout value */
 #define HSE_STARTUP_TIMEOUT    ((uint16_t)0x1000) /* Time out for HSE start up */
@@ -27,7 +29,7 @@ extern "C" {
 
 /* Standard Peripheral Library version number */
 #define __CH32L103_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32L103_STDPERIPH_VERSION_SUB    (0x02) /* [7:0] sub version */
+#define __CH32L103_STDPERIPH_VERSION_SUB    (0x03) /* [7:0] sub version */
 #define __CH32L103_STDPERIPH_VERSION        ((__CH32L103_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32L103_STDPERIPH_VERSION_SUB << 0))
 
@@ -40,7 +42,7 @@ typedef enum IRQn
     Ecall_M_Mode_IRQn = 5,     /* Ecall M Mode Interrupt                               */
     Ecall_U_Mode_IRQn = 8,     /* Ecall U Mode Interrupt                               */
     Break_Point_IRQn = 9,      /* Break Point Interrupt                                */
-    SysTicK_IRQn = 12,         /* System timer Interrupt                               */
+    SysTick_IRQn = 12,         /* System timer Interrupt                               */
     Software_IRQn = 14,        /* Software Interrupt                                   */
 
     /******  RISC-V specific Interrupt Numbers *********************************************************/
@@ -102,6 +104,7 @@ typedef enum IRQn
 
 #define HardFault_IRQn    EXC_IRQn
 #define ADC1_2_IRQn       ADC_IRQn
+#define SysTicK_IRQn      SysTick_IRQn
 
 #include <stdint.h>
 #include "core_riscv.h"
@@ -818,7 +821,7 @@ typedef struct
 #define ADC_TRIM_BASE                           ((uint32_t)0x1FFFF728)
 #define HSI_LP_TRIM_BASE                        ((uint32_t)0x1FFFF72A)
 #define CHIPID_BASE                             ((uint32_t)0x1FFFF704)
-
+#define USBPD_CFG_BASE                          ((uint32_t)0x1FFFF730)
 
 /* Peripheral declaration */
 #define TIM2                                    ((TIM_TypeDef *)TIM2_BASE)
@@ -900,8 +903,9 @@ typedef struct
 #define ADC_SCAN                                ((uint32_t)0x00000100) /* Scan mode */
 #define ADC_AWDSGL                              ((uint32_t)0x00000200) /* Enable the watchdog on a single channel in scan mode */
 #define ADC_JAUTO                               ((uint32_t)0x00000400) /* Automatic injected group conversion */
-#define ADC_RDISCEN                             ((uint32_t)0x00000800) /* Discontinuous mode on regular channels */
+#define ADC_DISCEN                              ((uint32_t)0x00000800) /* Discontinuous mode on regular channels */
 #define ADC_JDISCEN                             ((uint32_t)0x00001000) /* Discontinuous mode on injected channels */
+#define ADC_RDISCEN                             ADC_DISCEN
 
 #define ADC_DISCNUM                             ((uint32_t)0x0000E000) /* DISCNUM[2:0] bits (Discontinuous mode channel count) */
 #define ADC_DISCNUM_0                           ((uint32_t)0x00002000) /* Bit 0 */
@@ -3532,7 +3536,8 @@ typedef struct
 #define AFIO_PCFR1_CAN_RM_0                     ((uint32_t)0x00002000) /* Bit 0 */
 #define AFIO_PCFR1_CAN_RM_1                     ((uint32_t)0x00004000) /* Bit 1 */
 
-#define AFIO_PCFR1_PD01_RM                      ((uint32_t)0x00008000) /* Port D0/Port D1 mapping on OSC_IN/OSC_OUT */
+#define AFIO_PCFR1_PD0PD1_RM                    ((uint32_t)0x00008000) /* Port D0/Port D1 mapping on OSC_IN/OSC_OUT */
+#define AFIO_PCFR1_PD01_RM                      AFIO_PCFR1_PD0PD1_RM
 
 #define AFIO_PCFR1_SW_CFG                       ((uint32_t)0x07000000) /* SW_CFG[2:0] bits (SDI configuration) */
 #define AFIO_PCFR1_SW_CFG_0                     ((uint32_t)0x01000000) /* Bit 0 */
@@ -4647,16 +4652,19 @@ typedef struct
 #define OPA_CTLR2_MODE1                         ((uint32_t)0x00000006)
 #define OPA_CTLR2_NSEL1                         ((uint32_t)0x00000008)
 #define OPA_CTLR2_PSEL1                         ((uint32_t)0x00000010)
+#define OPA_CTLR2_HYEN1                         ((uint32_t)0x00000020)
 #define OPA_CTLR2_LP1                           ((uint32_t)0x00000040)
 #define OPA_CTLR2_EN2                           ((uint32_t)0x00000100)
 #define OPA_CTLR2_MODE2                         ((uint32_t)0x00000600)
 #define OPA_CTLR2_NSEL2                         ((uint32_t)0x00000800)
 #define OPA_CTLR2_PSEL2                         ((uint32_t)0x00001000)
+#define OPA_CTLR2_HYEN2                         ((uint32_t)0x00002000)
 #define OPA_CTLR2_LP2                           ((uint32_t)0x00004000)
 #define OPA_CTLR2_EN3                           ((uint32_t)0x00010000)
 #define OPA_CTLR2_MODE3                         ((uint32_t)0x00060000)
 #define OPA_CTLR2_NSEL3                         ((uint32_t)0x00080000)
 #define OPA_CTLR2_PSEL3                         ((uint32_t)0x00100000)
+#define OPA_CTLR2_HYEN3                         ((uint32_t)0x00200000)
 #define OPA_CTLR2_LP3                           ((uint32_t)0x00400000)
 
 #define OPA_CTLR2_WKUP_MD                       ((uint32_t)0x03000000)
