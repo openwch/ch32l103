@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/05/23
+ * Date               : 2024/11/05
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -47,6 +47,7 @@ void CMP_Init( void )
     CMP_InitTypeDef.Mode = OUT_IO0;
     CMP_InitTypeDef.NSEL = CMP_CHN0;
     CMP_InitTypeDef.PSEL = CMP_CHP_0;
+    CMP_InitTypeDef.HYEN = CMP_HYEN1;
 
     OPA_CMP_Init(&CMP_InitTypeDef);
     OPA_CMP_Cmd(CMP1,ENABLE);

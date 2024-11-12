@@ -2,7 +2,7 @@
  * File Name          : ch32l103_opa.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/05/23
+ * Date               : 2024/11/05
  * Description        : This file provides all the OPA firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -176,19 +176,19 @@ void OPA_CMP_Init(CMP_InitTypeDef *CMP_InitStruct)
     {
         tmp1 &= 0xFFFFFFC1;
         tmp1 |= (CMP_InitStruct->Mode << 1) | (CMP_InitStruct->NSEL << 3)
-                | (CMP_InitStruct->PSEL << 4);
+                | (CMP_InitStruct->PSEL << 4) | (CMP_InitStruct->HYEN <<5);
     }
     else if(CMP_InitStruct->CMP_NUM == CMP2)
     {
         tmp1 &= 0xFFFFC1FF;
         tmp1 |= (CMP_InitStruct->Mode << 9) | (CMP_InitStruct->NSEL << 11)
-                | (CMP_InitStruct->PSEL << 12);
+                | (CMP_InitStruct->PSEL << 12) | (CMP_InitStruct->HYEN <<13);
     }
     else if(CMP_InitStruct->CMP_NUM == CMP3)
     {
         tmp1 &= 0xFFC1FFFF;
         tmp1 |= (CMP_InitStruct->Mode << 17) | (CMP_InitStruct->NSEL << 19)
-                | (CMP_InitStruct->PSEL << 20);
+                | (CMP_InitStruct->PSEL << 20) | (CMP_InitStruct->HYEN <<21);
     }
 
     CTLR2_tmp = tmp1;

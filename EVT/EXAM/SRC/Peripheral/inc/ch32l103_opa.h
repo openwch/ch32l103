@@ -2,7 +2,7 @@
  * File Name          : ch32l103_opa.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/05/23
+ * Date               : 2024/11/05
  * Description        : This file contains all the functions prototypes for the
  *                      OPA firmware library.
  *********************************************************************************
@@ -184,6 +184,13 @@ typedef enum
 #define CMP_CHP1 CMP_CHP_0
 #define CMP_CHP2 CMP_CHP_1
 
+/* CMP_HYEN_enumeration */
+typedef enum
+{
+    CMP_HYEN0 = 0,
+    CMP_HYEN1,
+} CMP_HYEN_TypeDef;
+
 /* CMP Init Structure definition */
 typedef struct
 {
@@ -191,6 +198,7 @@ typedef struct
     CMP_Mode_TypeDef   Mode;     /* Specifies the mode of CMP */
     CMP_NSEL_TypeDef   NSEL;     /* Specifies the negative channel of CMP */
     CMP_PSEL_TypeDef   PSEL;     /* Specifies the positive channel of CMP */
+    CMP_HYEN_TypeDef   HYEN;     /* Specifies the hysteresis comparator of CMP */
 } CMP_InitTypeDef;
 
 /* Current channel for OPA polling enumeration */

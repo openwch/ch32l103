@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/02/27
+ * Date               : 2024/11/06
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -255,21 +255,26 @@ void Enter_LowPower(void)
 }
 
 /*********************************************************************
- * @fn      GPIO_Toggle_INIT
+ * @fn      GPIO_ALL_IPD
  *
- * @brief   Initializes GPIOB pin6,pin7.
+ * @brief   Set all pins mode to pull-down.
  *
  * @return  none
  */
-void GPIO_Toggle_INIT(void)
+void GPIO_ALL_IPD(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 
-    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOB, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    /* To reduce power consumption, unused GPIOs need to be set as pull-down inputs */
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA|RCC_PB2Periph_GPIOB|
+            RCC_PB2Periph_GPIOC|RCC_PB2Periph_GPIOD, ENABLE);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
     GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
 /*********************************************************************
@@ -281,7 +286,8 @@ void GPIO_Toggle_INIT(void)
  */
 int main(void)
 {
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    GPIO_ALL_IPD();
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
     SystemCoreClockUpdate();
     Delay_Init();
     USART_Printf_Init(115200);
@@ -304,9 +310,6 @@ int main(void)
 #endif
 
     EXTI0_INT_INIT();
-
-    /*set cc1,cc2 pin mode to pull-up */
-    GPIO_Toggle_INIT();
 
     /*close cc1,cc2 pull-down resistors */
     USBPD->PORT_CC1 &= ~(0x01<<1);

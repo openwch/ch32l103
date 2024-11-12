@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/06/05
+ * Date               : 2024/10/31
  * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -70,6 +70,34 @@ void TIM1_Init( u16 arr, u16 psc )
 }
 
 /*********************************************************************
+ * @fn      EXTI_INIT
+ *
+ * @brief   Initializes CC wake up pin.
+ *
+ * @return  none
+ */
+void EXTI_INIT(void)
+{
+    EXTI_InitTypeDef EXTI_InitStructure = {0};
+
+    /* GPIOB.0 ----> EXTI_Line6 */
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource6);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
+
+    /* GPIOB.0 ----> EXTI_Line7 */
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource7);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
+}
+
+/*********************************************************************
  * @fn      main
  *
  * @brief   Main program.
@@ -89,7 +117,7 @@ int main(void)
 
     PD_Init( );
     TIM1_Init( 999, 96-1);
-
+    EXTI_INIT();
     while(1)
     {
         /* Get the calculated timing interval value */
@@ -124,3 +152,29 @@ void TIM1_UP_IRQHandler(void)
         TIM_ClearITPendingBit( TIM1, TIM_IT_Update );
     }
 }
+
+void EXTI9_5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+
+/*********************************************************************
+ * @fn      EXTI9_5_IRQHandler
+ *
+ * @brief   This function handles EXTI6 and EXTI7 Handler.
+ *
+ * @return  none
+ */
+void EXTI9_5_IRQHandler(void)
+{
+  if(EXTI_GetITStatus(EXTI_Line6)!=RESET)
+  {
+    printf("Wake_up\r\n");
+    EXTI_ClearITPendingBit(EXTI_Line6);     /* Clear Flag */
+    NVIC_DisableIRQ(EXTI9_5_IRQn);
+  }
+  if(EXTI_GetITStatus(EXTI_Line7)!=RESET)
+  {
+    printf("Wake_up\r\n");
+    EXTI_ClearITPendingBit(EXTI_Line7);     /* Clear Flag */
+    NVIC_DisableIRQ(EXTI9_5_IRQn);
+  }
+}
+

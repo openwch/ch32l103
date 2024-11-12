@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2024.06
+南京沁恒微电子股份有限公司 2024.11
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -30,6 +30,7 @@ https://wch.cn
   |      |      |      |      |-- Networking：CAN例程：正常模式，标准帧和扩展帧数据收发
   |      |      |      |      |-- TestMode：测试模式，包括静默模式、回环模式、回环静默模式
   |      |      |      |      |-- Time-triggered：时间触发通信模式   
+  |      |      |      |      |-- CAN_Wakeup：CAN唤醒例程
   |      |      |      |-- CRC：CRC例程  
   |      |      |      |-- DMA
   |      |      |      |      |-- DMA_MEM2MEM：储存器到储存器模式例程
@@ -72,6 +73,7 @@ https://wch.cn
   |      |      |      |      |-- Standby_RAM_Mode：待机模式不开启LV时，RAM 2K、30K低功耗数据保持例程
   |      |      |      |      |-- PVD_Wakeup：STOP模式PVD中断唤醒例程
   |      |      |      |      |-- PVD_VoltageJudger：PVD电压判定例程
+  |      |      |      |      |-- Standby_RAM_Application：待机模式RAM数据保持例程
   |      |      |      |-- PMP
   |      |      |      |      |-- PMP：物理内存保护例程
   |      |      |      |-- RCC
@@ -116,6 +118,7 @@ https://wch.cn
   |      |      |      |      |-- Synchro_Timer：定时器同步模式
   |      |      |      |      |-- TIM_DMA：定时器使用DMA例程
   |      |      |      |      |-- Encoder：定时器编码器例程
+  |      |      |      |      |-- TIM_INT：定时器中断例程
   |      |      |      |-- TOUCHKEY：TouchKey检测例程 
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA：USART使用DMA，Master/Slave 模式收发例程
@@ -127,6 +130,7 @@ https://wch.cn
   |      |      |      |      |-- USART_Printf：串口打印调试例程
   |      |      |      |      |-- USART_SynchronousMode：同步模式，Master/Slave 模式收发例程
   |      |      |      |      |-- USART_Idle_Recv：串口使用DMA进行不定长接收例程
+  |      |      |      |      |-- USART_SmartCard：串口智能卡例程
   |      |      |      |-- USB
   |      |      |      |      |-- USBFS
   |      |      |      |      |      |-- DEVICE

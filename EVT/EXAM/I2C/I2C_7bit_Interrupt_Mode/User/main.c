@@ -2,7 +2,7 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/03/19
+ * Date               : 2024/11/04
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2024 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -13,12 +13,12 @@
 /*
  *@Note
  7-bit addressing mode, master/slave mode, transceiver routine:
- I2C1_SCL(PB9)\I2C1_SDA(PB11).
+ I2C1_SCL(PB6)\I2C1_SDA(PB7).
  This routine demonstrates that Master sends and Slave receives using interrupt.
 Note: The two boards download the Master and Slave programs respectively,
 and power on at the same time.
-     Hardware connection:PB9 -- PB9
-                         PB11 -- PB11
+     Hardware connection:PB6 -- PB6
+                         PB7 -- PB7
 
 */
 
@@ -80,16 +80,15 @@ void IIC_Init(u32 bound, u16 address)
     I2C_InitTypeDef I2C_InitTSturcture={0};
     NVIC_InitTypeDef NVIC_InitStructure = {0};
 
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOB | RCC_PB2Periph_AFIO, ENABLE );
-    GPIO_PinRemapConfig(GPIO_FullRemap_I2C1, ENABLE);
+    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOB , ENABLE );
     RCC_PB1PeriphClockCmd( RCC_PB1Periph_I2C1, ENABLE );
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init( GPIOB, &GPIO_InitStructure );
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_OD;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init( GPIOB, &GPIO_InitStructure );
