@@ -8,7 +8,7 @@ CH32L103是基于青稞RISC-V内核设计的工业级低功耗通用微控制器
 
 ### 系统框图
 
-![image-20240509144156279](C:\Users\DZG\AppData\Roaming\Typora\typora-user-images\image-20240509144156279.png)
+![Alt](image/frame.png)
 
 ### 产品特点
 
