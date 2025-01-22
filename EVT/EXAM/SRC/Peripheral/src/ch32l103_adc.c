@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_adc.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/05/06
+ * Version            : V1.0.1
+ * Date               : 2025/01/07
  * Description        : This file provides all the ADC firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -1219,7 +1219,7 @@ void ADC_FIFO_Cmd(ADC_TypeDef *ADCx, FunctionalState NewState)
 
     *(vu32*)0x4002202C |= (1<<9);     //offset calibration
     (*(vu32*)0x40022034) |= (1<<29);  //lock
-    while((*(vu32*)0x40022034) & (1<<29) == 0); //wait lock
+    while(((*(vu32*)0x40022034) & (1<<29)) == 0); //wait lock
 
     if(NewState != DISABLE)
     {
@@ -1304,19 +1304,19 @@ int16_t Get_CalibrationValue(ADC_TypeDef *ADCx)
     uint16_t      buf[10];
     __IO uint16_t t;
 
-    ADC1->CTLR2|=(7<<17);
-    ADC_Cmd(ADC1, ENABLE);
-    ADC_FIFO_Cmd(ADC1, ENABLE);
-    ADC_ResetCalibration(ADC1);
-    while(ADC_GetResetCalibrationStatus(ADC1));
-    ADC_StartCalibration(ADC1);
-    while(ADC_GetCalibrationStatus(ADC1));
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_CalInternal, 1, ADC_SampleTime_CyclesMode0);
+    ADCx->CTLR2|=(7<<17);
+    ADC_Cmd(ADCx, ENABLE);
+    ADC_FIFO_Cmd(ADCx, ENABLE);
+    ADC_ResetCalibration(ADCx);
+    while(ADC_GetResetCalibrationStatus(ADCx));
+    ADC_StartCalibration(ADCx);
+    while(ADC_GetCalibrationStatus(ADCx));
+    ADC_RegularChannelConfig(ADCx, ADC_Channel_CalInternal, 1, ADC_SampleTime_CyclesMode0);
     for(i = 0; i < 10; i++)
     {
-        ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-        while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
-        buf[i] = ADC_GetConversionValue(ADC1);
+        ADC_SoftwareStartConvCmd(ADCx, ENABLE);
+        while(!ADC_GetFlagStatus(ADCx, ADC_FLAG_EOC));
+        buf[i] = ADC_GetConversionValue(ADCx);
     }
     for(i = 0; i < 10; i++)
     {

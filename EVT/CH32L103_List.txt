@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2024.11
+南京沁恒微电子股份有限公司 2025.01
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -51,6 +51,7 @@ https://wch.cn
   |      |      |      |      |-- USB_UART：USB+UART IAP例程  
   |      |      |      |-- INT
   |      |      |      |      |-- Interrupt_VTF：使用VTF IRQ中断例程  
+  |      |      |      |      |-- VectorInRAM：中断向量表在RAM的中断例程
   |      |      |      |-- IWDG：独立看门狗例程
   |      |      |      |-- LPTIM：低功耗定时器例程
   |      |      |      |      |--LPTIM_LP_WakeUp：LPTIM 睡眠，停机唤醒例程  
@@ -119,7 +120,13 @@ https://wch.cn
   |      |      |      |      |-- TIM_DMA：定时器使用DMA例程
   |      |      |      |      |-- Encoder：定时器编码器例程
   |      |      |      |      |-- TIM_INT：定时器中断例程
-  |      |      |      |-- TOUCHKEY：TouchKey检测例程 
+  |      |      |      |-- TOUCHKEY：
+  |      |      |      |      |-- TKY：TouchKey检测例程
+  |      |      |      |      |-- TKey_MulShield：主动屏蔽例程
+  |      |      |      |      |-- Touch_EX001：触摸按键综合演示例程  
+  |      |      |      |      |-- Touch_EX002：8按键触摸例程 
+  |      |      |      |      |-- TKYLIB：触摸按键库
+  |      |      |      |      |-- DOC_SCH_PCB：原理图及使用说明 
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA：USART使用DMA，Master/Slave 模式收发例程
   |      |      |      |      |-- USART_HalfDuplex：单线半双工模式，Master/Slave 模式收发例程

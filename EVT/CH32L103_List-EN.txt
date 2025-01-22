@@ -1,5 +1,5 @@
 
-Nanjing Qinheng Microelectronics Co., Ltd. 2024.11
+Nanjing Qinheng Microelectronics Co., Ltd. 2025.01
 Please check our website for the latest information.
 https://wch-ic.com
 
@@ -51,6 +51,7 @@ Directory
   |      |      |      |      |-- USB_UART：USB+UART IAP routine  
   |      |      |      |-- INT
   |      |      |      |      |-- Interrupt_VTF：use VTF IRQ interrupt routine  
+  |      |      |      |      |-- VectorInRAM：Interrupt routines for the interrupt vector table in RAM
   |      |      |      |-- IWDG：independent watchdog routine
   |      |      |      |-- LPTIM：low power consumption timer routine
   |      |      |      |      |--LPTIM_LP_WakeUp：LPTIM sleep，shutdown wakeup routine  
@@ -119,7 +120,13 @@ Directory
   |      |      |      |      |-- TIM_DMA：the timer uses DMA routines
   |      |      |      |      |-- Encode:Timer encoder mode routines
   |      |      |      |      |-- TIM_INT:Timer interrupt routines
-  |      |      |      |-- TOUCHKEY：touchkey detection routine
+  |      |      |      |-- TOUCHKEY
+  |      |      |      |      |-- TKY：TouchKey: touchkey detection routine
+  |      |      |      |      |-- TKey_MulShield：TKey MulShield routine
+  |      |      |      |      |-- Touch_EX001：Comprehensive demonstration of touch keys
+  |      |      |      |      |-- Touch_EX002：8 Key Touch Routines 
+  |      |      |      |      |-- TKYLIB：Touch Button Library 
+  |      |      |      |      |-- DOC_SCH_PCB: Schematic diagrams and instructions for use 
   |      |      |      |-- USART
   |      |      |      |      |-- USART_DMA：USART uses DMA, master / slave mode transceiver routine
   |      |      |      |      |-- USART_HalfDuplex：1-wire half duplex mode, master / slave mode transceiver routine

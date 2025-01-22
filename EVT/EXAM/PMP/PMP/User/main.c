@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2024/06/05
+* Version            : V1.0.1
+* Date               : 2025/01/08
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -116,13 +116,13 @@ void PMP_Set_Range(uint32_t grop, uint32_t md, uint32_t sd, uint32_t ed)
     if ((md & PMP_MODE_NAPOT) == PMP_MODE_NAPOT)
     {
         uint32_t temp = 0xffffffff;
-        for (int i = 0; i < ed; i++)
+        for (uint32_t i = 0; i < ed; i++)
         {
             temp <<= 1;
         }
         pmp_start_address &= temp;
         temp = 0;
-        for (int i = 0; i < ed - 1; i++)
+        for (uint32_t i = 0; i < ed - 1; i++)
         {
             temp<<= 1;
             temp |= 0x00000001;

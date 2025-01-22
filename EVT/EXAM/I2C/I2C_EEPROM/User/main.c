@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/06/05
+ * Version            : V1.0.1
+ * Date               : 2025/01/08
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -134,11 +134,11 @@ u8 AT24CXX_ReadOneByte(u16 ReadAddr)
 	I2C_Send7bitAddress( I2C2, 0XA0, I2C_Direction_Receiver );
 
 	while( !I2C_CheckEvent( I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED ) );
-  while( I2C_GetFlagStatus( I2C2, I2C_FLAG_RXNE ) ==  RESET )
+    while( I2C_GetFlagStatus( I2C2, I2C_FLAG_RXNE ) ==  RESET );
 	I2C_AcknowledgeConfig( I2C2, DISABLE );
 
 	temp = I2C_ReceiveData( I2C2 );
-  I2C_GenerateSTOP( I2C2, ENABLE );
+    I2C_GenerateSTOP( I2C2, ENABLE );
 
 	return temp;
 }
