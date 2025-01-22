@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/01/19
+ * Version            : V1.0.1
+ * Date               : 2025/01/08
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -117,6 +117,7 @@ u16 Get_ADC_Val(u8 ch)
 {
     u16 val;
 
+	ADC_RegularChannelConfig(ADC1, ch, 1, ADC_SampleTime_CyclesMode7);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));

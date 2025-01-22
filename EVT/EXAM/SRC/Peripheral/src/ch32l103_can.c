@@ -1441,7 +1441,7 @@ uint8_t CANFD_Init(CAN_TypeDef* CANx, CANFD_InitTypeDef* CANFD_InitStruct)
                                      ((uint32_t)CANFD_InitStruct->CANFD_TDC0);
 
         CANx->CANFD_BTR = (uint32_t)((uint32_t)CANFD_InitStruct->CANFD_TDCE << 23) | \
-                                    ((uint32_t)CANFD_InitStruct->CANFD_Prescaler-1 << 16) | \
+                                    (((uint32_t)CANFD_InitStruct->CANFD_Prescaler-1) << 16) | \
                                     ((uint32_t)CANFD_InitStruct->CANFD_BS1 << 8) | \
                                     ((uint32_t)CANFD_InitStruct->CANFD_BS2 << 4) | \
                                     ((uint32_t)CANFD_InitStruct->CANFD_SJW);

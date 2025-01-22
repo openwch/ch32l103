@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103.h
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/06
+ * Version            : V1.0.1
+ * Date               : 2025/01/08
  * Description        : CH32L103 Device Peripheral Access Layer Header File.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -29,7 +29,7 @@ extern "C" {
 
 /* Standard Peripheral Library version number */
 #define __CH32L103_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32L103_STDPERIPH_VERSION_SUB    (0x03) /* [7:0] sub version */
+#define __CH32L103_STDPERIPH_VERSION_SUB    (0x04) /* [7:0] sub version */
 #define __CH32L103_STDPERIPH_VERSION        ((__CH32L103_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32L103_STDPERIPH_VERSION_SUB << 0))
 
@@ -3155,7 +3155,6 @@ typedef struct
 /*******************  Bit definition for FLASH_CTLR register  *******************/
 #define FLASH_CTLR_PER                          ((uint32_t)0x00000002) /* Sector Erase 1K */
 #define FLASH_CTLR_MER                          ((uint32_t)0x00000004) /* Mass Erase */
-#define FLASH_CTLR_OBPG                         ((uint32_t)0x00000010) /* Option Byte Programming */
 #define FLASH_CTLR_OBER                         ((uint32_t)0x00000020) /* Option Byte Erase */
 #define FLASH_CTLR_STRT                         ((uint32_t)0x00000040) /* Start */
 #define FLASH_CTLR_LOCK                         ((uint32_t)0x00000080) /* Lock */

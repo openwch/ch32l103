@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/07/08
+ * Version            : V1.0.1
+ * Date               : 2025/01/20
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -34,8 +34,8 @@ void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
  */
 void Interrupt_VTF_Init(void)
 {
-    NVIC_EnableIRQ(SysTick_IRQn);
     SetVTFIRQ((u32)SysTick_Handler,SysTick_IRQn,0,ENABLE);
+	NVIC_EnableIRQ(SysTick_IRQn);
 }
 
 /*********************************************************************

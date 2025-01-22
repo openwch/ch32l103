@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/12/26
+ * Version            : V1.0.1
+ * Date               : 2025/01/13
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -11,13 +11,16 @@
  *******************************************************************************/
 
 /*
- *@Note
- *GPIO routine:
- *PA0 push-pull output.
- *
+ * APP routine: this routine support USB and UART mode,
+ * and you can choose the command method to jump to the IAP .
+ * Key  parameters: CalAddr - address in flash(same in IAP), note that this address needs to be unused.
+ *                  CheckNum - The value of 'CalAddr' that needs to be modified.
+ * Tips :the routine need IAP software version 1.50.
  */
 
+#include "ch32l103_usbfs_device.h"
 #include "debug.h"
+#include "iap.h"
 
 /* Global define */
 
@@ -42,6 +45,42 @@ void GPIO_Toggle_INIT(void)
 }
 
 /*********************************************************************
+ * @fn      APP_2_IAP
+ *
+ * @brief   APP_2_IAP program.
+ *
+ * @return  none
+ */
+void APP_2_IAP(void)
+{
+    NVIC_SystemReset();
+    while(1){
+    }
+}
+
+/*********************************************************************
+ * @fn      USART2_IT_CFG
+ *
+ * @brief   USART2 IT configuration.
+ *
+ * @return  none
+ */
+void USART2_IT_CFG(void)
+{
+    NVIC_InitTypeDef  NVIC_InitStructure = {0};
+
+    RCC_PB1PeriphClockCmd(RCC_PB1Periph_USART2, ENABLE);
+    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+
+    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+    USART_Cmd(USART2, ENABLE);
+}
+/*********************************************************************
  * @fn      main
  *
  * @brief   Main program.
@@ -58,12 +97,39 @@ int main(void)
     USART_Printf_Init(115200);
     printf("SystemClk:%d\r\n", SystemCoreClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
-    printf("GPIO Toggle TEST\r\n");
+    printf("APP\r\n");
     GPIO_Toggle_INIT();
 
+    /* Usb Init */
+    USBFS_RCC_Init( );
+    USBFS_Device_Init( ENABLE );
+    USART2_CFG(460800);
+    USART2_IT_CFG();
     while(1)
     {
         Delay_Ms(250);
         GPIO_WriteBit(GPIOA, GPIO_Pin_1, (i == 0) ? (i = Bit_SET) : (i = Bit_RESET));
+        if(*(uint32_t*)CalAddr == CheckNum)
+        {
+             Delay_Ms(10);
+             APP_2_IAP();
+             while(1);
+        }
+    }
+}
+
+void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+/*********************************************************************
+ * @fn      USART3_IRQHandler
+ *
+ * @brief   This function handles USART3 global interrupt request.
+ *
+ * @return  none
+ */
+void USART2_IRQHandler(void)
+{
+    if( USART_GetFlagStatus(USART2, USART_FLAG_RXNE) != RESET){
+
+        UART_Rx_Deal();
     }
 }
