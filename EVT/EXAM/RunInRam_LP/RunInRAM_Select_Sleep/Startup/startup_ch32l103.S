@@ -1,8 +1,8 @@
 ;/********************************** (C) COPYRIGHT *******************************
 ;* File Name          : startup_ch32l103.s
 ;* Author             : WCH
-;* Version            : V1.0.0
-;* Date               : 2024/05/06
+;* Version            : V1.0.1
+;* Date               : 2025/03/25
 ;* Description        : CH32L103 vector table for eclipse toolchain.
 ;*********************************************************************************
 ;* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -223,7 +223,6 @@ handle_reset:
 .option	norelax 
 	la gp, __global_pointer$
 .option	pop 
-1:
 	la sp, _eusrstack 
 
 	lui s0,0x40024
@@ -232,7 +231,6 @@ handle_reset:
 	sw a1,-2048(s0)
 
 /* Load highcode code  section from flash to RAM */
-2:
     la a0, _highcode_lma
     la a1, _highcode_vma_start
     la a2, _highcode_vma_end

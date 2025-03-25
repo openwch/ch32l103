@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_lptim.h
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/07/15
+ * Version            : V1.0.1
+ * Date               : 2025/03/14
  * Description        : This file contains all the functions prototypes for the
  *                      TIM firmware library.
 *********************************************************************************
@@ -186,6 +186,7 @@ void LPTIM_Cmd(FunctionalState NewState);
 uint16_t LPTIM_GetCounter(void);
 void LPTIM_SetAutoreload(uint16_t Autoreload);
 void LPTIM_SetCompare(uint16_t Compare);
+uint16_t LPTIM_GetCapture(void);
 void LPTIM_ITConfig(uint32_t LPTIM_IT, FunctionalState NewState);
 FlagStatus LPTIM_GetFlagStatus(uint32_t LPTIM_FLAG);
 void LPTIM_ClearFlag(uint32_t LPTIM_FLAG);

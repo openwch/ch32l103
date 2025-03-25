@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103.h
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/01/08
+ * Version            : V1.0.2
+ * Date               : 2025/03/25
  * Description        : CH32L103 Device Peripheral Access Layer Header File.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -29,7 +29,7 @@ extern "C" {
 
 /* Standard Peripheral Library version number */
 #define __CH32L103_STDPERIPH_VERSION_MAIN   (0x01) /* [15:8] main version */
-#define __CH32L103_STDPERIPH_VERSION_SUB    (0x04) /* [7:0] sub version */
+#define __CH32L103_STDPERIPH_VERSION_SUB    (0x05) /* [7:0] sub version */
 #define __CH32L103_STDPERIPH_VERSION        ((__CH32L103_STDPERIPH_VERSION_MAIN << 8)\
                                              |(__CH32L103_STDPERIPH_VERSION_SUB << 0))
 
@@ -3214,14 +3214,6 @@ typedef struct
 /******************  Bit definition for FLASH_WRPR1 register  ******************/
 #define FLASH_WRPR1_WRPR1                       ((uint32_t)0x00FF0000) /* Flash memory write protection option bytes */
 #define FLASH_WRPR1_nWRPR1                      ((uint32_t)0xFF000000) /* Flash memory write protection complemented option bytes */
-
-/******************  Bit definition for FLASH_WRPR2 register  ******************/
-#define FLASH_WRPR2_WRPR2                       ((uint32_t)0x000000FF) /* Flash memory write protection option bytes */
-#define FLASH_WRPR2_nWRPR2                      ((uint32_t)0x0000FF00) /* Flash memory write protection complemented option bytes */
-
-/******************  Bit definition for FLASH_WRPR3 register  ******************/
-#define FLASH_WRPR3_WRPR3                       ((uint32_t)0x00FF0000) /* Flash memory write protection option bytes */
-#define FLASH_WRPR3_nWRPR3                      ((uint32_t)0xFF000000) /* Flash memory write protection complemented option bytes */
 
 /******************************************************************************/
 /*                General Purpose and Alternate Function I/O                  */

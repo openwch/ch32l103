@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_flash.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2024/12/11
+ * Version            : V1.0.2
+ * Date               : 2025/03/25
  * Description        : This file provides all the FLASH firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -58,7 +58,7 @@
 
 /* FLASH Size */
 #define Size_256B                  0x100
-#define Size_1KB                   0x400
+#define Size_2KB                   0x800
 #define Size_32KB                  0x8000
 
 /********************************************************************************
@@ -112,7 +112,7 @@ void FLASH_Lock(void)
 /********************************************************************************
  * @fn      FLASH_ErasePage
  *
- * @brief   Erases a specified FLASH page(1KB).
+ * @brief   Erases a specified FLASH page(2KB).
  *
  * @param   Page_Address - The page address to be erased.
  *
@@ -237,7 +237,7 @@ void FLASH_OptionBytePR(u32* pbuf)
  */
 FLASH_Status FLASH_EnableWriteProtection(uint32_t FLASH_Pages)
 {
-    uint8_t     WRP0_Data = 0xFF, WRP1_Data = 0xFF, WRP2_Data = 0xFF, WRP3_Data = 0xFF;
+    uint8_t     WRP0_Data = 0xFF, WRP1_Data = 0xFF;
     uint32_t buf[4];
     uint8_t i;
     FLASH_Status status = FLASH_COMPLETE;
@@ -250,8 +250,6 @@ FLASH_Status FLASH_EnableWriteProtection(uint32_t FLASH_Pages)
         FLASH_Pages = (uint32_t)(~FLASH_Pages);
         WRP0_Data = (uint8_t)(FLASH_Pages & WRP0_Mask);
         WRP1_Data = (uint8_t)((FLASH_Pages & WRP1_Mask) >> 8);
-        WRP2_Data = (uint8_t)((FLASH_Pages & WRP2_Mask) >> 16);
-        WRP3_Data = (uint8_t)((FLASH_Pages & WRP3_Mask) >> 24);
 
         status = FLASH_WaitForLastOperation(ProgramTimeout);
 
@@ -263,8 +261,7 @@ FLASH_Status FLASH_EnableWriteProtection(uint32_t FLASH_Pages)
 
             buf[2] = ((uint32_t)(((uint32_t)(WRP0_Data) & 0x00FF) + (((uint32_t)(~WRP0_Data) & 0x00FF) << 8) \
                    + (((uint32_t)(WRP1_Data) & 0x00FF) << 16) + (((uint32_t)(~WRP1_Data) & 0x00FF) << 24)));
-            buf[3] = ((uint32_t)(((uint32_t)(WRP2_Data) & 0x00FF) + (((uint32_t)(~WRP2_Data) & 0x00FF) << 8) \
-                   + (((uint32_t)(WRP3_Data) & 0x00FF) << 16) + (((uint32_t)(~WRP3_Data) & 0x00FF) << 24)));
+            buf[3] = 0x00FF00FF;
 
             FLASH_OptionBytePR(buf);
         }
@@ -742,7 +739,7 @@ void FLASH_ProgramPage_Fast(uint32_t Page_Address)
  * @param   StartAddr - Erases Flash start address(StartAddr%256 == 0).
  *          Cnt - Erases count.
  *          Erase_Size - Erases size select.The returned value can be:
- *          Size_32KB, Size_1KB, Size_256B.
+ *          Size_32KB, Size_2KB, Size_256B.
  *
  * @return  none.
  */
@@ -755,7 +752,7 @@ static void ROM_ERASE(uint32_t StartAddr, uint32_t Cnt, uint32_t Erase_Size)
         {
             FLASH->CTLR |= CR_BER32;
         }
-        else if(Erase_Size == Size_1KB)
+        else if(Erase_Size == Size_2KB)
         {
             FLASH->CTLR |= CR_PER_Set;
         }
@@ -774,10 +771,10 @@ static void ROM_ERASE(uint32_t StartAddr, uint32_t Cnt, uint32_t Erase_Size)
             FLASH->CTLR &= ~CR_BER32;
             StartAddr += Size_32KB;
         }
-        else if(Erase_Size == Size_1KB)
+        else if(Erase_Size == Size_2KB)
         {
             FLASH->CTLR &= ~CR_PER_Set;
-            StartAddr += Size_1KB;
+            StartAddr += Size_2KB;
         }
         else if(Erase_Size == Size_256B)
         {
@@ -835,9 +832,9 @@ FLASH_Status FLASH_ROM_ERASE(uint32_t StartAddr, uint32_t Length)
         Addr1 = StartAddr + Length0;
         Length1 = Length - Length0;
     }
-    else if(Length >= Size_1KB)
+    else if(Length >= Size_2KB)
     {
-        Length0 = Size_1KB - (Addr0 & (Size_1KB - 1));
+        Length0 = Size_2KB - (Addr0 & (Size_2KB - 1));
         Addr1 = StartAddr + Length0;
         Length1 = Length - Length0;
     }
@@ -880,38 +877,38 @@ FLASH_Status FLASH_ROM_ERASE(uint32_t StartAddr, uint32_t Length)
         ROM_ERASE(StartAddr, ((Length - Length1) >> 15), Size_32KB);
     }
 
-    /* Erase 1KB */
-    if(Length0 >= Size_1KB) //front
+    /* Erase 2KB */
+    if(Length0 >= Size_2KB) //front
     {
         Length = Length0;
-        if(Addr0 & (Size_1KB - 1))
+        if(Addr0 & (Size_2KB - 1))
         {
-            Length0 = Size_1KB - (Addr0 & (Size_1KB - 1));
+            Length0 = Size_2KB - (Addr0 & (Size_2KB - 1));
         }
         else
         {
             Length0 = 0;
         }
 
-        ROM_ERASE((Addr0 + Length0), ((Length - Length0) >> 10), Size_1KB);
+        ROM_ERASE((Addr0 + Length0), ((Length - Length0) >> 11), Size_2KB);
     }
 
-    if(Length1 >= Size_1KB) //back
+    if(Length1 >= Size_2KB) //back
     {
         StartAddr = Addr1;
         Length = Length1;
 
-        if((Addr1 + Length1) & (Size_1KB - 1))
+        if((Addr1 + Length1) & (Size_2KB - 1))
         {
-            Addr1 = ((StartAddr + Length1) & (~(Size_1KB - 1)));
-            Length1 = (StartAddr + Length1) & (Size_1KB - 1);
+            Addr1 = ((StartAddr + Length1) & (~(Size_2KB - 1)));
+            Length1 = (StartAddr + Length1) & (Size_2KB - 1);
         }
         else
         {
             Length1 = 0;
         }
 
-        ROM_ERASE(StartAddr, ((Length - Length1) >> 10), Size_1KB);
+        ROM_ERASE(StartAddr, ((Length - Length1) >> 11), Size_2KB);
     }
 
     /* Erase 256B */

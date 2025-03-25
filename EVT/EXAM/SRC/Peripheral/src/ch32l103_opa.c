@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_opa.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/05
+ * Version            : V1.0.1
+ * Date               : 2025/03/19
  * Description        : This file provides all the OPA firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -17,9 +17,6 @@
 
 /* mask definition*/
 #define POLL_CNT_MASK             ((uint16_t)0x7000)
-
-volatile uint32_t CTLR2_tmp = 0;
-
 
 /********************************************************************************
  * @fn      OPCM_Unlock
@@ -170,7 +167,7 @@ void OPA_CMP_Init(CMP_InitTypeDef *CMP_InitStruct)
 {
     uint32_t tmp1 = 0;
 
-    tmp1 = CTLR2_tmp;
+    tmp1 = OPA->CTLR2;
 
     if(CMP_InitStruct->CMP_NUM == CMP1)
     {
@@ -191,7 +188,6 @@ void OPA_CMP_Init(CMP_InitTypeDef *CMP_InitStruct)
                 | (CMP_InitStruct->PSEL << 20) | (CMP_InitStruct->HYEN <<21);
     }
 
-    CTLR2_tmp = tmp1;
     OPA->CTLR2 = tmp1;
 }
 
@@ -224,16 +220,19 @@ void OPA_CMP_StructInit(CMP_InitTypeDef *CMP_InitStruct)
  */
 void OPA_CMP_Cmd(CMP_Num_TypeDef CMP_NUM, FunctionalState NewState)
 {
+    uint32_t tmp1 = 0;
+    tmp1 = OPA->CTLR2;
+
     if(NewState == ENABLE)
     {
-        CTLR2_tmp |= (uint32_t)(1 << (CMP_NUM*8));
+        tmp1 |= (uint32_t)(1 << (CMP_NUM*8));
     }
     else
     {
-        CTLR2_tmp &= ~(uint32_t)(1 << (CMP_NUM*8));
+        tmp1 &= ~(uint32_t)(1 << (CMP_NUM*8));
     }
 
-    OPA->CTLR2 = CTLR2_tmp;
+    OPA->CTLR2 = tmp1;
 }
 
 /*********************************************************************
