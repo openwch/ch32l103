@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/04
+ * Version            : V1.0.1
+ * Date               : 2025/02/17
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -100,7 +100,7 @@ void CAN_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode)
     CAN_FilterInitSturcture.CAN_FilterMaskIdHigh = 0xFFE0;
     CAN_FilterInitSturcture.CAN_FilterMaskIdLow = 0x0006;
 
-    /* identifier/mask mode, Two 16-bit filters, StdId: 0x317��0x316 */
+    /* identifier/mask mode, Two 16-bit filters, StdId: 0x317,0x316 */
     //	CAN_FilterInitSturcture.CAN_FilterMode = CAN_FilterMode_IdMask;
     //	CAN_FilterInitSturcture.CAN_FilterScale = CAN_FilterScale_16bit;
     //	CAN_FilterInitSturcture.CAN_FilterIdHigh = 0x62E0;
@@ -108,7 +108,7 @@ void CAN_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode)
     //	CAN_FilterInitSturcture.CAN_FilterMaskIdHigh = 0x62C0;
     //	CAN_FilterInitSturcture.CAN_FilterMaskIdLow = 0xFFF8;
 
-    /* identifier list mode, One 32-bit filter, StdId: 0x317��0x316 */
+    /* identifier list mode, One 32-bit filter, StdId: 0x317,0x316 */
     //	CAN_FilterInitSturcture.CAN_FilterMode = CAN_FilterMode_IdList;
     //	CAN_FilterInitSturcture.CAN_FilterScale = CAN_FilterScale_32bit;
     //	CAN_FilterInitSturcture.CAN_FilterIdHigh = 0x62E0;

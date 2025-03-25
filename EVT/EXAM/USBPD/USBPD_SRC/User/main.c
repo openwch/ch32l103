@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/01/03
+ * Version            : V1.0.2
+ * Date               : 2025/02/17
  * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -17,7 +17,7 @@
  *
  * This sample code may have compatibility issues and is for learning purposes only.
  *
- * This example code does not apply to CH32L103G8R6 and F8U6.
+ * CH32L103K8U6 and CH32L103F8U6 built-in Rd, as Source, need turn off the built-in 5.1K pull-down resistor.
  * Be sure to notice the chip model when using it.
  *
  * Be sure to remove the pull-down resistors on both CC wires when using this Sample code!
