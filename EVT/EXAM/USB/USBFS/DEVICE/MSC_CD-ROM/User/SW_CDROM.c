@@ -2,7 +2,7 @@
 * File Name          : SW_CDROM.C
 * Author             : WCH
 * Version            : V1.0.1
-* Date               : 2024/01/19
+* Date               : 2022/11/24
 * Description        : CD-ROM Source File
 *******************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -14,8 +14,8 @@
 /* Header Files */
 #include <SPI_FLASH.h>
 #include <SW_CDROM.h>
-#include "ch32l103_usbfs_device.h"
-#include "ch32l103_spi.h"
+#include "ch32f20x_usbfs_device.h"
+#include "ch32f20x_spi.h"
 /******************************************************************************/
 /* Variable Definition */
 __attribute__ ((aligned(4))) uint8_t  CDROM_Pack_Buffer[DEF_CDROM_PACK_64];

@@ -21,16 +21,28 @@ extern "C" {
 /* Header File */
 #include "string.h"
 #include "debug.h"
-#include "ch32l103_usb.h"
-#include <ch32l103_usbfs_host.h>
+#include "ch32f20x_usb.h"
+#include "ch32f20x_usbfs_host.h"
 
 /******************************************************************************/
 /* USB Host Communication Related Macro Definition */
 
 /* USB Host Port General Control */
+/* CH32F205/F207 Support USBHS/FS Host */
+#ifdef  CH32F20x_D8C
+#define DEF_TOTAL_ROOT_HUB          2
+#define DEF_USB_PORT_FS_EN          1
+#define DEF_USB_PORT_HS_EN          0
+#define DEF_USB_PORT_FS             0x00                                        
+#define DEF_USB_PORT_HS             0x01
+#else
+/* CH32F203C6/C8,F208, Support USBFS Host ONLY */
 #define DEF_TOTAL_ROOT_HUB          1
 #define DEF_USB_PORT_FS_EN          1
-#define DEF_USB_PORT_FS             0x00
+#define DEF_USB_PORT_HS_EN          0
+#define DEF_USB_PORT_FS             0x00                                        
+#define DEF_USB_PORT_HS             0x01
+#endif
 
 /* USB Root Device Status */
 #define ROOT_DEV_DISCONNECT         0

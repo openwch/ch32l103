@@ -1,14 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : main.c
- * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/01/19
- * Description        : Main program body.
+* File Name          : main.c
+* Author             : WCH
+* Version            : V1.0.0
+* Date               : 2022/08/20
+* Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* Attention: This software (modified or not) and binary are used for
+* Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
-*******************************************************************************/
+*******************************************************************************/ 
 
 /* @Note
  * UDisk Example:
@@ -16,11 +16,12 @@
  * Flash, selected by STORAGE_MEDIUM at SW_UDISK.h.
  *  */
 
-#include "ch32l103_usbfs_device.h"
+#include "ch32f20x_usbfs_device.h"
 #include "debug.h"
 #include "Internal_Flash.h"
 #include "SPI_FLASH.h"
 #include "SW_UDISK.h"
+
 /*********************************************************************
  * @fn      main
  *
@@ -30,10 +31,10 @@
  */
 int main(void)
 {
-	Delay_Init();
-	USART_Printf_Init(115200);
-	printf("SystemClk:%d\r\n",SystemCoreClock);
-	Delay_Ms( 10 );
+		Delay_Init();
+		USART_Printf_Init(115200);
+		printf("SystemClk:%d\r\n",SystemCoreClock);
+		Delay_Ms(10);
 #if (STORAGE_MEDIUM == MEDIUM_SPI_FLASH)
     printf("USBD UDisk Demo\r\nStorage Medium: SPI FLASH \r\n");
     /* SPI flash init */
@@ -49,14 +50,18 @@ int main(void)
     /* Enable Udisk */
     Udisk_Capability = Flash_Sector_Count;
     Udisk_Status |= DEF_UDISK_EN_FLAG;
-
-    /* Usb Init */
     USBFS_RCC_Init( );
     USBFS_Device_Init( ENABLE );
-    NVIC_EnableIRQ(USBFS_IRQn);
+    NVIC_EnableIRQ( USBFS_IRQn );
 
 	while(1)
 	{
 	    ;
 	}
 }
+
+
+
+
+
+

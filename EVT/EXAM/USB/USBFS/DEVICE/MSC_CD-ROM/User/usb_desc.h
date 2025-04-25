@@ -2,14 +2,13 @@
  * File Name          : usb_desc.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/01/19
+ * Date               : 2022/08/20
  * Description        : header file of usb_desc.c
-*********************************************************************************
+ *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
-
 #ifndef USER_USB_DESC_H_
 #define USER_USB_DESC_H_
 
@@ -35,14 +34,13 @@
 #define DEF_USBD_LS_UEP0_SIZE        8      /* usb ls device end-point 0 size */
 #define DEF_USBD_LS_PACK_SIZE        64     /* usb ls device max int pack size */
 
-/* Pack size */
-#define DEF_USBD_ENDP1_SIZE          DEF_USBD_FS_PACK_SIZE
-#define DEF_USBD_ENDP2_SIZE          DEF_USBD_FS_PACK_SIZE
-#define DEF_USBD_ENDP3_SIZE          DEF_USBD_FS_PACK_SIZE
-#define DEF_USBD_ENDP4_SIZE          DEF_USBD_FS_PACK_SIZE
-#define DEF_USBD_ENDP5_SIZE          DEF_USBD_FS_PACK_SIZE
-#define DEF_USBD_ENDP6_SIZE          DEF_USBD_FS_PACK_SIZE
-#define DEF_USBD_ENDP7_SIZE          DEF_USBD_FS_PACK_SIZE
+/* FS end-point size */
+#define DEF_USB_EP1_FS_SIZE          DEF_USBD_FS_PACK_SIZE
+#define DEF_USB_EP2_FS_SIZE          DEF_USBD_FS_PACK_SIZE
+#define DEF_USB_EP3_FS_SIZE          DEF_USBD_FS_PACK_SIZE
+#define DEF_USB_EP4_FS_SIZE          DEF_USBD_FS_PACK_SIZE
+#define DEF_USB_EP5_FS_SIZE          DEF_USBD_FS_PACK_SIZE
+#define DEF_USB_EP6_FS_SIZE          DEF_USBD_FS_PACK_SIZE
 
 /******************************************************************************/
 /* usb device Descriptor length, length of usb descriptors, if one descriptor not

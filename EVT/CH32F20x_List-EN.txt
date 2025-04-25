@@ -1,0 +1,277 @@
+
+Nanjing WCH Microelectronics Co. 2025.04
+For the latest information, please go to our website.
+https://wch.cn
+
+
+File Directory
+  |
+  |-- CH32F20x:32-bit ARM Cortex-M3 core microcontroller
+  |      |-- DS
+  |      |      |--CH32F20xDS0.PDF:CH32F20x Datasheet
+  |      |-- EVT: CH32F20x Evaluation Board and CH32F20x Related Routines
+  |      |      |-- PUB: 
+  |      |      |      |-- CH32F20x Evaluation Board Manual.pdf: CH32F20x Evaluation Board Description and Project Creation Instructions
+  |      |      |      |-- CH32F20xSCH.pdf: CH32F20x Evaluation Board Schematic
+  |      |      |      |-- Keil.WCH32F2xx_DFP.1.0.2.pack: Download Device Pack package
+  |      |      |      |--  SCHPCB: Schematic and PCB of CH32F20xEVT evaluation board
+  |      |      |-- EXAM: 
+  |      |      |      |-- SRC  
+  |      |      |      |      |-- CMSIS:Core system headers
+  |      |      |      |      |-- Startup:Boot file. The following boot files are included for the user's chip model, and the matching chip model definition is selected in the ch32f20x.h file
+  |      |      |      |      |      |-- startup_ch32f20x_D6.s:For CH32F203K8-CH32F203C6-CH32F203C8 series
+  |      |      |      |      |      |-- startup_ch32f20x_D8.s:For CH32F203CB-CH32F203RC-CH32F203VC series
+  |      |      |      |      |      |-- startup_ch32f20x_D8C.s:For CH32F207-CH32F205 series
+  |      |      |      |      |      |-- startup_ch32f20x_D8W.s:For CH32F208 series  
+  |      |      |      |      |-- StdPeriphDriver:Basic peripheral driver source files and headers
+  |      |      |      |      |-- Debug:Delay functions, serial debugging source files and header files
+  |      |      |      |-- ADC
+  |      |      |      |      |-- ADC_DMA:ADC using DMA sampling routines
+  |      |      |      |      |-- AnalogWatchdog:Analog Watchdog Routines
+  |      |      |      |      |-- Auto_Injection:Automatic Injection Mode Routine
+  |      |      |      |      |-- Discontinuous_mode:Intermittent Mode Routines
+  |      |      |      |      |-- DualADC_AlternateTrigger:Dual ADC Alternate Trigger Sampling Routine----for CH32F20x_D6-CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- DualADC_Combined_RegInjectionSimul:Dual ADC hybrid synchronization rules + injection sampling routines----for CH32F20x_D6-CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- DualADC_FastInterleaved:Dual ADC Fast Cross-Sampling Routine ----for CH32F20x_D6-CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- DualADC_InjectionSimul:Dual ADC Synchronous Injection Sampling Routine ----for CH32F20x_D6-CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- DualADC_RegSimul:Dual ADC synchronous rule sampling routines ----for CH32F20x_D6-CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- DualADC_SlowInterleaved:Dual ADC Slow Cross-Sampling Routine ----for CH32F20x_D6-CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- ExtLines_Trigger:Externally triggered ADC conversion routines
+  |      |      |      |      |-- Internal_Temperature:Internal temperature sensor routines  
+  |      |      |      |      |-- TIM_Trigger:TIM trigger ADC conversion routine 
+  |      |      |      |      |-- Temperature_External_channel:Temperature-External channel Injection alternating inversion routine 
+  |      |      |      |-- APPLICATION
+  |      |      |      |      |-- WS2812_LED
+  |      |      |      |      |      |-- WS2812_LED：SPI\PWM Operates WS2812_LED routine
+  |      |      |      |-- BKP
+  |      |      |      |-- BKP:BKP routines
+  |      |      |      |-- BLE ----for CH32F20x_D8W only
+  |      |      |      |      |-- BackupUpgrade_IAP:Backup the wireless upgrade IAP routine, detect the current code flag, determine whether to carry the backup zone code to the user zone and run the user zone code  
+  |      |      |      |      |-- BackupUpgrade_OTA:Backup wireless upgrade user routines, add OTA function on the basis of peripheral slave routines, save the upgrade firmware to the backup area and then jump to the IAP program for upgrade  
+  |      |      |      |      |-- BLE_UART:Bluetooth serial port pass-through routine, refer to the root <instructions.txt> document for detailed instructions
+  |      |      |      |      |-- BLE_USB:Bluetooth and USB combined routine, USB emulation 340 device forwarding Bluetooth data
+  |      |      |      |      |-- Broadcaster:Broadcaster role routines, in broadcast state always broadcast 
+  |      |      |      |      |-- CentPeri:Master-slave routines that integrate the functions of the master and slave routines to run simultaneously 
+  |      |      |      |      |-- Central:Host routine, actively scan the surrounding devices, connect to the given slave device address, look for custom services and features, execute read and write commands, need to be used with the slave routine, and modify the slave device address as the target address of the routine, the default is (84:C2:E4:03:02:02) 
+  |      |      |      |      |-- CyclingSensor:Ride sensor routine, connect to host and upload speed and pedaling frequency at regular intervals
+  |      |      |      |      |-- DirectTest:Direct test routine to test sending packets on a specified communication channel
+  |      |      |      |      |-- HAL:Hardware-related files shared by routines  
+  |      |      |      |      |-- HeartRate:Heart rate monitor routine, connect to host and upload heart rate regularly
+  |      |      |      |      |-- HID_Consumer:Bluetooth camera routine, simulate user-controlled devices, connect to the host and upload the volume key down key at regular intervals
+  |      |      |      |      |-- HID_Keyboard:Bluetooth keyboard routine to simulate a keyboard device, connect to the host and upload the key values regularly
+  |      |      |      |      |-- HID_Mouse:Bluetooth mouse routine, simulate a mouse device, connect to the host and upload key values regularly   
+  |      |      |      |      |-- HID_Touch:Bluetooth touch routine to simulate a stylus device, connect to the host and upload the touch values regularly
+  |      |      |      |      |-- LIB:BLE protocol stack library files and its header files
+  |      |      |      |      |-- LWNS:LWNS wireless networking routines, including broadcast, unicast, netflood, mesh and other functions.
+  |      |      |      |      |-- MultiCentPeri:Multi-host multi-slave routines, supporting simultaneous connection of three hosts and three slaves
+  |      |      |      |      |-- MultiCentral:The host multi-connection routine actively scans the surrounding devices, connects to the given three slave device addresses, looks for custom services and features, and executes read and write commands, and needs to be used with the slave routine, and modifies the slave device address to be the target address of the routine, the three slave device addresses are (84:C2:E4:03:02:02), (84:C2:E4:03:02:03) by default (84:C2:E4:03:02:04), (84:C2:E4:03:02:04), (84:C2:E4:03:02:04)
+  |      |      |      |      |-- Observer:Observer role routine that scans at regular intervals and prints the scanned broadcast address if the scan result is not empty
+  |      |      |      |      |-- PAwR_ADV：periodic advertising with responses routine in advertising
+  |      |      |      |      |-- PAwR_RSP：periodic advertising with responses routine in responses
+  |      |      |      |      |-- Peripheral:Peripheral slave role routines, customized to include five different attributes of the service, including readable, writable, notification, readable-writable, and secure readable
+  |      |      |      |      |-- peripheral_ancs_client:Peripheral slave role routines, including Apple Notification Center service
+  |      |      |      |      |-- peripheral_ETH:Bluetooth ETH routines
+  |      |      |      |      |-- RF_PHY:Non-standard wireless transceiver routines
+  |      |      |      |      |-- RF_PHY_Auto：non-standard wireless auto transceiver routines
+  |      |      |      |      |-- RF_PHY_Hop:Non-standard wireless frequency hopping transceiver routines    
+  |      |      |      |      |-- RunningSensor:Running sensor routine, connect to host and upload speed at regular intervals
+  |      |      |      |      |-- SpeedTest_Central:Bluetooth speed measurement host routine
+  |      |      |      |      |-- SpeedTest_Peripheral:Bluetooth speed measurement slave routines
+  |      |      |      |      |-- SYNC_ADV:Periodic Simultaneous Broadcast Routine
+  |      |      |      |      |-- SYNC_SCAN:Periodic Synchronous Scan Routine
+  |      |      |      |      |-- WCH Low Power Bluetooth Software Development Reference Manual.pdf
+  |      |      |      |      |-- BLE Certificate: Products:WCH CH32V208  QDID:179771   
+  |      |      |      |      |-- MESH
+  |      |      |      |      |      |-- adv_ali_light:The Tmall Genie light routine can be used to find teammates to match the network device and control the switch state through Tmall Genie. By default, there are only switch properties, if you want to add the rest of the properties (brightness, power, temperature, etc.), you need to add the corresponding processing functions and status reporting functions according to the property descriptions configured by Aliyun products.
+  |      |      |      |      |      |-- adv_ali_light_add_lightness:MESH generic attribute addition routine. Based on the Tmall Genie Light routine, the brightness attribute is added for quick familiarization with adding other MESH generic attributes against the original Tmall Genie Light routine
+  |      |      |      |      |      |-- adv_ali_light_add_windspeed:Tmall definition property adding routines. Based on the Tmall Genie Light routine, the wind speed attribute is added for quick familiarization with adding other Tmall defined attributes against the original Tmall Genie Light routine.
+  |      |      |      |      |      |-- adv_ali_light_multi_element:Multi-element TMC fan light routine. Also contains fan switch rocker and light switch color control. Used to quickly familiarize yourself with adding multiple properties against the original Tmall Genie light routine.
+  |      |      |      |      |      |-- adv_ali_light_with_peripheral:Based on the Tmall Genie Light routine, add brightness and color temperature control, and support cell phone BLE debugging assistant connection control.
+  |      |      |      |      |      |-- adv_proxy:Proxy node routines that can be wired through the PB_GATT layer (BLE connection).
+  |      |      |      |      |      |-- adv_vendor:Vendor-defined model routines, used with provisioner_vendor, support two types of communication attributes, answerable transmission and unanswered transmission, and draw up their own communication protocols.
+  |      |      |      |      |      |-- adv_vendor_friend:Vendor custom model routines based on support for friend node functionality
+  |      |      |      |      |      |-- adv_vendor_low_power:Support for low-power node functionality based on vendor-defined model routines, to be used in conjunction with friend nodes
+  |      |      |      |      |      |-- adv_vendor_self_provision:On the basis of vendor-defined model routines, it supports local self-matching, adapts to special application scenarios such as those without a match or simplifies the matching process
+  |      |      |      |      |      |-- adv_vendor_self_provision_IAP:MESH backup wireless upgrade IAP routine, detects the current code flag, determines whether to carry the backup zone code to the user zone and run the user zone code
+  |      |      |      |      |      |-- adv_vendor_self_provision_with_peripheral:MESH backup wireless upgrade user routines, based on the manufacturer's custom model routines, support cell phone BLE debugging assistant connection control, through the BLE to receive information about the network and will be their own network, suitable for terminal control networking applications, you can draw up your own communication protocol to achieve cell phone control of all devices in the mesh network.
+  |      |      |      |      |      |-- provisioner_vendor:The vendor-defined model self-matching initiator routine, used with adv_vendor, automatically matches the surrounding un-matched devices and adds them to its own mesh network, supporting 6 devices by default. By default, the device is configured to bind 1 APPKEY, which is used for answer transmission and no-answer transmission, and 1 subscription address, which is used for sending no-answer messages.
+  |      |      |      |      |      |-- provisioner_vendor_with_peripheral:Based on the vendor-defined model self-matching network initiator routine, it supports cell phone BLE debugging assistant connection control, relaying the communication between cell phone and mesh network, and can draw up its own communication protocol to realize cell phone control of all devices in mesh network.
+  |      |      |      |      |      |-- MESH_LIB:MESH protocol stack library files and its header files
+  |      |      |      |      |      |-- WCH MESH APP Managing Distribution Networks Renference Manual.pdf
+  |      |      |      |      |      |-- WCH Low-power Bluetooth MESH Software Development Reference Manual.pdf  
+  |      |      |      |-- CAN
+  |      |      |      |      |-- Networking:CAN routines: normal mode, standard frame and extended frame data sending and receiving
+  |      |      |      |      |-- TestMode:Test modes, including silent mode, loopback mode, loopback silent mode
+  |      |      |      |      |-- Time-triggered:Time-triggered communication mode  
+  |      |      |      |-- CRC
+  |      |      |      |-- CRC_Calculation:CRC routines  
+  |      |      |      |-- DAC ----for CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- DAC_DMA:DAC using DMA conversion routines
+  |      |      |      |      |-- DAC_Exit_9_Trig:Externally triggered DAC conversion routines
+  |      |      |      |      |-- DAC_Noise_Generation:Noise waveform output routines
+  |      |      |      |      |-- DAC_Normal_OUT:Normal Output Routines
+  |      |      |      |      |-- DAC_Timer_Trig:Timer-triggered DAC conversion routines
+  |      |      |      |      |-- DAC_Triangle_Generation:Triangle Waveform Output Routine
+  |      |      |      |      |-- DualDAC_SineWave:Dual DAC Output Sine Wave Routine
+  |      |      |      |      |-- DualDAC_Triangle:Dual DAC output delta wave routines 
+  |      |      |      |-- DMA
+  |      |      |      |      |-- DMA_MEM2MEM:Memory-to-memory mode routines
+  |      |      |      |      |-- DMA_MEM2PERIP:Memory-to-Peripheral Mode, Peripheral-to-Memory Mode routines are available in each peripheral subroutine
+  |      |      |      |-- DVP ----for CH32F20x_D8C only
+  |      |      |      |      |-- DVP_TFTLCD:DVP operation OV2640 camera video mode in LCD display image routines
+  |      |      |      |      |-- DVP_UART:DVP operation OV2640 camera JPEG mode routines
+  |      |      |      |-- ETH for CH32F20x_D8C-CH32F20x_D8W only
+  |      |      |      |      |-- 1_Tool_Doc:Routine related documentation and configuration software   
+  |      |      |      |      |-- DHCP:Demonstrate DHCP to obtain IP automatically and establish TCP connection for data return
+  |      |      |      |      |-- DNS:DHCP automatically obtain ip and then request domain name resolution demo routine   
+  |      |      |      |      |-- ETH_CFG:ETH_CFG routine to create a UDP Server to communicate with the host computer to configure WCHNET functions, including parameters and create a new communication
+  |      |      |      |      |-- ETH_IAP:Demonstration of IAP via TCP data transfer
+  |      |      |      |      |-- ETH_UART:Demonstrates Ethernet to UART data pass-through. Default use 1000000 baud rate (can be changed in bsp_uart.h) for serial data transfer
+  |      |      |      |      |-- IPRaw_PING:  Demonstrate the PING function
+  |      |      |      |      |-- Mail:Demonstration of SMTP and POP3 mail sending and receiving
+  |      |      |      |      |-- MQTT:Demonstration of TCP/IP based MQTT protocol communication   
+  |      |      |      |      |-- NetLib:Network Protocol Stack Library 
+  |      |      |      |      |-- TcpClient:Demonstrate Tcp client connecting to a server and then receiving data back
+  |      |      |      |      |-- TcpServer:Demonstrate Tcp Server connecting to a client and then receiving data and sending it back
+  |      |      |      |      |-- UdpClient:Demonstrate Udp Client receiving data and sending it back
+  |      |      |      |      |-- UdpServer:Demonstrate Udp Server receiving data and sending it back
+  |      |      |      |      |-- WebServer: Demonstrate the function of configuring WCHNET chip through web browser, WCHNET chip built-in web server, through the web page can realize the configuration of WCHNET network parameters, and password management      
+  |      |      |      |-- EXTI
+  |      |      |      |      |-- EXTI0:External Interrupt Routine  
+  |      |      |      |-- FLASH 
+  |      |      |      |      |-- FLASH_Program:FLASH erase/read/write, and fast programming  
+  |      |      |      |-- FreeRTOS
+  |      |      |      |      |-- FreeRTOS_Core:FreeRTOS migration routines ---- for CH32F20x_D8C only
+  |      |      |      |-- FSMC ----for CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- LCD:FSMC operating TFTLCD routines
+  |      |      |      |      |-- NANDFLASH:FSMC operating NANDFLASH routines
+  |      |      |      |      |-- SRAM:FSMC operating NOR_SRAM routines    
+  |      |      |      |-- GPIO 
+  |      |      |      |      |-- GPIO_Toggle:GPIO routines  
+  |      |      |      |-- I2C
+  |      |      |      |      |-- I2C_7bit_Mode:7-bit address mode, Master/Slave mode send/receive routines
+  |      |      |      |      |-- I2C_10bit_Mode:10-bit address mode, Master/Slave mode send/receive routines
+  |      |      |      |      |-- I2C_DMA:I2C using DMA, Master/Slave mode send/receive routines
+  |      |      |      |      |-- I2C_EEPROM:I2C interface operation EEPROM peripheral routines
+  |      |      |      |      |-- I2C_PEC:Master/Slave mode send/receive routines using PEC error checking
+  |      |      |      |      |-- I2C_7bit_Interrupt_Mode：Use interrupt to receive and send routine 
+  |      |      |      |-- I2S ----for CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- HostRx_SlaveTx:I2S master-receiver-slave routines
+  |      |      |      |      |-- I2S_DMA:I2S master-receiver-slave DMA  routines
+  |      |      |      |      |-- I2S_Interupt:I2S master-slave interrupt routines   
+  |      |      |      |-- IAP:IAP Upgrade Routine - Built-in Hex to Bin Tool and IAP Upgrade Tool 
+  |      |      |      |      |-- USB+UART:USB+UART IAP routines     
+  |      |      |      |-- IWDG
+  |      |      |      |      |-- IWDG:Independent Watchdog routine 
+  |      |      |      |-- OPA
+  |      |      |      |      |-- OPA_Voltage_Follower:OPA4 as a voltage follower output routine 
+  |      |      |      |-- LiteOS_M
+  |      |      |      |      |-- LiteOS_M_Core：LiteOS_M Porting Routine ----for CH32F20x_D8C only
+  |      |      |      |-- PWR
+  |      |      |      |      |-- Sleep_Mode:Low-power consumption, Sleep mode routines
+  |      |      |      |      |-- Standby_Mode:Low-power consumption, Standby mode routines
+  |      |      |      |      |-- Stop_Mode:Low-power consumption, Stop mode routines
+  |      |      |      |      |-- Standby_RAM_LV_Mode:RAM 2K, 30K low-power data retention routines when LV is turned on in Standby mode
+  |      |      |      |      |-- Standby_RAM_Mode:RAM 2K, 30K low-power data retention routines when Standby mode is not on LV
+  |      |      |      |      |-- PVD_Wakeup：STOP mode PVD wakeup MCU Routine
+  |      |      |      |      |-- PVD_VoltageJudger：PVD voltage Judger Routine
+  |      |      |      |-- RCC
+  |      |      |      |      |-- Get_CLK:Get system-HCLK-AHB1-AHB2 clock routine    
+  |      |      |      |      |-- MCO:MCO Pin Clock Output Routines
+  |      |      |      |      |-- HSI_PLL_Source:HSI or HSI/2 as PLL input clock routines  
+  |      |      |      |      |-- HSE_CLK:HSE frequency check routine
+  |      |      |      |      |-- HSI_Calibration：HSI calibrate routine
+  |      |      |      |-- RNG
+  |      |      |      |      |-- RNG：Random Number Generator Routine   ----for CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |-- RTC
+  |      |      |      |      |-- RTC_Calendar：Calendar Routines   
+  |      |      |      |      |-- RTC_Calibration：RTC calibrate Routines   
+  |      |      |      |-- RT-Thread
+  |      |      |      |      |-- RT_Thread_Core：RT-Thread porting routines ----for CH32F20x_D8C only
+  |      |      |      |-- SDIO
+  |      |      |      |      |-- SDIO_SD：SDIO operation SD card routine ----for CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |      |-- SDIO_eMMC：SDIO operation eMMC card routine ----for CH32F20x_D8-CH32F20x_D8C only
+  |      |      |      |-- SPI
+  |      |      |      |      |-- 1Lines_half-duplex:Single-line half-duplex mode,Master/Slave mode data sending and receiving
+  |      |      |      |      |-- 2Lines_FullDuplex:Dual-lines full-duplex mode, Master/Slave mode data sending and receiving
+  |      |      |      |      |-- FullDuplex_HardNSS:Hardware NSS mode, Master/Slave mode data sending and receiving
+  |      |      |      |      |-- SPI_CRC:Master/Slave mode send/receive routines using CRC error checks
+  |      |      |      |      |-- SPI_DMA:SPI using DMA, Master/Slave mode send/receive routines
+  |      |      |      |      |-- SPI_FLASH:SPI interface operation FLASH peripheral routines
+  |      |      |      |      |-- SPI_LCD:SPI interface operation FLASH  and LCD peripheral routines
+  |      |      |      |-- SYSTICK 
+  |      |      |      |      |-- SYSTICK_Interrupt：Systick timer routine    
+  |      |      |      |-- TencentOS_Tiny
+  |      |      |      |      |-- TencentOS_Tiny_Core：TencentOS porting routines ----for CH32F20x_D8C only
+  |      |      |      |-- TIM
+  |      |      |      |      |-- Clock_Select:Clock Source Selection Routine
+  |      |      |      |      |-- ComplementaryOutput_DeadTime:Complementary output and deadband insertion mode routines
+  |      |      |      |      |-- ExtTrigger_Start_Two_Timer:External trigger to start two timer routines synchronously
+  |      |      |      |      |-- Input_Capture:Input Capture Routines
+  |      |      |      |      |-- One_Pulse:Single Pulse Output Routine
+  |      |      |      |      |-- Output_Compare_Mode:Output comparison mode routines
+  |      |      |      |      |-- PWM_Output:PWM Output Routines
+  |      |      |      |      |-- Synchro_ExtTrigger:Slave mode routines, including reset mode, gated mode, trigger mode
+  |      |      |      |      |-- Synchro_Timer:Timer synchronization mode
+  |      |      |      |      |-- TIM_DMA:Timer using DMA routines
+  |      |      |      |      |-- Encode:Timer encoder mode routines
+  |      |      |      |      |-- TIM_INT:Timer interput mode routines
+  |      |      |      |      |-- TIM_Continuous：Timer continuous routines
+  |      |      |      |      |-- PWM_Phase-shifted：Timer PWM Phase shifted routines
+  |      |      |      |      |-- PWM_6_Step：Timer 6_Step PWM routines
+  |      |      |      |-- TOUCHKEY
+  |      |      |      |      |-- TKey：TouchKey Detection Routine  
+  |      |      |      |-- USART
+  |      |      |      |      |-- USART_DMA:USART using DMA, Master/Slave mode send/receive routines
+  |      |      |      |      |-- USART_HalfDuplex:Single-wire half-duplex mode, Master/Slave mode send/receive routines
+  |      |      |      |      |-- USART_HardwareFlowControl:Hardware flow control mode, Master/Slave mode send/receive routines
+  |      |      |      |      |-- USART_Interrupt:USART interrupt routines, Master/Slave mode send/receive routines
+  |      |      |      |      |-- USART_MultiProcessorCommunication:Multi-processor communication mode routines
+  |      |      |      |      |-- USART_Polling:Polling transceiver mode, Master/Slave mode transceiver routines
+  |      |      |      |      |-- USART_Printf:Serial port printing debugging routines
+  |      |      |      |      |-- USART_SynchronousMode:Synchronous mode, Master/Slave mode send/receive routines
+  |      |      |      |      |-- USART_Printf:Serial port printing debugging routines
+  |      |      |      |      |-- USART_Idle_Recv：USART use DMA receiving indeterminate length data routines
+  |      |      |      |-- USB
+  |      |      |      |      |-- USBD ----for CH32F20x_D6-CH32F20x_D8_CH32F20x_D8W only
+  |      |      |      |      |      |-- CH372:Simulates a custom USB device (CH372 device) with endpoints 1, 3 down and 2, 4 up. Data down from endpoint 1 is uploaded from endpoint 3 and not reversed, and data down from endpoint 2 is uploaded from endpoint 4 and reversed.
+  |      |      |      |      |      |-- Compatibility_HID:Simulation of HID devices, data up and down via serial port
+  |      |      |      |      |      |-- CompositeKM:Simulates keyboard and mouse, use I/O to simulate keystrokes, while simulated data can be uploaded through serial port 2.
+  |      |      |      |      |      |-- MSC_U-Disk: Simulates a simple USB flash drive, optionally using on-chip Flash or external SPI-Flash 
+  |      |      |      |      |      |-- MSC_CD-ROM: Simulate CDROM, need external SPI-Flash    
+  |      |      |      |      |      |-- SimulateCDC:Simulates a CDC serial port and use serial port 2 to send and receive.
+  |      |      |      |      |      |-- SimulateCDC-HID:Simulate a CDC serial port, use serial port 2 to send and receive, HID interrupt endpoints to send and receive data to reverse and upload.  
+  |      |      |      |      |-- USBFS ----for CH32F20x_D6-CH32F20x_D8C-CH32F20x_D8W only
+  |      |      |      |      |      |-- DEVICE
+  |      |      |      |      |      |      |-- CH372:Simulates a custom USB device (CH372 device) with endpoints 1, 3 down and 2, 4 up. Data down from endpoint 1 is uploaded from endpoint 3 and not reversed, and data down from endpoint 2 is uploaded from endpoint 4 and reversed.
+  |      |      |      |      |      |      |-- Compatibility_HID:Simulates HID devices, with data transmitted up and down through the serial port.
+  |      |      |      |      |      |      |-- CompositeKM:Simulate keyboard and mouse, use I/O to simulate keys, while simulated data can be uploaded through serial port 2.
+  |      |      |      |      |      |      |-- MSC_U-Disk: Simulates a simple USB flash drive, optionally using on-chip Flash or external SPI-Flash
+  |      |      |      |      |      |      |-- SimulateCDC:Simulate a CDC serial port and use serial port 2 to send and receive. 
+  |      |      |      |      |      |      |-- SimulateCDC-HID:Simulate a CDC serial port, use serial port 2 to send and receive, HID interrupt endpoints to send and receive data to reverse and upload. 
+  |      |      |      |      |      |      |-- MSC_CD-ROM: Simulate CDROM, need external SPI-Flash     
+  |      |      |      |      |      |-- HOST_IAP
+  |      |      |      |      |      |      |-- APP: APP used with HOST_IAP, the project has modified the starting location of the program, after compilation, you need to convert the file into a bin file and rename it to APP.bin
+  |      |      |      |      |      |      |-- HOST_IAP:  The host U disk IAP routine based on the U disk read file routine finishing, read the file with the name bit APP.bin from the U disk, write it to the internal flash, check it and jump automatically.
+  |      |      |      |      |      |-- HOST_KM: The host operates the Keyboard and Mouse, gets the data of the endpoints uploaded by the Keyboard and Mouse and prints it, supports U-port under level 1 hub
+  |      |      |      |      |      |-- HOST_MTP_FileSystem:Enumeration process of a USB host to a device that supports MTP and PTP protocols, supports MTP and PTP protocols, and reads its files
+  |      |      |      |      |      |-- Host_Udisk:USB host operation USB disk routine 
+  |      |      |      |      |      |-- Udisk_Lib:U disk file system library file
+  |      |      |      |      |-- USBHS ----for CH32F20x_D8C only  
+  |      |      |      |      |      |-- DEVICE
+  |      |      |      |      |      |      |-- CH372:Simulates a custom USB device (CH372 device) with endpoints 1, 3 down and 2, 4 up. Data down from endpoint 1 is uploaded from endpoint 3 and not reversed, and data down from endpoint 2 is uploaded from endpoint 4 and reversed.
+  |      |      |      |      |      |      |-- Compatibility_HID:Simulates HID devices, with data transmitted up and down through the serial port.
+  |      |      |      |      |      |      |-- CompositeKM:Simulates keyboard and mouse, use I/O to simulate keystrokes, while simulated data can be uploaded through serial port 2.
+  |      |      |      |      |      |      |-- MSC_U-Disk: Simulates a simple USB flash drive, optionally using on-chip Flash or external SPI-Flash
+  |      |      |      |      |      |      |-- MSC_CD-ROM: Simulate CDROM, need external SPI-Flash
+  |      |      |      |      |      |      |-- SimulateCDC:Simulates a CDC serial port and use serial port 2 to send and receive.
+  |      |      |      |      |      |      |-- SimulateCDC-HID:Simulate a CDC serial port, use serial port 2 to send and receive, HID interrupt endpoints to send and receive data to reverse and upload.  
+  |      |      |      |      |      |-- HOST_IAP
+  |      |      |      |      |      |      |-- APP: APP used with HOST_IAP, the project has modified the starting location of the program, after compilation, you need to convert the file into a bin file and rename it to APP.bin
+  |      |      |      |      |      |      |-- HOST_IAP: The host U disk IAP routine based on the U disk read file routine finishing, read the file with the name bit APP.bin from the U disk, write it to the internal flash, check it and jump automatically.
+  |      |      |      |      |      |-- HOST_KM: The host operates the Keyboard and Mouse, gets the data of the endpoints uploaded by the Keyboard and Mouse and prints it, supports U-port under level 1 hub
+  |      |      |      |      |      |-- HOST_MTP_FileSystem:Enumeration process of a USB host to a device that supports MTP and PTP protocols, supports MTP and PTP protocols, and reads its files
+  |      |      |      |      |      |-- Host_Udisk:USB host operation USB disk routine 
+  |      |      |      |      |      |-- Udisk_Lib:U disk file system library file   
+  |      |      |      |-- WWDG
+  |      |      |      |      |-- WWDG：Window Watchdog Routine 

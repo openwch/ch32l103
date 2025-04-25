@@ -1,14 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : main.c
- * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/01/19
- * Description        : Main program body.
- *********************************************************************************
- * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
- * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+* File Name          : main.c
+* Author             : WCH
+* Version            : V1.0.0
+* Date               : 2021/08/08
+* Description        : Main program body.
+*********************************************************************************
+* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
+*******************************************************************************/ 
 
 /* @Note
  * Compatibility HID Example:
@@ -30,13 +30,8 @@
  *  */
 
 #include "debug.h"
-#include "ch32l103_usbfs_device.h"
+#include "ch32f20x_usbfs_device.h"
 #include "usbd_compatibility_hid.h"
-
-/* Global define */
-
-/* Global Variable */
-
 /*********************************************************************
  * @fn      Var_Init
  *
@@ -66,33 +61,41 @@ void Var_Init(void)
  */
 int main(void)
 {
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-    SystemCoreClockUpdate();
-    Delay_Init();
-    USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
-    printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+	Delay_Init();
+	USART_Printf_Init( 115200 );
+	printf("SystemClk:%d\r\n",SystemCoreClock);
+	printf("USBFS Compatibility HID Example\r\n");
+	/* USBFSD device init */
+	Delay_Ms(10);
 
-    /* Variables init */
-    Var_Init();
+	/* Variables init */
+	Var_Init();
+	
+	/* UART2 init */
+	UART2_Init();
+	UART2_DMA_Init();
+	
+	/* USBFS Device Init */
+	USBFS_RCC_Init( );
+	USBFS_Device_Init(ENABLE);
 
-    /* UART2 init */
-    UART2_Init();
-    UART2_DMA_Init();
 
-    USBFS_RCC_Init();
-    USBFS_Device_Init(ENABLE);
-
-    /* Timer init */
-    TIM2_Init();
-
-    while(1)
-    {
-        if(USBFS_DevEnumStatus)
-        {
-            UART2_Rx_Service();
-            UART2_Tx_Service();
-            HID_Set_Report_Deal();
-        }
-    }
+	/* Timer init */
+	TIM2_Init();
+    
+	while(1)
+	{
+			if(USBFS_DevEnumStatus)
+			{
+					UART2_Rx_Service();
+					UART2_Tx_Service();
+					HID_Set_Report_Deal();
+			}
+	}
 }
+
+
+
+
+
+

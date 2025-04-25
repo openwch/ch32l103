@@ -4,7 +4,7 @@
  * Version            : V1.0.0
  * Date               : 2022/08/18
  * Description        : USB keyboard and mouse processing.
-*********************************************************************************
+ *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -13,11 +13,11 @@
 
 /*******************************************************************************/
 /* Header Files */
-#include "ch32l103_usbfs_device.h"
+#include "ch32f20x_usbfs_device.h"
 #include "usbd_composite_km.h"
 
 /*******************************************************************************/
-/* Global Variable Definition */
+/* Variable Definition */
 
 /* Mouse */
 volatile uint8_t  MS_Scan_Done = 0x00;                                          // Mouse Movement Scan Done
@@ -33,14 +33,9 @@ volatile uint8_t  KB_LED_Last_Status = 0x00;                                    
 volatile uint8_t  KB_LED_Cur_Status = 0x00;                                     // Keyboard LED Current Result
 
 /* USART */
-volatile uint8_t  USART_Recv_Dat = 0x00;
+volatile uint8_t  USART_Recv_Dat = 0x00;                                        
 volatile uint8_t  USART_Send_Flag = 0x00;
 volatile uint8_t  USART_Send_Cnt = 0x00;
-
-/*******************************************************************************/
-/* Interrupt Function Declaration */
-void TIM3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 /*********************************************************************
  * @fn      TIM3_Init
@@ -57,10 +52,8 @@ void TIM3_Init( uint16_t arr, uint16_t psc )
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = { 0 };
     NVIC_InitTypeDef NVIC_InitStructure = { 0 };
 
-    /* Enable Timer3 Clock */
-    RCC_PB1PeriphClockCmd( RCC_PB1Periph_TIM3, ENABLE );
+    RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM3, ENABLE );
 
-    /* Initialize Timer3 */
     TIM_TimeBaseStructure.TIM_Period = arr;
     TIM_TimeBaseStructure.TIM_Prescaler = psc;
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -75,7 +68,6 @@ void TIM3_Init( uint16_t arr, uint16_t psc )
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init( &NVIC_InitStructure );
 
-    /* Enable Timer3 */
     TIM_Cmd( TIM3, ENABLE );
 }
 
@@ -123,8 +115,8 @@ void USART2_Init( uint32_t baudrate )
     USART_InitTypeDef USART_InitStructure = { 0 };
     NVIC_InitTypeDef NVIC_InitStructure = { 0 };
 
-    RCC_PB1PeriphClockCmd( RCC_PB1Periph_USART2, ENABLE );
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOA, ENABLE );
+    RCC_APB1PeriphClockCmd( RCC_APB1Periph_USART2, ENABLE );
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA, ENABLE );
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -245,7 +237,7 @@ void KB_Scan_Init( void )
     GPIO_InitTypeDef GPIO_InitStructure = { 0 };
 
     /* Enable GPIOB clock */
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOB, ENABLE );
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB, ENABLE );
 
     /* Initialize GPIOB (Pin4-Pin7) for the keyboard scan */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
@@ -265,8 +257,7 @@ void KB_Sleep_Wakeup_Cfg( void )
 {
     EXTI_InitTypeDef EXTI_InitStructure = { 0 };
 
-    /* Enable GPIOB clock */
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_AFIO, ENABLE );
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_AFIO, ENABLE );
 
     GPIO_EXTILineConfig( GPIO_PortSourceGPIOB, GPIO_PinSource12 );
     EXTI_InitStructure.EXTI_Line = EXTI_Line12;
@@ -511,10 +502,8 @@ void MS_Scan_Init( void )
 {
     GPIO_InitTypeDef GPIO_InitStructure = { 0 };
 
-    /* Enable GPIOC clock */
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_GPIOA, ENABLE );
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA, ENABLE );
 
-    /* Initialize GPIOC (Pin4-Pin7) for the mouse scan */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -532,8 +521,7 @@ void MS_Sleep_Wakeup_Cfg( void )
 {
     EXTI_InitTypeDef EXTI_InitStructure = { 0 };
 
-    /* Enable GPIOC clock */
-    RCC_PB2PeriphClockCmd( RCC_PB2Periph_AFIO, ENABLE );
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_AFIO, ENABLE );
 
     GPIO_EXTILineConfig( GPIO_PortSourceGPIOA, GPIO_PinSource4 );
     EXTI_InitStructure.EXTI_Line = EXTI_Line4;
@@ -668,7 +656,11 @@ void USB_Sleep_Wakeup_CFG( void )
 {
     EXTI_InitTypeDef EXTI_InitStructure = { 0 };
 
+#if defined( CH32F20x_D8C ) || defined( CH32F20x_D8 )
+    EXTI_InitStructure.EXTI_Line = EXTI_Line18;
+#else
     EXTI_InitStructure.EXTI_Line = EXTI_Line20;
+#endif
     EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Event;
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
@@ -684,11 +676,17 @@ void USB_Sleep_Wakeup_CFG( void )
  */
 void MCU_Sleep_Wakeup_Operate( void )
 {
+    printf( "Sleep\r\n" );
+    __disable_irq();
     EXTI_ClearFlag( EXTI_Line12 | EXTI_Line13 | EXTI_Line14 | EXTI_Line15 );
     EXTI_ClearFlag( EXTI_Line4 | EXTI_Line5 | EXTI_Line6 | EXTI_Line7 );
 
-//    printf( "Sleep\r\n" );
-    __WFE( );
+    __SEV();
+    __WFE();
+    PWR_EnterSTOPMode(PWR_Regulator_LowPower,PWR_STOPEntry_WFE);
+    SystemInit();
+    SystemCoreClockUpdate();
+    USBFS_RCC_Init();
 
     if( EXTI_GetFlagStatus( EXTI_Line12 | EXTI_Line13 | EXTI_Line14 | EXTI_Line15 ) != RESET  )
     {
@@ -700,5 +698,6 @@ void MCU_Sleep_Wakeup_Operate( void )
         EXTI_ClearFlag( EXTI_Line4 | EXTI_Line5 | EXTI_Line6 | EXTI_Line7 );
         USBFS_Send_Resume( );
     }
-//    printf( "Wake\r\n" );
+    __enable_irq( );
+    printf( "Wake\r\n" );
 }

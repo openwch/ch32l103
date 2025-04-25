@@ -16,8 +16,8 @@
 
 #include "debug.h"
 #include "string.h"
-#include "CHRV3UFI.h"
-#include "ch32l103_usbfs_host.h"
+#include "CH32F103UFI.h"
+#include "ch32f20x_usbfs_host.h"
 #include "usb_host_config.h"
 
 /*******************************************************************************/
