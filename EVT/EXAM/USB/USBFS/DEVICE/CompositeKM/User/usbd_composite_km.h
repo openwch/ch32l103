@@ -4,7 +4,7 @@
  * Version            : V1.0.0
  * Date               : 2022/08/18
  * Description        : USB keyboard and mouse processing.
-*********************************************************************************
+ *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -31,7 +31,6 @@
 /* Global Variable Declaration */
 extern volatile uint8_t  KB_LED_Last_Status;
 extern volatile uint8_t  KB_LED_Cur_Status;
-
 
 /*******************************************************************************/
 /* Function Declaration */

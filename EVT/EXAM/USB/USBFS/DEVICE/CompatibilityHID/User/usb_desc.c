@@ -2,10 +2,10 @@
  * File Name          : usb_desc.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2024/01/19
+ * Date               : 2022/08/20
  * Description        : usb device descriptor,configuration descriptor,
  *                      string descriptors and other descriptors.
-*********************************************************************************
+ *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -118,7 +118,8 @@ const uint8_t  MyManuInfo[] =
 /* Product Information */
 const uint8_t  MyProdInfo[] =
 {
-    0x12, 0x03, 'C', 0, 'H', 0, '3', 0, '2', 0, 'l', 0, '1', 0, '0', 0, '3', 0
+    0x12, 0x03, 'C', 0, 'H', 0, '3', 0, '2', 0, 'F', 0, '2', 0
+              , '0', 0, 'x', 0
 };
 
 /* Serial Number Information */
