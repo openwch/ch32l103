@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_can.h
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2025/04/12
  * Description        : This file contains all the functions prototypes for the
  *                      CAN firmware library.
  *********************************************************************************
@@ -90,7 +90,7 @@ typedef struct
                                          second one for a 16-bit configuration).
                                          This parameter can be a value between 0x0000 and 0xFFFF */
 
-    uint16_t CAN_FilterFIFOAssignment; /* Specifies the FIFO (0 or 1) which will be assigned to the filter.
+    uint16_t CAN_FilterFIFOAssignment; /* Specifies the FIFO0 which will be assigned to the filter.
                                               This parameter can be a value of @ref CAN_filter_FIFO */
 
     uint8_t CAN_FilterNumber; /* Specifies the filter which will be initialized. It ranges from 0 to 13. */
@@ -209,6 +209,10 @@ typedef struct
     FunctionalState CANFD_NART; /* Enable or disable the no-automatic
                                  retransmission mode. This parameter can be
                                  set either to ENABLE or DISABLE. */
+
+    FunctionalState CANFD_RFLM;   /* Enable or disable the Receive FIFO Locked mode.
+                                 This parameter can be set either to ENABLE
+                                 or DISABLE. */
 
     FunctionalState CANFD_TXFP; /* Enable or disable the transmit FIFO priority.
                                  This parameter can be set either to ENABLE
@@ -368,12 +372,10 @@ typedef struct
 #define CAN_FilterMode_IdList               ((uint8_t)0x01) /* identifier list mode */
 
 /* CAN_filter_scale */
-#define CAN_FilterScale_16bit               ((uint8_t)0x00) /* Two 16-bit filters */
 #define CAN_FilterScale_32bit               ((uint8_t)0x01) /* One 32-bit filter */
 
 /* CAN_filter_FIFO */
 #define CAN_Filter_FIFO0                    ((uint8_t)0x00) /* Filter FIFO 0 assignment for filter x */
-#define CAN_Filter_FIFO1                    ((uint8_t)0x01) /* Filter FIFO 1 assignment for filter x */
 
 /* CAN_identifier_type */
 #define CAN_Id_Standard                     ((uint32_t)0x00000000) /* Standard Id */
@@ -391,7 +393,6 @@ typedef struct
 
 /* CAN_receive_FIFO_number_constants */
 #define CAN_FIFO0                           ((uint8_t)0x00) /* CAN FIFO 0 used to receive */
-#define CAN_FIFO1                           ((uint8_t)0x01) /* CAN FIFO 1 used to receive */
 
 /* CAN_sleep_constants */
 #define CAN_Sleep_Failed                    ((uint8_t)0x00) /* CAN did not enter the sleep mode */
@@ -425,9 +426,6 @@ typedef struct
 #define CAN_FLAG_FMP0                       ((uint32_t)0x12000003) /* FIFO 0 Message Pending Flag */
 #define CAN_FLAG_FF0                        ((uint32_t)0x32000008) /* FIFO 0 Full Flag            */
 #define CAN_FLAG_FOV0                       ((uint32_t)0x32000010) /* FIFO 0 Overrun Flag         */
-#define CAN_FLAG_FMP1                       ((uint32_t)0x14000003) /* FIFO 1 Message Pending Flag */
-#define CAN_FLAG_FF1                        ((uint32_t)0x34000008) /* FIFO 1 Full Flag            */
-#define CAN_FLAG_FOV1                       ((uint32_t)0x34000010) /* FIFO 1 Overrun Flag         */
 
 /* Operating Mode Flags */
 #define CAN_FLAG_WKU                        ((uint32_t)0x31000008) /* Wake up Flag */
@@ -451,9 +449,6 @@ typedef struct
 #define CAN_IT_FMP0                         ((uint32_t)0x00000002) /* FIFO 0 message pending Interrupt*/
 #define CAN_IT_FF0                          ((uint32_t)0x00000004) /* FIFO 0 full Interrupt*/
 #define CAN_IT_FOV0                         ((uint32_t)0x00000008) /* FIFO 0 overrun Interrupt*/
-#define CAN_IT_FMP1                         ((uint32_t)0x00000010) /* FIFO 1 message pending Interrupt*/
-#define CAN_IT_FF1                          ((uint32_t)0x00000020) /* FIFO 1 full Interrupt*/
-#define CAN_IT_FOV1                         ((uint32_t)0x00000040) /* FIFO 1 overrun Interrupt*/
 
 /* Operating Mode Interrupts */
 #define CAN_IT_WKU                          ((uint32_t)0x00010000) /* Wake-up Interrupt*/
@@ -475,7 +470,6 @@ typedef struct
 #define CANINITFAILED                       CAN_InitStatus_Failed
 #define CANINITOK                           CAN_InitStatus_Success
 #define CAN_FilterFIFO0                     CAN_Filter_FIFO0
-#define CAN_FilterFIFO1                     CAN_Filter_FIFO1
 #define CAN_ID_STD                          CAN_Id_Standard
 #define CAN_ID_EXT                          CAN_Id_Extended
 #define CAN_RTR_DATA                        CAN_RTR_Data

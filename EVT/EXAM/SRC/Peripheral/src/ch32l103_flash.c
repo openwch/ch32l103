@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_flash.c
  * Author             : WCH
- * Version            : V1.0.2
- * Date               : 2025/03/25
+ * Version            : V1.0.3
+ * Date               : 2025/04/16
  * Description        : This file provides all the FLASH firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -443,7 +443,7 @@ FlagStatus FLASH_GetFlagStatus(uint32_t FLASH_FLAG)
 
     if(FLASH_FLAG == FLASH_FLAG_OPTERR)
     {
-        if((FLASH->OBR & FLASH_FLAG_OPTERR) != (uint32_t)RESET)
+        if((FLASH->OBR & (1<<0)) != (uint32_t)RESET)
         {
             bitstatus = SET;
         }

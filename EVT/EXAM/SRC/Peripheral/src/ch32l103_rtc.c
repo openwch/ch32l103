@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : ch32l103_rtc.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2025/04/10
  * Description        : This file provides all the RTC firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -25,7 +25,7 @@
  *            RTC_IT_ALR - Alarm interrupt
  *            RTC_IT_SEC - Second interrupt
  *
- * @return  NewState - new state of the specified RTC interrupts(ENABLE or DISABLE).
+ * @return  none.
  */
 void RTC_ITConfig(uint16_t RTC_IT, FunctionalState NewState)
 {
