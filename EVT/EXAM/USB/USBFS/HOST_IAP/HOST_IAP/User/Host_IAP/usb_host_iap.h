@@ -19,32 +19,17 @@ extern "C" {
 #include "debug.h"
 #include "stdio.h"
 #include "string.h"
-#include "ch32f20x.h"
-#include "ch32f20x_usbfs_host.h"
+#include "ch32l103.h"
+#include "ch32l103_usbfs_host.h"
 #include "usb_host_config.h"
-#include "CH32F103UFI.h"
+#include "CHRV3UFI.h"
 
-/*******************************************************************************/
-/* File Descripton */
-/*
- *@Note
-  适用于CH32系列的单片机，包括risc-v内核的CH32V系列和cortex-m3内核的CH32F系列
-  iap_flash.c/iap_flash.h文件包括iap和app需要的iap区域代码起止定义，app区域代码起止定义，
-  芯片flash的操作函数。
-  ***2022年6月13日***
-     1，版本0.1，
-  完整的代码包括flash字，半字，字节读，iap特化的flash擦除，写入，编程，读取，校验。
-  所有涉及flash读写，擦除的操作均使用DEF_FLASH_OPERATION_KEY_CODE保护，DEF_FLASH_OPERATION_KEY_CODE_0
-  在主函数开始时写入，DEF_FLASH_OPERATION_KEY_CODE_1在每次操作flash前写入。
-  使用宏定义区分iap代码和app代码，将iap和app对flash操作的代码统一到一个文件内
- iap代码开放所有函数调用，app代码仅开放IAP_VerifyCode_Erase(); 函数。
-*/
 
 /*******************************************************************************/
 /* Macro Definitions */
 #define DEF_CORE_RV                       0x01
 #define DEF_CORE_CM3                      0x10
-#define DEF_CORE_TYPE                     DEF_CORE_CM3
+#define DEF_CORE_TYPE                     DEF_CORE_RV
 
 /* IAP binary File */
 #define DEF_IAP_FILE_NAME                 "/APP.BIN"
@@ -63,27 +48,18 @@ extern "C" {
 #define DEF_MAX_IAP_BUFFER_LEN            1024                                   /* IAP Load buffer size */
 
 /* Flash page size */
-#define DEF_FLASH_PAGE_SIZE               0x100                                  /* Flash Page size, refer to the data-sheet (ch32vf2x_3xRM.pdf) for details */
+#define DEF_FLASH_PAGE_SIZE               0x100                                  /* Flash Page size, refer to the data-sheet  for details */
 
 /* APP CODE ADDR Setting */
-#define DEF_APP_CODE_START_ADDR           0x08005000                             /* IAP Flash Operation start address, user code start address */
-#ifdef CH32F20x_D6
+#define DEF_APP_CODE_START_ADDR           0x08008000                             /* IAP Flash Operation start address, user code start address */
 #define DEF_APP_CODE_END_ADDR             0x08010000                             /* IAP Flash Operation end address, user code end address */
-                                                                                 /* CH32F203C8x - 0x08010000 (64K), CH32F203C6x - 0x08008000 (32K) */
-#endif
-#ifdef CH32F20x_D8C
-#define DEF_APP_CODE_END_ADDR             0x08040000                             /* IAP Flash Operation end address, user code end address */
-                                                                                 /* CH32F205x - 0x08020000 (128K), CH32F207 - 0x08040000 (256K) */
-#endif
-#ifdef CH32F20x_D8W
-#define DEF_APP_CODE_END_ADDR             0x08020000                             /* IAP Flash Operation end address, user code end address */
-                                                                                 /* CH32F208x - 0x08020000 (128K) */
+                                                                                 /* Please refer to link.ld file for accuracy flash size, the size here is the smallest available size */
 #endif
 #define DEF_APP_CODE_MAXLEN               (DEF_APP_CODE_END_ADDR-DEF_APP_CODE_START_ADDR) /* IAP Flash Operation size, user code max size */
 
 /* Verify CODE ADDR Setting */
-#define DEF_VERIFY_CODE_START_ADDR        0x08004F00                             /* IAP Flash verify-code start address */
-#define DEF_VERIFY_CODE_END_ADDR          0x08005000                             /* IAP Flash verify-code end address */
+#define DEF_VERIFY_CODE_START_ADDR        0x08007F00                             /* IAP Flash verify-code start address */
+#define DEF_VERIFY_CODE_END_ADDR          0x08008000                             /* IAP Flash verify-code end address */
 #define DEF_VERIFY_CODE_MAXLEN            (DEF_VERIFY_CODE_END_ADDR-DEF_VERIFY_CODE_START_ADDR) /* IAP Flash verify-code max size */
 #define DEF_VERIFY_CODE_LEN               0x10                                   /* IAP Flash verify-code actual length, be careful not to exceed the DEF_VERIFY_CODE_MAXLEN */
 
@@ -126,8 +102,6 @@ extern void IAP_Initialization( void );
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
 
 

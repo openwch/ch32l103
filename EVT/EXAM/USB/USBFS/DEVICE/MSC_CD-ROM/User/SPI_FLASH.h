@@ -2,9 +2,9 @@
  * File Name          : SPI_FLAH.h
  * Author             : WCH
  * Version            : V1.0.1
- * Date               : 2022/11/24
+ * Date               : 2024/01/19
  * Description        : SPI FLASHChip operation file
- *********************************************************************************
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.

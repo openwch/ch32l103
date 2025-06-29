@@ -53,9 +53,9 @@ __attribute__((aligned(4))) static const uint8_t SetupGetHidDes[ ] =
 
 /*******************************************************************************/
 /* Function Declaration */
-extern uint8_t HID_GetHidDesr( uint8_t usb_port, uint8_t ep0_size, uint8_t intf_num, uint8_t *pbuf, uint16_t *plen );
-extern uint8_t HID_SetReport( uint8_t usb_port, uint8_t ep0_size, uint8_t intf_num, uint8_t *pbuf, uint16_t *plen );
-extern uint8_t HID_SetIdle( uint8_t usb_port, uint8_t ep0_size, uint8_t intf_num, uint8_t duration, uint8_t reportid );
+extern uint8_t HID_GetHidDesr( uint8_t ep0_size, uint8_t intf_num, uint8_t *pbuf, uint16_t *plen );
+extern uint8_t HID_SetReport( uint8_t ep0_size, uint8_t intf_num, uint8_t *pbuf, uint16_t *plen );
+extern uint8_t HID_SetIdle( uint8_t ep0_size, uint8_t intf_num, uint8_t duration, uint8_t reportid );
 
 #ifdef __cplusplus
 }

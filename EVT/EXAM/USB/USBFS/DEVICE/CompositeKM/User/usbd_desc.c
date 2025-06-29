@@ -4,7 +4,7 @@
  * Version            : V1.0.0
  * Date               : 2022/08/18
  * Description        : All descriptors for the keyboard and mouse composite device.
- *********************************************************************************
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -228,13 +228,13 @@ const uint8_t MyProdInfo[ ]  =
     0,
     '2',
     0,
-    'F',
+    'l',
     0,
-    '2',
+    '1',
     0,
     '0',
     0,
-    'x',
+    '3',
     0
 };
 

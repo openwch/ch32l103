@@ -52,10 +52,10 @@ __attribute__((aligned(4))) static const uint8_t GetHubDescr[ ] =
 
 /*******************************************************************************/
 /* Function Declaration */
-extern uint8_t HUB_GetPortStatus( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_port, uint8_t *pbuf );
-extern uint8_t HUB_ClearPortFeature( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector );
-extern uint8_t HUB_SetPortFeature( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector );
-extern uint8_t HUB_GetClassDevDescr( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t *pbuf, uint16_t *plen );
+extern uint8_t HUB_GetPortStatus( uint8_t hub_ep0_size, uint8_t hub_port, uint8_t *pbuf );
+extern uint8_t HUB_ClearPortFeature( uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector );
+extern uint8_t HUB_SetPortFeature( uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector );
+extern uint8_t HUB_GetClassDevDescr( uint8_t hub_ep0_size, uint8_t *pbuf, uint16_t *plen );
 
 #endif
 

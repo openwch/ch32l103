@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : main.c
-* Author             : WCH
-* Version            : V1.0.0
-* Date               : 2021/08/08
-* Description        : Main program body.
+ * File Name          : main.c
+ * Author             : WCH
+ * Version            : V1.0.0
+ * Date               : 2024/01/19
+ * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
@@ -19,8 +19,6 @@
     Support: FAT12/FAT16/FAT32
 */
 
-#include "stdio.h"
-#include "string.h"
 #include "usb_host_iap.h"
 
 /*********************************************************************
@@ -31,22 +29,16 @@
  * @return  none
  */
 int main(void)
-{    
-    /* System Debug Initialization */
+{
     USART_Printf_Init(115200);
-    SystemCoreClockUpdate();
-    Delay_Init();
-    printf("SystemClk:%d\r\n", SystemCoreClock);
-    printf("USBFS HOST,UDisk IAP.\r\n");
-    
-    /* IAP initialization */
+    Delay_Init( );
+    printf("SystemClk:%d\r\n",SystemCoreClock);
+    printf("USBFS-OTG HOST,UDisk IAP.\r\n");
+
     IAP_Initialization( );
 
-    while(1)
+    while( 1 )
     {
         IAP_Main_Deal( );
     }
 }
-
-
-

@@ -22,10 +22,10 @@ extern "C" {
 /* Header File */
 #include "string.h"
 #include "debug.h"
-#include "ch32f20x_usb.h"
-#include "ch32f20x_usbfs_host.h"
-#include "ch32f20x_usbhs_host.h"
+#include "ch32l103_usb.h"
+#include <ch32l103_usbfs_host.h>
 #include "app_mtp_ptp.h"
+
 
 /******************************************************************************/
 /* Debug Macro Definition */
@@ -36,18 +36,17 @@ extern "C" {
 #define DUG_PRINTF( format, arg... )    do{ if( 0 )printf( format, ##arg ); }while( 0 );
 #endif
 
+
 /******************************************************************************/
 /* USB Host Communication Related Macro Definition */
 
 /* USB Host Port General Control */
-#define DEF_TOTAL_ROOT_HUB          2
+#define DEF_TOTAL_ROOT_HUB          1
 #define DEF_USBFS_PORT_EN           1
-#define DEF_USBHS_PORT_EN           0
 #define DEF_USBFS_PORT_INDEX        0x00
-#define DEF_USBHS_PORT_INDEX        0x01
 #define DEF_ONE_USB_SUP_DEV_TOTAL   1
 #define DEF_NEXT_HUB_PORT_NUM_MAX   4
-#define DEF_INTERFACE_NUM_MAX       1
+#define DEF_INTERFACE_NUM_MAX       4
 
 /* USB Root Device Status */
 #define ROOT_DEV_DISCONNECT         0
@@ -125,13 +124,16 @@ typedef struct _ROOT_HUB_DEVICE
 
 /* USB Host Control Structure */
 typedef struct __HOST_CTL
-{                                   
+{
     uint8_t  InterfaceNum;
-    uint8_t  ErrorCount;	
-    
+    uint8_t  ErrorCount;
+
     struct interface
     {
         uint8_t  Type;
+        uint16_t HidDescLen;
+        uint8_t  HidReportID;
+        uint8_t  Full_KB_Flag;
 
         uint8_t  InEndpNum;
         uint8_t  InEndpAddr[ 4 ];
@@ -146,13 +148,24 @@ typedef struct __HOST_CTL
         uint8_t  OutEndpType[ 4 ];
         uint16_t OutEndpSize[ 4 ];
         uint8_t  OutEndpTog[ 4 ];
+
+        uint8_t  IDFlag;
+        uint8_t  ReportID;
+
+        uint8_t  LED_Usage_Min;
+        uint8_t  LED_Usage_Max;
+
+        uint8_t  SetReport_Swi;
+        uint8_t  SetReport_Value;
+        uint8_t  SetReport_Flag;
+
     }Interface[ DEF_INTERFACE_NUM_MAX ];
 } HOST_CTL, *PHOST_CTL;
 
 /*******************************************************************************/
 /* Struct Declaration */
-extern ROOT_HUB_DEVICE RootHubDev[ ];
-extern HOST_CTL HostCtl[ ];
+extern struct   _ROOT_HUB_DEVICE RootHubDev;
+extern struct   __HOST_CTL HostCtl[ ];
 
 
 #ifdef __cplusplus

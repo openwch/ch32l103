@@ -875,37 +875,29 @@ extern __attribute__ ((aligned(4))) uint8_t  Com_Buf[ ];
 
 /*******************************************************************************/
 /* Function Declaration */
-extern uint8_t USBH_CheckRootHubPortStatus( uint8_t usb_port );
-extern void USBH_ResetRootHubPort( uint8_t usb_port, uint8_t mode );
-extern uint8_t USBH_EnableRootHubPort( uint8_t usb_port );
-extern uint8_t USBH_GetDeviceDescr( uint8_t usb_port );
-extern uint8_t USBH_SetUsbAddress( uint8_t usb_port );
-extern uint8_t USBH_GetConfigDescr( uint8_t usb_port, uint16_t *pcfg_len );
 extern void USBH_AnalyseType( uint8_t *pdev_buf, uint8_t *pcfg_buf, uint8_t *ptype );
-extern uint8_t USBH_SetUsbConfig( uint8_t usb_port, uint8_t cfg_val );
-extern uint8_t USBH_GetStrDescr( uint8_t usb_port, uint8_t str_num );
-extern uint8_t USBH_EnumRootDevice( uint8_t usb_port );
+extern uint8_t USBH_EnumRootDevice( void );
 extern void IMAGE_AnalyzeCfgDesc( uint8_t index );
-extern uint8_t USBH_EnumImageDevice( uint8_t usb_port, uint8_t index );
-extern uint8_t MTP_SendData( uint8_t usb_port, uint8_t *pbuf, uint32_t len );
-extern uint8_t MTP_RecvData( uint8_t usb_port, uint8_t *pbuf, uint32_t *plen );
-extern void MTP_PTP_ParaInit( uint8_t usb_port );
-extern uint8_t USBH_PTP_SendRequest( uint8_t usb_port );
-extern uint8_t USBH_PTP_GetResponse( uint8_t usb_port );
-extern uint8_t USBH_PTP_OpenSession( uint8_t usb_port, uint32_t session );
-extern uint8_t USBH_PTP_GetDeviceInfo( uint8_t usb_port );
-extern uint8_t USBH_PTP_GetStorageIds( uint8_t usb_port );
+extern uint8_t USBH_EnumImageDevice( uint8_t index );
+extern uint8_t MTP_SendData( uint8_t *pbuf, uint32_t len );
+extern uint8_t MTP_RecvData( uint8_t *pbuf, uint32_t *plen );
+extern void MTP_PTP_ParaInit( void );
+extern uint8_t USBH_PTP_SendRequest( void );
+extern uint8_t USBH_PTP_GetResponse( void );
+extern uint8_t USBH_PTP_OpenSession( uint32_t session );
+extern uint8_t USBH_PTP_GetDeviceInfo( void );
+extern uint8_t USBH_PTP_GetStorageIds( void );
 extern void PTP_GetString( uint8_t *str, uint8_t *data, uint32_t *len );
-extern uint8_t USBH_PTP_GetStorageInfo( uint8_t usb_port, uint32_t storage_id );
-extern uint8_t USBH_PTP_GetNumObjects( uint8_t usb_port, uint32_t storage_id, uint32_t objectformatcode, uint32_t objecthandle, uint32_t *numobs );
-extern void ObjectHandles_Process( uint8_t usb_port, uint8_t *pdata, uint32_t len );
-extern uint8_t USBH_MTP_GetObjectHandles( uint8_t usb_port, uint32_t storage_id, uint32_t objectformatcode, uint32_t objecthandle );
-extern uint8_t USBH_MTP_GetObjectInfo( uint8_t usb_port, uint32_t objecthandle );
-extern void PTP_GetDevicePropValue( uint8_t usb_port, uint8_t *data, uint32_t *offset, uint16_t datatype );
-extern uint32_t PTP_GetObjectPropList( uint8_t usb_port, uint8_t *data, uint32_t len, uint16_t propval );
-extern uint8_t USBH_MTP_GetObjectSize( uint8_t usb_port, uint32_t objecthandle );
-extern uint8_t USBH_PTP_GetPartialObject( uint8_t usb_port );
-extern void MTP_Init_Process( uint8_t usb_port );
+extern uint8_t USBH_PTP_GetStorageInfo( uint32_t storage_id );
+extern uint8_t USBH_PTP_GetNumObjects( uint32_t storage_id, uint32_t objectformatcode, uint32_t objecthandle, uint32_t *numobs );
+extern void ObjectHandles_Process( uint8_t *pdata, uint32_t len );
+extern uint8_t USBH_MTP_GetObjectHandles( uint32_t storage_id, uint32_t objectformatcode, uint32_t objecthandle );
+extern uint8_t USBH_MTP_GetObjectInfo( uint32_t objecthandle );
+extern void PTP_GetDevicePropValue( uint8_t *data, uint32_t *offset, uint16_t datatype );
+extern uint32_t PTP_GetObjectPropList( uint8_t *data, uint32_t len, uint16_t propval );
+extern uint8_t USBH_MTP_GetObjectSize( uint32_t objecthandle );
+extern uint8_t USBH_PTP_GetPartialObject( void );
+extern void MTP_Init_Process( void );
 extern void USBH_MainDeal( void );
 
 

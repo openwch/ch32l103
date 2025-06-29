@@ -2,9 +2,9 @@
  * File Name          : main.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2021/06/06
+ * Date               : 2024/01/19
  * Description        : Main program body.
- *********************************************************************************
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -54,12 +54,10 @@ int main(void)
     USART_Printf_Init( 115200 );
     Delay_Init( );
     printf( "SystemClk:%d\r\n", SystemCoreClock );
-    printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     printf( "USBFS HOST Test EXAM %d\r\n", DEF_TEST_FUNC_NUM ); 
 
     /* General USB Host UDisk Operation Initialization */
     Udisk_USBH_Initialization( );
-    UDisk_Opeation_Flag = 1;
 
     while(1)
     {

@@ -1,0 +1,162 @@
+
+南京沁恒微电子股份有限公司 2025.01
+最新资料请到我们的网站上查询
+https://wch.cn
+
+
+文件目录
+  |
+  |-- CH32L103：RISC-V内核微控制器
+  |      |-- EVT: CH32L103 评估板和CH32L103 相关例程
+  |      |      |-- PUB: 
+  |      |      |      |-- CH32L103 评估板说明书.pdf：CH32L103 评估板说明及工程创建说明
+  |      |      |      |-- CH32L103SCH.pdf：CH32L103评估板原理图
+  |      |      |      |-- SCHPCB：CH32L103评估板原理图和PCB原文件
+  |      |      |-- EXAM: 
+  |      |      |      |-- ADC
+  |      |      |      |      |-- ADC_DMA：ADC使用DMA采样例程
+  |      |      |      |      |-- ADC_FastConvert：ADC高频采样低频校准例程
+  |      |      |      |      |-- ADC_PGA：ADC4倍增益采样例程
+  |      |      |      |      |-- AnalogWatchdog：模拟看门狗例程
+  |      |      |      |      |-- Auto_Injection：自动注入模式例程
+  |      |      |      |      |-- Discontinuous_mode：间断模式例程
+  |      |      |      |      |-- ExtLines_Trigger：外部触发ADC转换例程
+  |      |      |      |      |-- Internal_Temperature：内部温度传感器例程 
+  |      |      |      |-- APPLICATION
+  |      |      |      |      |-- WS2812_LED：通过SPI\PWM操作WS2812例程
+  |      |      |      |-- BKP：BKP例程
+  |      |      |      |-- CAN  
+  |      |      |      |      |-- CANFD：CANFD正常模式、标准帧和扩展帧数据例程
+  |      |      |      |      |-- Networking：CAN例程：正常模式，标准帧和扩展帧数据收发
+  |      |      |      |      |-- TestMode：测试模式，包括静默模式、回环模式、回环静默模式
+  |      |      |      |      |-- Time-triggered：时间触发通信模式   
+  |      |      |      |      |-- CAN_Wakeup：CAN唤醒例程
+  |      |      |      |-- CRC：CRC例程  
+  |      |      |      |-- DMA
+  |      |      |      |      |-- DMA_MEM2MEM：储存器到储存器模式例程
+  |      |      |      |      |-- DMA_MEM2PERIP：储存器到外设模式、外设到储存器模式例程见各外设子例程
+  |      |      |      |-- EXTI：外部中断线例程
+  |      |      |      |-- FLASH：FLASH的擦/读/写，以及快速编程
+  |      |      |      |-- FreeRTOS：FreeRTOS移植例程  
+  |      |      |      |-- GPIO：GPIO例程
+  |      |      |      |-- HarmonyOS：HarmonyOS移植例程 
+  |      |      |      |-- I2C
+  |      |      |      |      |-- I2C_7bit_Mode：7位地址模式，Master/Slave 模式收发例程
+  |      |      |      |      |-- I2C_10bit_Mode：10位地址模式，Master/Slave 模式收发例程
+  |      |      |      |      |-- I2C_DMA：I2C使用DMA，Master/Slave 模式收发例程
+  |      |      |      |      |-- I2C_EEPROM：I2C接口操作EEPROM外设例程
+  |      |      |      |      |-- I2C_PEC：使用PEC错误校验，Master/Slave 模式收发例程 
+  |      |      |      |      |-- I2C_7bit_Interrupt_Mode：使用中断进行收发例程
+  |      |      |      |-- IAP：IAP升级例程-内置Hex转Bin工具和IAP升级工具  
+  |      |      |      |      |-- USB_UART：USB+UART IAP例程  
+  |      |      |      |-- INT
+  |      |      |      |      |-- Interrupt_VTF：使用VTF IRQ中断例程  
+  |      |      |      |      |-- VectorInRAM：中断向量表在RAM的中断例程
+  |      |      |      |-- IWDG：独立看门狗例程
+  |      |      |      |-- LPTIM：低功耗定时器例程
+  |      |      |      |      |--LPTIM_LP_WakeUp：LPTIM 睡眠，停机唤醒例程  
+  |      |      |      |      |--PWM_OnePulse_SingleMode：LPTIM 输出PWM、单脉冲、一次设置模式波形例程  
+  |      |      |      |-- OPA
+  |      |      |      |      |-- CMP：比较器例程
+  |      |      |      |      |-- CMP_WakeUp：比较器唤醒例程
+  |      |      |      |      |-- CMP_TIM2：定时器2捕获比较器例程
+  |      |      |      |      |-- OPA：OPA作电压跟随器输出例程
+  |      |      |      |      |-- OPA_BKIN：OPA刹车例程
+  |      |      |      |      |-- OPA_IRQ：OPA中断例程
+  |      |      |      |      |-- OPA_PGA：OPA的PGA例程
+  |      |      |      |      |-- OPA_Poll：OPA轮询例程
+  |      |      |      |      |-- OPA_Reset：OPA复位例程
+  |      |      |      |-- PWR
+  |      |      |      |      |-- Sleep_Mode：低功耗，睡眠模式例程
+  |      |      |      |      |-- Standby_Mode：低功耗，待机模式例程
+  |      |      |      |      |-- Stop_Mode：低功耗，停机模式例程
+  |      |      |      |      |-- Standby_RAM_LV_Mode：待机模式开启LV时，RAM 2K、30K低功耗数据保持例程
+  |      |      |      |      |-- Standby_RAM_Mode：待机模式不开启LV时，RAM 2K、30K低功耗数据保持例程
+  |      |      |      |      |-- PVD_Wakeup：STOP模式PVD中断唤醒例程
+  |      |      |      |      |-- PVD_VoltageJudger：PVD电压判定例程
+  |      |      |      |      |-- Standby_RAM_Application：待机模式RAM数据保持例程
+  |      |      |      |-- PMP
+  |      |      |      |      |-- PMP：物理内存保护例程
+  |      |      |      |-- RCC
+  |      |      |      |      |-- Get_CLK：获取system-HCLK-HB1-HB2时钟例程   
+  |      |      |      |      |-- MCO：MCO引脚时钟输出例程
+  |      |      |      |      |-- HSI_Calibration：HSI校准例程  
+  |      |      |      |      |-- LSI_Calibration：LSI校准例程
+  |      |      |      |-- RTC：日历例程  
+  |      |      |      |-- RT-Thread：RT-Thread移植例程 
+  |      |      |      |-- RunInRam_LP
+  |      |      |      |      |-- RunInRam：程序在RAM中运行例程
+  |      |      |      |      |-- RunInRAM_HSI_LP：程序在RAM中运行，降低运行功耗例程
+  |      |      |      |      |-- RunInRAM_Select：部分程序在RAM中运行例程
+  |      |      |      |      |-- RunInRAM_Select_Sleep：部分程序在RAM中运行且睡眠例程
+  |      |      |      |-- SDI_Printf
+  |      |      |      |      |-- SDI_Printf：调试接口SDI虚拟串口    
+  |      |      |      |-- SPI
+  |      |      |      |      |-- 1Lines_half-duplex：单线半双工模式，Master/Slave 模式数据收发
+  |      |      |      |      |-- 2Lines_FullDuplex：双线全双工模式，Master/Slave 模式数据收发
+  |      |      |      |      |-- FullDuplex_HardNSS：硬件NSS模式，Master/Slave 模式数据收发
+  |      |      |      |      |-- SPI_CRC：使用CRC错误校验，Master/Slave 模式收发例程
+  |      |      |      |      |-- SPI_DMA：SPI使用DMA，Master/Slave 模式收发例程
+  |      |      |      |      |-- SPI_FLASH：SPI接口操作FLASH外设例程
+  |      |      |      |-- SRC  
+  |      |      |      |      |-- Core：内核系统头文件
+  |      |      |      |      |-- Debug：延时函数、串口调试源文件及头文件
+  |      |      |      |      |-- Ld：ld文件  
+  |      |      |      |      |-- Peripheral：基本外设驱动源文件及头文件
+  |      |      |      |      |-- Startup：启动文件。
+  |      |      |      |      |      |-- startup_ch32l103.S：适用于CH32L103系列 
+  |      |      |      |-- SYSTICK：系统定时器中断例程
+  |      |      |      |-- TencentOS：TencentOS移植例程       
+  |      |      |      |-- TIM
+  |      |      |      |      |-- Clock_Select：时钟源选择例程
+  |      |      |      |      |-- ComplementaryOutput_DeadTime：互补输出和死区插入模式例程
+  |      |      |      |      |-- ExtTrigger_Start_Two_Timer：外部触发同步启动两个定时器例程
+  |      |      |      |      |-- Input_Capture：输入捕获例程
+  |      |      |      |      |-- One_Pulse：单脉冲输出例程
+  |      |      |      |      |-- Output_Compare_Mode：输出比较模式例程
+  |      |      |      |      |-- PWM_Output：PWM输出例程
+  |      |      |      |      |-- Synchro_ExtTrigger：从模式例程，包括复位模式、门控模式、触发模式
+  |      |      |      |      |-- Synchro_Timer：定时器同步模式
+  |      |      |      |      |-- TIM_DMA：定时器使用DMA例程
+  |      |      |      |      |-- Encoder：定时器编码器例程
+  |      |      |      |      |-- TIM_INT：定时器中断例程
+  |      |      |      |-- TOUCHKEY：
+  |      |      |      |      |-- TKY：TouchKey检测例程
+  |      |      |      |      |-- TKey_MulShield：主动屏蔽例程
+  |      |      |      |      |-- Touch_EX001：触摸按键综合演示例程  
+  |      |      |      |      |-- Touch_EX002：8按键触摸例程 
+  |      |      |      |      |-- TKYLIB：触摸按键库
+  |      |      |      |      |-- DOC_SCH_PCB：原理图及使用说明 
+  |      |      |      |-- USART
+  |      |      |      |      |-- USART_DMA：USART使用DMA，Master/Slave 模式收发例程
+  |      |      |      |      |-- USART_HalfDuplex：单线半双工模式，Master/Slave 模式收发例程
+  |      |      |      |      |-- USART_HardwareFlowControl：硬件流控制模式，Master/Slave 模式收发例程
+  |      |      |      |      |-- USART_Interrupt：USART中断例程，Master/Slave 模式收发例程
+  |      |      |      |      |-- USART_MultiProcessorCommunication：多处理器通信模式例程
+  |      |      |      |      |-- USART_Polling：轮询收发模式，Master/Slave 模式收发例程
+  |      |      |      |      |-- USART_Printf：串口打印调试例程
+  |      |      |      |      |-- USART_SynchronousMode：同步模式，Master/Slave 模式收发例程
+  |      |      |      |      |-- USART_Idle_Recv：串口使用DMA进行不定长接收例程
+  |      |      |      |      |-- USART_SmartCard：串口智能卡例程
+  |      |      |      |-- USB
+  |      |      |      |      |-- USBFS
+  |      |      |      |      |      |-- DEVICE
+  |      |      |      |      |      |      |-- CH372：模拟自定义USB设备（CH372设备），端点1，3下传，2，4上传，端点1下传的数据从端点3上传，不取反，端点2下传的数据从端点4上传，取反。
+  |      |      |      |      |      |      |-- Compatibility_HID：模拟HID设备，数据通过串口上下传。
+  |      |      |      |      |      |      |-- CompositeKM：模拟键盘和鼠标，使用IO模拟按键，同时模拟数据可以通过串口2上传。
+  |      |      |      |      |      |      |-- CompositeKM_LowSpeed：模拟低速键盘和鼠标复合设备。  
+  |      |      |      |      |      |      |-- MSC_U-Disk: 模拟简单U盘，可选使用片内Flash或外部SPI-Flash
+  |      |      |      |      |      |      |-- SimulateCDC：模拟一个CDC串口，使用串口2收发。
+  |      |      |      |      |      |      |-- SimulateCDC-HID：模拟一个CDC串口，使用串口2收发,HID中断端点下发数据取反上传。
+  |      |      |      |      |      |      |-- MSC_CD-ROM: CDROM例程，需要外挂SPI-Flash
+  |      |      |      |      |      |-- HOST_IAP
+  |      |      |      |      |      |      |-- APP: 与HOST_IAP配套使用的APP，工程修改了程序起始位置，编译后需自行将文件转化为bin文件并重命名为APP.bin
+  |      |      |      |      |      |      |-- HOST_IAP:  基于U盘读取文件例程整理的主机U盘IAP例程，从U盘内读取名称位APP.bin的文件，写入内部flash，校验后自动跳转。
+  |      |      |      |      |      |-- HOST_KM: 主机操作键鼠，获取键鼠上传的端点的数据并打印，支持U口下1级hub
+  |      |      |      |      |      |-- HOST_MTP_FileSystem：枚举过程的USB主机到一个支持MTP和PTP协议的设备，支持MTP和PTP协议，并读取其文件
+  |      |      |      |      |      |-- Udisk_Lib：U盘文件系统库文件
+  |      |      |      |      |      |-- Host_Udisk：USB主机操作U盘例程
+  |      |      |      |-- USBPD
+  |      |      |      |      |-- USBPD_SNK：PD SNK 例程
+  |      |      |      |      |-- USBPD_SRC：PD SRC 例程   
+  |      |      |      |-- WWDG：窗口看门狗例程

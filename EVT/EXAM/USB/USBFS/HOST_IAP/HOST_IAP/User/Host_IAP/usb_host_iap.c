@@ -2,7 +2,7 @@
  * File Name          : iap.c
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2022/08/20
+ * Date               : 2024/01/19
  * Description        : IAP
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -21,10 +21,6 @@ volatile   uint32_t  IAP_WriteIn_Length;
 volatile   uint32_t  IAP_WriteIn_Count;
 struct   _ROOT_HUB_DEVICE RootHubDev[ DEF_TOTAL_ROOT_HUB ];
 struct   __HOST_CTL HostCtl[ DEF_TOTAL_ROOT_HUB * DEF_ONE_USB_SUP_DEV_TOTAL ];
-
-/* For Udisk Lib */
-uint8_t *pHOST_RX_RAM_Addr;
-uint8_t *pHOST_TX_RAM_Addr;
 
 /* Verify Code */
 const uint8_t Verify_Code[ DEF_VERIFY_CODE_LEN ] =
@@ -87,7 +83,7 @@ void FLASH_ReadWordAdd(uint32_t address, u32* buff, uint16_t length)
 
     for(i = 0; i < length; i++)
     {
-        buff[i] = *(__IO uint32_t*)address;//读指定地址的一个字的数据
+        buff[i] = *(__IO uint32_t*)address;
         address += 4;
     }
 }
@@ -157,8 +153,21 @@ uint8_t IAP_Flash_Read(uint32_t address, uint8_t* buff, uint32_t length)
  */
 uint8_t mFLASH_ProgramPage_Fast(uint32_t addr, uint32_t* buffer)
 {
-    /* 根据芯片的flash编程流程修改此处代码 */
-    FLASH_ProgramPage_Fast( addr, buffer );
+    uint16_t i;
+    uint32_t adr = addr;
+    uint32_t* buf = buffer;
+
+    adr &= 0xFFFFFF80;
+
+    FLASH_BufReset();
+
+    for (i = 0; i < 64; ++i)
+    {
+        FLASH_BufLoad(adr+i*4,buf[i]);
+    }
+
+    FLASH_ProgramPage_Fast(adr);
+
     return 0;
 }
 
@@ -513,9 +522,9 @@ void IAP_Jump_APP(void)
     /* .... */
     /* Jump Code */
 #if DEF_CORE_TYPE == DEF_CORE_CM3
-    jump2app = (iapfun) * (vu32*)(DEF_APP_CODE_START_ADDR + 4);		//用户代码区第二个字为程序开始地址(复位地址)
-    MSR_MSP(*(vu32*)DEF_APP_CODE_START_ADDR);					//初始化用户代码区堆栈指针(用户代码区的第一个字用于存放栈顶地址)
-    jump2app();									             //跳转到APP.
+    jump2app = (iapfun) * (vu32*)(DEF_APP_CODE_START_ADDR + 4);     //用户代码区第二个字为程序开始地址(复位地址)
+    MSR_MSP(*(vu32*)DEF_APP_CODE_START_ADDR);                   //初始化用户代码区堆栈指针(用户代码区的第一个字用于存放栈顶地址)
+    jump2app();                                              //跳转到APP.
 #elif DEF_CORE_TYPE == DEF_CORE_RV
     /* Code for Jump, Enable Chip soft reset interrupt, jump to application code in soft reset interrupt */
     Delay_Ms(500);
@@ -542,7 +551,7 @@ void mStopIfError( uint8_t iError )
     }
     /* Display the errors */
     DUG_PRINTF( "Error:%02x\r\n", iError );
-    /* After encountering an error, you should analyze the error code and CH103DiskStatus status, for example,
+    /* After encountering an error, you should analyze the error code and CHRV3DiskStatus status, for example,
      * call CHRV3DiskReady to check whether the current USB disk is connected or not,
      * if the disk is disconnected then wait for the disk to be plugged in again and operate again,
      * Suggested steps to follow after an error:
@@ -592,271 +601,21 @@ void IAP_Initialization( void )
 
     /* USB Host Initialization */
     printf( "USB Host & UDisk Lib Initialization. \r\n" );
-    /* Initialize USBHS host */
-    /* Note: Only CH32V305/CH32V307 support USB high-speed port. */
-#if DEF_USB_PORT_HS_EN
-    DUG_PRINTF( "USBHS Host Init\r\n" );
-    USBHS_RCC_Init( );
-    USBHS_Host_Init( ENABLE );
-    /* For Udisk Lib */
-    pHOST_TX_RAM_Addr = USBHS_TX_Buf;
-    pHOST_RX_RAM_Addr = USBHS_RX_Buf;
-    /* Clear Struct */
-    memset( &RootHubDev[ DEF_USB_PORT_HS ].bStatus, 0, sizeof( struct _ROOT_HUB_DEVICE ) );
-    memset( &HostCtl[ DEF_USB_PORT_HS ].InterfaceNum, 0, sizeof( struct __HOST_CTL ) );
-#endif
-
     /* Initialize USBFS host */
-#if DEF_USB_PORT_FS_EN
     DUG_PRINTF( "USBFS Host Init\r\n" );
     USBFS_RCC_Init( );
     USBFS_Host_Init( ENABLE );
-    /* For Udisk Lib */
-    pHOST_TX_RAM_Addr = USBFS_TX_Buf;
-    pHOST_RX_RAM_Addr = USBFS_RX_Buf;
-    /* Clear Struct */
     memset( &RootHubDev[ DEF_USB_PORT_FS ].bStatus, 0, sizeof( struct _ROOT_HUB_DEVICE ) );
     memset( &HostCtl[ DEF_USB_PORT_FS ].InterfaceNum, 0, sizeof( struct __HOST_CTL ) );
-#endif
 
     /* USB Libs Initialization */
     printf( "UDisk library Initialization. \r\n" );
-    CH103LibInit( );
+    CHRV3LibInit( );
 
     /* IAP-related variable initialization  */
     IAP_Load_Addr_Offset = 0;
     IAP_WriteIn_Length = 0;
     IAP_WriteIn_Count = 0;
-}
-
-
-/*********************************************************************
- * @fn      USBH_CheckRootHubPortStatus
- *
- * @brief   Check status of USB port.
- *
- * @para    index: USB host port
- *
- * @return  The current status of the port.
- */
-uint8_t USBH_CheckRootHubPortStatus( uint8_t usb_port )
-{
-    uint8_t s = ERR_USB_UNSUPPORT;
-
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        s = USBFSH_CheckRootHubPortStatus( RootHubDev[ usb_port ].bStatus );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        s = USBHSH_CheckRootHubPortStatus( RootHubDev[ usb_port ].bStatus );
-#endif
-    }
-
-    return s;
-}
-
-/*********************************************************************
- * @fn      USBH_ResetRootHubPort
- *
- * @brief   Reset USB port.
- *
- * @para    index: USB host port
- *          mod: Reset host port operating mode.
- *               0 -> reset and wait end
- *               1 -> begin reset
- *               2 -> end reset
- *
- * @return  none
- */
-void USBH_ResetRootHubPort( uint8_t usb_port, uint8_t mode )
-{
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        USBFSH_ResetRootHubPort( mode );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        USBHSH_ResetRootHubPort( mode );
-#endif
-    }
-}
-
-/*********************************************************************
- * @fn      USBH_EnableRootHubPort
- *
- * @brief   Enable USB host port.
- *
- * @para    index: USB host port
- *
- * @return  none
- */
-uint8_t USBH_EnableRootHubPort( uint8_t usb_port )
-{
-    uint8_t s = ERR_USB_UNSUPPORT;
-
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        s = USBFSH_EnableRootHubPort( &RootHubDev[ usb_port ].bSpeed );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        s = USBHSH_EnableRootHubPort( &RootHubDev[ usb_port ].bSpeed );
-#endif
-    }
-
-    return s;
-}
-
-/*********************************************************************
- * @fn      USBH_SetSelfSpeed
- *
- * @brief   Set USB speed.
- *
- * @para    index: USB host port
- *
- * @return  none
- */
-void USBH_SetSelfSpeed( uint8_t usb_port )
-{
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        USBFSH_SetSelfSpeed( RootHubDev[ usb_port].bSpeed );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        USBHSH_SetSelfSpeed( RootHubDev[ usb_port ].bSpeed );
-#endif
-    }
-}
-
-/*********************************************************************
- * @fn      USBH_GetDeviceDescr
- *
- * @brief   Get the device descriptor of the USB device.
- *
- * @para    index: USB host port
- *
- * @return  none
- */
-uint8_t USBH_GetDeviceDescr( uint8_t usb_port )
-{
-    uint8_t s = ERR_USB_UNSUPPORT;
-
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        s = USBFSH_GetDeviceDescr( &RootHubDev[ usb_port ].bEp0MaxPks, DevDesc_Buf );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        s = USBHSH_GetDeviceDescr( &RootHubDev[ usb_port ].bEp0MaxPks, DevDesc_Buf );
-#endif
-    }
-
-    return s;
-}
-
-/*********************************************************************
- * @fn      USBH_SetUsbAddress
- *
- * @brief   Set USB device address.
- *
- * @para    index: USB host port
- *
- * @return  none
- */
-uint8_t USBH_SetUsbAddress( uint8_t usb_port )
-{
-    uint8_t s = ERR_USB_UNSUPPORT;
-
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        RootHubDev[ usb_port ].bAddress = (uint8_t)( DEF_USB_PORT_FS + USB_DEVICE_ADDR );
-        s = USBFSH_SetUsbAddress( RootHubDev[ usb_port ].bEp0MaxPks, RootHubDev[ usb_port ].bAddress );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        RootHubDev[ usb_port ].bAddress = (uint8_t)( DEF_USB_PORT_HS + USB_DEVICE_ADDR );
-        s = USBHSH_SetUsbAddress( RootHubDev[ usb_port ].bEp0MaxPks, RootHubDev[ usb_port ].bAddress );
-#endif
-    }
-
-    return s;
-}
-
-/*********************************************************************
- * @fn      USBH_GetConfigDescr
- *
- * @brief   Get the configuration descriptor of the USB device.
- *
- * @para    index: USB host port
- *
- * @return  none
- */
-uint8_t USBH_GetConfigDescr( uint8_t usb_port, uint16_t *pcfg_len )
-{
-    uint8_t s = ERR_USB_UNSUPPORT;
-
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        s = USBFSH_GetConfigDescr( RootHubDev[ usb_port ].bEp0MaxPks, Com_Buffer, DEF_COM_BUF_LEN, pcfg_len );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        s = USBHSH_GetConfigDescr( RootHubDev[ usb_port ].bEp0MaxPks, Com_Buffer, DEF_COM_BUF_LEN, pcfg_len );
-#endif
-    }
-    return s;
-}
-
-/*********************************************************************
- * @fn      USBFSH_SetUsbConfig
- *
- * @brief   Set USB configuration.
- *
- * @para    index: USB host port
- *
- * @return  none
- */
-uint8_t USBH_SetUsbConfig( uint8_t usb_port, uint8_t cfg_val )
-{
-    uint8_t s = ERR_USB_UNSUPPORT;
-
-    if( usb_port == DEF_USB_PORT_FS )
-    {
-#if DEF_USB_PORT_FS_EN
-        s = USBFSH_SetUsbConfig( RootHubDev[ usb_port ].bEp0MaxPks, cfg_val );
-#endif
-    }
-    else if( usb_port == DEF_USB_PORT_HS )
-    {
-#if DEF_USB_PORT_HS_EN
-        s = USBHSH_SetUsbConfig( RootHubDev[ usb_port ].bEp0MaxPks, cfg_val );
-#endif
-    }
-
-    return s;
 }
 
 /*********************************************************************
@@ -886,10 +645,10 @@ ENUM_START:
     Delay_Ms( 8 << enum_cnt );
 
     /* Reset the USB device and wait for the USB device to reconnect */
-    USBH_ResetRootHubPort( usb_port, 0 );
+    USBFSH_ResetRootHubPort( 0 );
     for( i = 0, s = 0; i < DEF_RE_ATTACH_TIMEOUT; i++ )
     {
-        if( USBH_EnableRootHubPort( usb_port ) == ERR_SUCCESS )
+        if( USBFSH_EnableRootHubPort( &RootHubDev[ usb_port ].bSpeed ) == ERR_SUCCESS )
         {
             i = 0;
             s++;
@@ -911,11 +670,11 @@ ENUM_START:
     }
 
     /* Select USB speed */
-    USBH_SetSelfSpeed( usb_port );
+    USBFSH_SetSelfSpeed( RootHubDev[ usb_port].bSpeed );
 
     /* Get USB device device descriptor */
     DUG_PRINTF("Get DevDesc: ");
-    s = USBH_GetDeviceDescr( usb_port );
+    s = USBFSH_GetDeviceDescr( &RootHubDev[ usb_port ].bEp0MaxPks, DevDesc_Buf );
     if( s == ERR_SUCCESS )
     {
         /* Print USB device device descriptor */
@@ -940,7 +699,8 @@ ENUM_START:
 
     /* Set the USB device address */
     DUG_PRINTF("Set DevAddr: ");
-    s = USBH_SetUsbAddress( usb_port );
+    RootHubDev[ usb_port ].bAddress = (uint8_t)( DEF_USB_PORT_FS + USB_DEVICE_ADDR );
+    s = USBFSH_SetUsbAddress( RootHubDev[ usb_port ].bEp0MaxPks, RootHubDev[ usb_port ].bAddress );
     if( s == ERR_SUCCESS )
     {
         DUG_PRINTF( "OK\n" );
@@ -959,7 +719,7 @@ ENUM_START:
 
     /* Get the USB device configuration descriptor */
     DUG_PRINTF("Get CfgDesc: ");
-    s = USBH_GetConfigDescr( usb_port, &len );
+    s = USBFSH_GetConfigDescr( RootHubDev[ usb_port ].bEp0MaxPks, Com_Buffer, DEF_COM_BUF_LEN, &len );
     if( s == ERR_SUCCESS )
     {
         cfg_val = ( (PUSB_CFG_DESCR)Com_Buffer )->bConfigurationValue;
@@ -986,7 +746,7 @@ ENUM_START:
 
     /* Set USB device configuration value */
     DUG_PRINTF("Set Cfg: ");
-    s = USBH_SetUsbConfig( usb_port, cfg_val );
+    s = USBFSH_SetUsbConfig( RootHubDev[ usb_port ].bEp0MaxPks, cfg_val );
     if( s == ERR_SUCCESS )
     {
         DUG_PRINTF( "OK\n" );
@@ -1018,16 +778,12 @@ uint8_t IAP_USBH_PreDeal( void )
     uint8_t usb_port;
     uint8_t index;
     uint8_t ret;
-#if DEF_USB_PORT_FS_EN
     usb_port = DEF_USB_PORT_FS;
-#elif DEF_USB_PORT_HS_EN
-    usb_port = DEF_USB_PORT_HS;
-#endif
-    ret = USBH_CheckRootHubPortStatus( usb_port );
+    ret = USBFSH_CheckRootHubPortStatus( RootHubDev[ usb_port ].bStatus );
     if( ret == ROOT_DEV_CONNECTED )
     {
         DUG_PRINTF("USB Dev In.\n");
-        USBH_CheckRootHubPortStatus( usb_port );
+        USBFSH_CheckRootHubPortStatus( RootHubDev[ usb_port ].bStatus );
         RootHubDev[ usb_port ].bStatus = ROOT_DEV_CONNECTED; // Set connection status_
         RootHubDev[ usb_port ].DeviceIndex = usb_port * DEF_ONE_USB_SUP_DEV_TOTAL;
 
@@ -1077,29 +833,29 @@ void IAP_Main_Deal( void )
     if( ret == DEF_IAP_SUCCESS )
     {
         /* Wait for uDisk Ready */
-        CH103DiskStatus = DISK_USB_ADDR;
+        CHRV3DiskStatus = DISK_USB_ADDR;
         for ( i = 0; i != 10; i ++ )
         {
               DUG_PRINTF( "Wait Disk Ready...\r\n" );
-              ret = CH103DiskReady( );
+              ret = CHRV3DiskReady( );
               if ( ret == ERR_SUCCESS )
               {
                   /* Disk Ready */
                   DUG_PRINTF( "Disk Ready Code:%02x.\r\n", ret );
-                  DUG_PRINTF( "CH103DiskStatus:%02x\n", CH103DiskStatus);
+                  DUG_PRINTF( "CHRV3DiskStatus:%02x\n", CHRV3DiskStatus);
                   op_flag = 1;
                   break;
               }
               else
               {
                   DUG_PRINTF("Not Ready Code :%02x.\r\n", ret);
-                  DUG_PRINTF("CH103DiskStatus:%02x.\n", CH103DiskStatus);
+                  DUG_PRINTF("CHRV3DiskStatus:%02x.\n", CHRV3DiskStatus);
               }
               Delay_Ms( 50 );
           }
     }
 
-    if( (CH103DiskStatus >= DISK_MOUNTED) && op_flag )
+    if( (CHRV3DiskStatus >= DISK_MOUNTED) && op_flag )
     {
         op_flag = 0;
         /* Make sure the flash operation is correct */
@@ -1107,7 +863,7 @@ void IAP_Main_Deal( void )
         /* Set the name of the file to be manipulated to "/APP.BIN"  */
         strcpy( (char *)mCmdParam.Open.mPathName, DEF_IAP_FILE_NAME );
         /* open file */
-        ret = CH103FileOpen( );
+        ret = CHRV3FileOpen( );
         /* file or directory not found */
         if ( ret == ERR_MISS_DIR || ret == ERR_MISS_FILE )
         {
@@ -1120,8 +876,8 @@ void IAP_Main_Deal( void )
                 strcpy( (char *)mCmdParam.Open.mPathName, (char *)pCodeStr );       //Search for filenames, * is a wildcard, for all files or subdirectories
                 ret = strlen( (char *)mCmdParam.Open.mPathName );
                 mCmdParam.Open.mPathName[ ret ] = 0xFF;             //Replace the terminator with the search number according to the length of the string, from 0 to 254,if it is 0xFF that is 255, then the search number is in the CHRV3vFileSize variable
-                CH103vFileSize = i;                                 //Specify the serial number of the search/enumeration
-                ret = CH103FileOpen( );                             //Open a file, if the file name contains a wildcard *, the file is searched for and not opened
+                CHRV3vFileSize = i;                                 //Specify the serial number of the search/enumeration
+                ret = CHRV3FileOpen( );                             //Open a file, if the file name contains a wildcard *, the file is searched for and not opened
                 if ( ret == ERR_MISS_FILE )                         //The only difference between CHRV3FileEnum and CHRV3FileOpen is that when the latter returns ERR_FOUND_NAME, then the former returns ERR_SUCCESS.
                 {
                     break;                                          //No more matching files, no more matching file names
@@ -1143,7 +899,7 @@ void IAP_Main_Deal( void )
         {
             DUG_PRINTF( "File Found, Start IAP Process\r\n" );
             /* Read File Size */
-            totalcount = CH103vFileSize;
+            totalcount = CHRV3vFileSize;
             DUG_PRINTF( "File size in bytes: %d.\r\n", totalcount );
             /* Make sure the flash operation is correct */
             Flash_Operation_Key0 = DEF_FLASH_OPERATION_KEY_CODE_0;
@@ -1165,7 +921,7 @@ void IAP_Main_Deal( void )
                 }
                 mCmdParam.ByteRead.mByteCount = t;                 //Request to read out tens of bytes of data
                 mCmdParam.ByteRead.mByteBuffer= &Com_Buffer[0];
-                ret = CH103ByteRead( );                            //Read the data block in bytes, the length of a single read/write cannot exceed MAX_BYTE_IO, and the second call is followed by a backward read.
+                ret = CHRV3ByteRead( );                            //Read the data block in bytes, the length of a single read/write cannot exceed MAX_BYTE_IO, and the second call is followed by a backward read.
                 mStopIfError( ret );
                 totalcount -= mCmdParam.ByteRead.mByteCount;       //Counting, subtracting the number of characters that have actually been read out
                 for(i=0;i<mCmdParam.ByteRead.mByteCount;i++)
@@ -1191,14 +947,14 @@ void IAP_Main_Deal( void )
                 }
             }
             /* Close the file be operated now */
-            CH103FileClose( );
+            CHRV3FileClose( );
             /* Disposal of remaining package length  */
             ret = IAP_Flash_Program( DEF_APP_CODE_START_ADDR+IAP_Load_Addr_Offset, IAPLoadBuffer, IAP_WriteIn_Length );
             mStopIfError( ret );
             IAP_WriteIn_Count += IAP_WriteIn_Length;
             /* Check actual write length and file length */
-            DUG_PRINTF( "\r\nFileSze : %d,%d.\r\n", (int)CH103vFileSize, IAP_WriteIn_Count );
-            if( CH103vFileSize == IAP_WriteIn_Count )
+            DUG_PRINTF( "\r\nFileSze : %d,%d.\r\n", (int)CHRV3vFileSize, IAP_WriteIn_Count );
+            if( CHRV3vFileSize == IAP_WriteIn_Count )
             {
                 ret = IAP_VerifyCode_Write( );
                 if( ret != ERR_SUCCESS )

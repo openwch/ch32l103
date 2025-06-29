@@ -2,20 +2,22 @@
  * File Name  :usbd_compatibility_hid.c
  * Author     :OWNER
  * Version    : v0.01
- * Date       : 2022年7月8日
+ * Date       : 2022骞�7鏈�8鏃�
  * Description:
 *******************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
+#include <ch32l103_usbfs_device.h>
 #include "debug.h"
 #include "string.h"
-#include "ch32f20x_usbfs_device.h"
 #include "usbd_compatibility_hid.h"
 
+void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+
 __attribute__ ((aligned(4))) uint8_t UART2_RxBuffer[DEF_UART2_BUF_SIZE];  // UART2 Rx Buffer
-__attribute__ ((aligned(4))) uint8_t  HID_Report_Buffer[DEF_USBD_FS_PACK_SIZE];              // HID Report Buffer
+__attribute__ ((aligned(4))) uint8_t  HID_Report_Buffer[64];              // HID Report Buffer
 volatile uint8_t HID_Set_Report_Flag = SET_REPORT_DEAL_OVER;               // HID SetReport flag
 
 volatile uint16_t UART2_TimeOut;                                           // UART2 RX timeout flag
@@ -38,7 +40,7 @@ void TIM2_Init( void )
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure = {0};
     NVIC_InitTypeDef NVIC_InitStructure = {0};
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    RCC_PB1PeriphClockCmd(RCC_PB1Periph_TIM2, ENABLE);
     TIM_TimeBaseStructure.TIM_Period = 71;
     TIM_TimeBaseStructure.TIM_Prescaler =100;
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -79,7 +81,7 @@ void UART2_DMA_Init( void )
 {
     DMA_InitTypeDef DMA_InitStructure = {0};
 
-    RCC_AHBPeriphClockCmd( RCC_AHBPeriph_DMA1, ENABLE );
+    RCC_HBPeriphClockCmd( RCC_HBPeriph_DMA1, ENABLE );
 
     /* UART2 Tx DMA initialization */
     DMA_Cmd( DMA1_Channel7, DISABLE );
@@ -122,8 +124,8 @@ void UART2_Init( void )
     GPIO_InitTypeDef  GPIO_InitStructure = {0};
     USART_InitTypeDef USART_InitStructure = {0};
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_PB1PeriphClockCmd(RCC_PB1Periph_USART2, ENABLE);
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA, ENABLE);
 
     /* UART2 GPIO Init */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
@@ -266,16 +268,14 @@ void UART2_Tx_Service( void )
             USART_ClearFlag(USART2, USART_FLAG_TC);
             USART_DMACmd(USART2, USART_DMAReq_Tx, DISABLE);
             UART2_Tx_Flag = 0;
-            // Disable USB interrupts
-            NVIC_DisableIRQ( USBFS_IRQn );                                       
+            NVIC_DisableIRQ(USBFS_IRQn);                                                  // Disable USB interrupts
             RingBuffer_Comm.RemainPack--;
             RingBuffer_Comm.DealPtr++;
             if(RingBuffer_Comm.DealPtr == DEF_Ring_Buffer_Max_Blks)
             {
                 RingBuffer_Comm.DealPtr = 0;
             }
-            // Enable USB interrupts
-            NVIC_EnableIRQ( USBFS_IRQn );                                            
+            NVIC_EnableIRQ(USBFS_IRQn);                                                   // Enable USB interrupts
         }
     }
     else
@@ -297,14 +297,14 @@ void UART2_Tx_Service( void )
             else
             {
                 /* drop out */
-                NVIC_DisableIRQ( USBFS_IRQn );
+                NVIC_DisableIRQ(USBFS_IRQn);                                                  // Disable USB interrupts
                 RingBuffer_Comm.RemainPack--;
                 RingBuffer_Comm.DealPtr++;
                 if(RingBuffer_Comm.DealPtr == DEF_Ring_Buffer_Max_Blks)
                 {
                     RingBuffer_Comm.DealPtr = 0;
                 }
-                NVIC_EnableIRQ( USBFS_IRQn );
+                NVIC_EnableIRQ(USBFS_IRQn);                                                   // Enable USB interrupts
             }
         }
     }

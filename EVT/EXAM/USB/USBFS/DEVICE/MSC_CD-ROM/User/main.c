@@ -1,19 +1,18 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : main.c
-* Author             : WCH
-* Version            : V1.0.0
-* Date               : 2022/08/20
-* Description        : Main program body.
+ * File Name          : main.c
+ * Author             : WCH
+ * Version            : V1.0.0
+ * Date               : 2024/01/19
+ * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
-*******************************************************************************/ 
-#include "ch32f20x_usbfs_device.h"
+*******************************************************************************/
+#include "ch32l103_usbfs_device.h"
 #include "debug.h"
 #include "SPI_FLASH.h"
-#include "SW_CDROM.h"
-
+#include <SW_CDROM.h>
 /* @Note
  * CD-ROM Example:
  * 1.This program provides examples of CD-ROM.The iso file TEST.iso used for testing is 
@@ -26,7 +25,8 @@
  * of flash, you can add flash type by yourself in SPI_FLASH.c in user floder.
  * 4.External flash chip needs to be attached to SPI_1.
  * 5.CD_ROM iso file 'TEST.iso' contains wch serial-port driver, and autorun.inf.
- *  */ 
+ *  */
+
 /*********************************************************************
  * @fn      main
  *
@@ -36,9 +36,10 @@
  */
 int main(void)
 {
-		Delay_Init();
-		USART_Printf_Init(115200);
-		printf("SystemClk:%d\r\n",SystemCoreClock);
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+	Delay_Init();
+	USART_Printf_Init(115200);
+	printf("SystemClk:%d\r\n",SystemCoreClock);
     printf("USBD CD-ROM Demo\r\nStorage Medium: SPI FLASH \r\n");
     /* SPI flash init */
     FLASH_Port_Init( );
@@ -51,7 +52,7 @@ int main(void)
     /* Usb Init */
     USBFS_RCC_Init( );
     USBFS_Device_Init( ENABLE );
-    NVIC_EnableIRQ( USBFS_IRQn );
+    NVIC_EnableIRQ(USBFS_IRQn);
 
 	while(1)
 	{

@@ -56,11 +56,11 @@ uint8_t LongName[ ] =
  */
 void UDisk_USBH_Longname( void )
 {
-    uint8_t  i, len;
+    uint8_t  ret, i, len;
     uint16_t j;
 
-    UDisk_USBH_DiskReady( );
-    if( ( CH103DiskStatus >= DISK_MOUNTED )&&( UDisk_Opeation_Flag == 1 ) )
+    ret = UDisk_USBH_DiskReady( );
+    if( ( ret == DISK_READY )&&( UDisk_Opeation_Flag == 1 ) )
     {
         UDisk_Opeation_Flag = 0;
         /*==================== 以下演示创建及读取长文件名 ============================*/
@@ -71,7 +71,7 @@ void UDisk_USBH_Longname( void )
         LongNameBuf[len] = 0x00;
         LongNameBuf[len + 1] = 0x00;
         // 该长文件名的ANSI编码短文件名(8+3格式)
-        strcpy( (char *)mCmdParam.Create.mPathName, "\\长文件名.TXT" );
+        strcpy( mCmdParam.Create.mPathName, "\\长文件名.TXT" );
         i = CHRV3CreateLongName( );
         if( i == ERR_SUCCESS )
         {
@@ -84,7 +84,7 @@ void UDisk_USBH_Longname( void )
         }
 
         DUG_PRINTF( "Get long Name#\r\n" );
-        strcpy( (char *)mCmdParam.Open.mPathName, "\\长文件名.TXT" );
+        strcpy( mCmdParam.Open.mPathName, "\\长文件名.TXT" );
         // 以上需要输入文件名的完整路径
         i = CHRV3GetLongName( );
         if( i == ERR_SUCCESS )
@@ -195,20 +195,20 @@ uint8_t   BackPathBuf[MAX_PATH_LEN];    // 保存文件路径
         return ERR_LONG_NAME;
     MultBak = Mult;
 
-    i = CH103FileOpen();                    // 短文件名存在则返回错误
+    i = CHRV3FileOpen();                    // 短文件名存在则返回错误
     if( i == ERR_SUCCESS )
         return ERR_NAME_EXIST;
 
-    i = CH103FileCreate( );
+    i = CHRV3FileCreate( );
     if( i == ERR_SUCCESS )
     {
-        Backoffset = CH103vFdtOffset;
+        Backoffset = CHRV3vFdtOffset;
         BackoffsetBak = Backoffset;
-        BackFdtSector = CH103vFdtLba;
+        BackFdtSector = CHRV3vFdtLba;
         sum = CheckNameSum( &DISK_BASE_BUF[Backoffset ] );
         for( i=0; i!=MAX_PATH_LEN; i++ )    // 对文件路径进行备份
             BackPathBuf[i] = mCmdParam.Open.mPathName[i];
-        CH103FileErase( );                  // 删除此文件
+        CHRV3FileErase( );                  // 删除此文件
 
         Secoffset   = 0;                    // 从0开始偏移
         index       = Mult*26;              // 得到长文件名的长度
@@ -235,13 +235,13 @@ uint8_t   BackPathBuf[MAX_PATH_LEN];    // 保存文件路径
             mCmdParam.Open.mPathName[1] = 0;
         }
 
-        i = CH103FileOpen();                // 打开上级目录
+        i = CHRV3FileOpen();                // 打开上级目录
         if( i == ERR_OPEN_DIR )
         {
             while( 1 )                      // 循环填写 直到完成
             {
                 mCmdParam.Locate.mSectorOffset = Secoffset;
-                i = CH103FileLocate( );
+                i = CHRV3FileLocate( );
                 if( i == ERR_SUCCESS )
                 {
                     if( Fbit )             // 第二次进入次写扇区
@@ -255,10 +255,10 @@ uint8_t   BackPathBuf[MAX_PATH_LEN];    // 保存文件路径
                         {
                             for( i=0; i!=MAX_PATH_LEN; i++ )// 还原文件路径
                                 mCmdParam.Open.mPathName[i] = BackPathBuf[i];
-                            i = CH103FileCreate( );         // 进行空间扩展
+                            i = CHRV3FileCreate( );         // 进行空间扩展
                             if( i != ERR_SUCCESS )
                                 return i;
-                            CH103FileErase( );
+                            CHRV3FileErase( );
                             goto P_RETRY;                   // 重新打开上级目录
                         }
                     }
@@ -267,12 +267,12 @@ uint8_t   BackPathBuf[MAX_PATH_LEN];    // 保存文件路径
                     {
                         mCmdParam.Read.mSectorCount = 1;   // 读一个扇区到磁盘缓冲区
                         mCmdParam.Read.mDataBuffer = &DISK_BASE_BUF[0];
-                        i = CH103FileRead( );
-                        CH103DirtyBuffer( );                // 清除磁盘缓冲区
+                        i = CHRV3FileRead( );
+                        CHRV3DirtyBuffer( );                // 清除磁盘缓冲区
                         if( i!= ERR_SUCCESS )
                             return i;
 
-                        i = ( CH103vSectorSize - Backoffset ) / 32;
+                        i = ( CHRV3vSectorSize - Backoffset ) / 32;
                         if( Mult > i )
                             Mult = Mult - i;                // 剩余的倍数
                         else
@@ -344,18 +344,17 @@ uint8_t   BackPathBuf[MAX_PATH_LEN];    // 保存文件路径
                             Fbit = TRUE;
                             DISK_BASE_BUF[ BackoffsetBak ] |= 0x40;
                         }
-                        CH103vLbaCurrent = BackFdtSector;
-                        i = CH103WriteSector( 1, DISK_BASE_BUF );
+                        CHRV3vLbaCurrent = BackFdtSector;
+                        i = CHRV3WriteSector( 1, DISK_BASE_BUF );
                         if( i!= ERR_SUCCESS )
                             return i;
 
                         if( Mult==0 )
-                        {   
-					        // 还原文件路径
-							CH103FileClose( );
+                        {   // 还原文件路径
+					        CHRV3FileClose( );
                             for( i=0; i!=MAX_PATH_LEN; i++ )
                                 mCmdParam.Open.mPathName[i] = BackPathBuf[i];
-                            i = CH103FileCreate( );
+                            i = CHRV3FileCreate( );
                             return i;
                         }
                     }
@@ -400,20 +399,20 @@ uint32_t index;           // 目录扇区偏移扇区数
     {
         mCmdParam.Open.mPathName[0] = '/';
         mCmdParam.Open.mPathName[1] = 0;
-        i = CH103FileOpen();
+        i = CHRV3FileOpen();
         if ( i == ERR_OPEN_DIR )
             goto P_NEXT0;
     }
     else
     {
-        i = CH103FileOpen();
+        i = CHRV3FileOpen();
         if ( i == ERR_OPEN_DIR )
         {
             while( 1 )
             {
                 P_NEXT0:
                 mCmdParam.Locate.mSectorOffset = index;
-                i = CH103FileLocate( );
+                i = CHRV3FileLocate( );
                 if( i == ERR_SUCCESS )
                 {
                     if( *NowSector == mCmdParam.Locate.mSectorOffset )
@@ -421,14 +420,14 @@ uint32_t index;           // 目录扇区偏移扇区数
                         if( index==0 )                          // 处于根目录扇区的开始
                             return ERR_NO_NAME;
                         mCmdParam.Locate.mSectorOffset = --index;
-                        i = CH103FileLocate( );                 // 读上一个扇区的数据
+                        i = CHRV3FileLocate( );                 // 读上一个扇区的数据
                         if( i == ERR_SUCCESS )
                         {                                       // 以下保存当前所在扇区数
                             *NowSector = mCmdParam.Locate.mSectorOffset;
                             mCmdParam.Read.mSectorCount = 1;   // 读一个扇区到磁盘缓冲区
                             mCmdParam.Read.mDataBuffer = &DISK_BASE_BUF[0];
-                            i = CH103FileRead( );
-                            CH103DirtyBuffer( );                // 清除磁盘缓冲区
+                            i = CHRV3FileRead( );
+                            CHRV3DirtyBuffer( );                // 清除磁盘缓冲区
                             return i;
                         }
                         else
@@ -466,19 +465,19 @@ uint16_t  offset;         // 扇区内文件偏移32倍数
 uint8_t   FirstBit;       // 长文件名跨越两个扇区标志位
 uint8_t   BackPathBuf[MAX_PATH_LEN]; // 保存文件路径
 
-    i = CH103FileOpen( );
+    i = CHRV3FileOpen( );
     if( ( i == ERR_SUCCESS ) || ( i == ERR_OPEN_DIR ) )
     {
         for( i=0; i!=MAX_PATH_LEN; i++ )
             BackPathBuf[i] = mCmdParam.Open.mPathName[i];
         // 以上完成对路径的备份
- 
-        sum = CheckNameSum( &DISK_BASE_BUF[CH103vFdtOffset] );
+
+        sum = CheckNameSum( &DISK_BASE_BUF[CHRV3vFdtOffset] );
         index = 0;
         FirstBit = FALSE;
-//        Backoffset = CH103vFdtOffset;
-        BackFdtSector = CH103vFdtLba;
-        if( CH103vFdtOffset == 0 )
+//        Backoffset = CHRV3vFdtOffset;
+        BackFdtSector = CHRV3vFdtLba;
+        if( CHRV3vFdtOffset == 0 )
         {
             // 先判断是否处于一个扇区开始 是否处于根目录开始 ，否则向后偏移
             if( FirstBit == FALSE )
@@ -486,7 +485,7 @@ uint8_t   BackPathBuf[MAX_PATH_LEN]; // 保存文件路径
             i = GetUpSectorData( &BackFdtSector );
             if( i == ERR_SUCCESS )
             {
-                CH103vFdtOffset = CH103vSectorSize;
+                CHRV3vFdtOffset = CHRV3vSectorSize;
                 goto P_NEXT1;
             }
         }
@@ -494,7 +493,7 @@ uint8_t   BackPathBuf[MAX_PATH_LEN]; // 保存文件路径
         {
             // 读取偏移后的数据，直到结束。如果不够则向后偏移
             P_NEXT1:
-            offset = CH103vFdtOffset;
+            offset = CHRV3vFdtOffset;
             while( 1 )
             {
                 if( offset != 0 )
@@ -582,7 +581,7 @@ uint8_t   BackPathBuf[MAX_PATH_LEN]; // 保存文件路径
                     i = GetUpSectorData( &BackFdtSector );
                     if( i == ERR_SUCCESS )
                     {
-                        CH103vFdtOffset = CH103vSectorSize;
+                        CHRV3vFdtOffset = CHRV3vSectorSize;
                         goto P_NEXT1;
                     }
                     else
@@ -592,6 +591,6 @@ uint8_t   BackPathBuf[MAX_PATH_LEN]; // 保存文件路径
             }
         }
     }
-    return i;       // 返回错误
+    return i;                // 返回错误
 }
 

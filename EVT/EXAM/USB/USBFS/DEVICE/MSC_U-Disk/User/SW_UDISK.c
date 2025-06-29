@@ -2,9 +2,9 @@
 * File Name          : SW_UDISK.C
 * Author             : WCH
 * Version            : V1.00
-* Date               : 2021/08/01
+* Date               : 2024/01/19
 * Description        : UDISK Source File
-*******************************************************************************
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -14,8 +14,8 @@
 /* Header Files */
 #include <SPI_FLASH.h>
 #include <SW_UDISK.h>
-#include "ch32f20x_usbfs_device.h"
-#include "ch32f20x_spi.h"
+#include "ch32l103_usbfs_device.h"
+#include "ch32l103_spi.h"
 #include "Internal_Flash.h"
 /******************************************************************************/
 /* Variable Definition */
@@ -24,11 +24,11 @@ __attribute__ ((aligned(4))) uint8_t  UDisk_Down_Buffer[DEF_FLASH_SECTOR_SIZE];
 __attribute__ ((aligned(4))) uint8_t  UDisk_Pack_Buffer[DEF_UDISK_PACK_64];
 
 /******************************************************************************/
-/* INQUITY */
+/* INQUITY–≈œ¢ */
 uint8_t UDISK_Inquity_Tab[ ] =
 {
     /* UDISK */
-    0x00,                                                /* Peripheral Device Type:UDISK = 0x00 */
+    0x00,                                                /* Peripheral Device Type£∫UDISK = 0x00 */
     0x80,                                                /* Removable */
     0x02,                                                /* ISO/ECMA */
     0x02,
@@ -523,7 +523,7 @@ void UDISK_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen )
         UDISK_Down_OnePack( pbuf, packlen );
     }
     else
-    {                                
+    {
         if( packlen == 0x1F )
         {
             for( i = 0; i < packlen; i++ ) 
@@ -547,7 +547,7 @@ void UDISK_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen )
                 else if( Udisk_CSW_Status == 0x00 )
                 {
                     /* upload CSW */
-                    UDISK_Up_CSW(  );                     
+                    UDISK_Up_CSW(  );
                 }                        
             }
         }
@@ -637,7 +637,6 @@ void UDISK_Up_OnePack( void )
 
     /* USB upload this package data */
     USBFS_Endp_DataUp(DEF_UEP2, pbuf,UDISK_Pack_Size, DEF_UEP_CPY_LOAD );
-
     /* Determine whether the current sector data is read and uploaded */
     UDISK_Sec_Pack_Count++;
     UDISK_Transfer_DataLen -= UDISK_Pack_Size;
