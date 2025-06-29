@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/06/05
+ * Version            : V1.0.1
+ * Date               : 2025/04/22
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -56,6 +56,8 @@ void Touch_Key_Init(void)
     ADC_Init(ADC1, &ADC_InitStructure);
 
 	ADC_Cmd(ADC1, ENABLE);
+	ADC_Sample_ModeConfig(ADC1,ADC_Sample_Over_1M_Mode);
+	ADC_DutyDelayCmd(ADC1,ENABLE);
 	TKey1->CTLR1 |= (1<<26)|(1<<24);     // Enable TouchKey and Buffer
 }
 
@@ -82,8 +84,8 @@ void Touch_Key_Init(void)
  */
 u16 Touch_Key_Adc(u8 ch)
 {
-  ADC_RegularChannelConfig(ADC1,ch, 1, ADC_SampleTime_CyclesMode2 );
-  TKey1->IDATAR1 =0x10;  //Charging Time
+  ADC_RegularChannelConfig(ADC1,ch, 1, ADC_SampleTime_CyclesMode0 );
+  TKey1->IDATAR1 =0x30;  //Charging Time
   TKey1->RDATAR =0x1f;   //Discharging Time
   while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));
 

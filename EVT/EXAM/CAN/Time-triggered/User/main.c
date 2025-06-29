@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/04
+ * Version            : V1.0.1
+ * Date               : 2025/04/11
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -29,9 +29,101 @@
 //#define CAN_MODE    TX_MODE
 #define CAN_MODE   RX_MODE
 
+
+#define CANSOFTFILTER_MAX_GROUP_NUM 2           // The maximum recommended configuration is 14. 
+                                                //Configure only what you need to prevent excessive RAM usage or an increase in the software's filtering time.
+
+#define CANSOFTFILER_PREDEF_CTRLBYTE_MASK32 ((CAN_FilterScale_32bit << 5) | (CAN_FilterMode_IdMask << 1))
+#define CANSOFTFILER_PREDEF_CTRLBYTE_ID32   ((CAN_FilterScale_32bit << 5) | (CAN_FilterMode_IdList << 1))
+
+/* 
+This is the structure of the software filtering table. It can be configured through the CAN_SoftFilterInit function,
+or you can directly set the configuration values. The configured values can be modified directly during runtime.
+However, when using the interrupt mode for reception, you need to be aware that if the modification is interrupted, 
+it may affect the filtering results during this period. 
+*/
+struct CANFilterStruct_t
+{
+    union
+    {
+        union
+        {
+            struct
+            {
+                uint32_t :1;
+                uint32_t RTR :1;
+                uint32_t IDE :1;
+                uint32_t ExID :29;
+            }Access_Ex;
+            struct
+            {
+                uint32_t :1;
+                uint32_t RTR :1;
+                uint32_t IDE :1;
+                uint32_t :18;
+                uint32_t StID :11;
+            }Access_St;
+        };
+        union{
+            struct {
+                uint16_t FR_16_L;
+                uint16_t FR_16_H;
+            };
+            uint32_t FR_32;
+        };
+    }FR[2];
+    union
+    {
+        struct
+        {
+            uint16_t en :1;
+            uint16_t mode :4;
+            uint16_t scale :3;
+        };
+        uint16_t ctrl_byte;
+    };
+}CANFilterStruct[CANSOFTFILTER_MAX_GROUP_NUM];
+
+uint8_t interrupt_rx_flag = 0;
+volatile u8 canexbuf_interrupt[8];
+
 /* Global Variable */
 u8 txbuf[8];
 u8 tx;
+
+void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct);
+void CAN_Test_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode);
+void CAN_ReceiveViaSoftFilter(CAN_TypeDef* CANx, uint8_t FIFONumber, CanRxMsg* RxMessage);
+u8 CAN_Send_Msg(u8 *msg, u8 len);
+u8 CAN_Receive_Msg(u8 *buf);
+
+/*********************************************************************
+ * @fn      CAN_SoftFilterInit
+ *
+ * @brief   Initializes the CAN peripheral according to the specified
+ *        parameters in the CAN_FilterInitStruct.
+ *
+ * @param   CAN_FilterInitStruct - pointer to a CAN_FilterInitTypeDef
+ *        structure that contains the configuration information.
+ *
+ * @return  none
+ */
+void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct)
+{
+    if(CAN_FilterInitStruct->CAN_FilterActivation)
+    {
+        CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].en = 1;
+    }else
+    {
+        CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].en = 0;
+    }
+    CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].FR[0].FR_16_H = CAN_FilterInitStruct->CAN_FilterIdHigh;
+    CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].FR[0].FR_16_L = CAN_FilterInitStruct->CAN_FilterIdLow;
+    CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].FR[1].FR_16_H = CAN_FilterInitStruct->CAN_FilterMaskIdHigh;
+    CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].FR[1].FR_16_L = CAN_FilterInitStruct->CAN_FilterMaskIdLow;
+    CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].mode = CAN_FilterInitStruct->CAN_FilterMode;
+    CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].scale = CAN_FilterInitStruct->CAN_FilterScale;
+}
 
 /*********************************************************************
  * @fn      CAN_Mode_Init
@@ -93,7 +185,7 @@ void CAN_Mode_Init(u8 tsjw, u8 tbs2, u8 tbs1, u16 brp, u8 mode)
     CAN_FilterInitSturcture.CAN_FilterMaskIdLow = 0xFFFE;
     CAN_FilterInitSturcture.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
     CAN_FilterInitSturcture.CAN_FilterActivation = ENABLE;
-    CAN_FilterInit(&CAN_FilterInitSturcture);
+    CAN_SoftFilterInit(&CAN_FilterInitSturcture);
     CAN_TTComModeCmd(CAN1, ENABLE);
 
 #if(CAN_MODE == TX_MODE)
@@ -216,7 +308,7 @@ u8 CAN_Receive_Msg(u8 *buf)
         return 0;
     }
 
-    CAN_Receive(CAN1, CAN_FIFO0, &CanRxStructure);
+    CAN_ReceiveViaSoftFilter(CAN1, CAN_FIFO0, &CanRxStructure);
 
     for(i = 0; i < 8; i++){
         buf[i] = CanRxStructure.Data[i];
@@ -259,6 +351,62 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 
 #endif
 
+
+/*********************************************************************
+ * @fn      CAN_ReceiveViaSoftFilter
+ *
+ * @brief   Receives a message via soft filter.
+ *
+ * @param   CANx - where x can be 1 to select the CAN peripheral.
+ *          FIFONumber - Receive FIFO number.
+ *            CAN_FIFO0.
+ *          RxMessage -  pointer to a structure receive message which contains
+ *        CAN Id, CAN DLC, CAN datas and FMI number.
+ *
+ * @return  none
+ */
+void CAN_ReceiveViaSoftFilter(CAN_TypeDef* CANx, uint8_t FIFONumber, CanRxMsg* RxMessage)
+{
+    for (int group = 0; group < sizeof(CANFilterStruct)/sizeof(*CANFilterStruct); group++) 
+    {
+        if (CANFilterStruct[group].en) 
+        {
+            uint32_t temp = CANx->sFIFOMailBox[0].RXMIR & (~0x1);
+            switch ((uint8_t)CANFilterStruct[group].ctrl_byte & ~0x1) 
+            {
+
+                case CANSOFTFILER_PREDEF_CTRLBYTE_ID32:
+                    if((CANFilterStruct[group].FR[0].FR_32 != temp) && (CANFilterStruct[group].FR[1].FR_32 != temp))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        CAN_Receive(CANx, CAN_FIFO0, RxMessage);
+                        return;
+                    }
+                    break;
+
+                case CANSOFTFILER_PREDEF_CTRLBYTE_MASK32:
+                    if((CANFilterStruct[group].FR[0].FR_32 & CANFilterStruct[group].FR[1].FR_32) ^ (temp & CANFilterStruct[group].FR[1].FR_32))
+                    {
+                        continue;
+                    }
+                    else 
+                    {
+                        CAN_Receive(CANx, CAN_FIFO0, RxMessage);
+                        return;
+                    }
+                    break;
+
+                default:
+                    return;
+                    break;
+            }
+        }
+    }
+    CAN_FIFORelease(CANx,CAN_FIFO0);
+}
 /*********************************************************************
  * @fn      main
  *

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_can.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2025/04/14
  * Description        : This file provides all the CAN firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -18,9 +18,6 @@
 /* CAN Mailbox Transmit Request */
 #define TMIDxR_TXRQ                  ((uint32_t)0x00000001) 
 
-/* CAN FCTLR Register bits */
-#define FCTLR_FINIT                  ((uint32_t)0x00000001) 
-
 /* Time out for INAK bit */
 #define INAK_TIMEOUT                 ((uint32_t)0x0000FFFF)
 /* Time out for SLAK bit */
@@ -29,8 +26,6 @@
 
 /* Flags in TSTATR register */
 #define CAN_FLAGS_TSTATR             ((uint32_t)0x08000000) 
-/* Flags in RFIFO1 register */
-#define CAN_FLAGS_RFIFO1             ((uint32_t)0x04000000) 
 /* Flags in RFIFO0 register */
 #define CAN_FLAGS_RFIFO0             ((uint32_t)0x02000000) 
 /* Flags in STATR register */
@@ -87,10 +82,64 @@ uint8_t CAN_Init(CAN_TypeDef* CANx, CAN_InitTypeDef* CAN_InitStruct)
 	uint8_t InitStatus = CAN_InitStatus_Failed;
 	uint32_t wait_ack = 0x00000000;
 
+	CANx->CANFD_CR |= (1<<7);
 	CANx->CANFD_CR &= ~(1);
+
+	(*(__IO uint32_t *)(0x40021010)) |= 0x2000000;
+	(*(__IO uint32_t *)(0x40021010)) &= ~(0x2000000);
+
+	(*(__IO uint32_t *)(0x40006400)) &= ~0x2;
+	(*(__IO uint32_t *)(0x40006400)) |= 0x1;
+	
+	while(!((*(__IO uint32_t *)(0x40006404)) & 0x1) && (wait_ack != 0x0000FFFF))
+	{
+		wait_ack++;
+	}
+
+	if(((*(__IO uint32_t *)(0x40006404)) & 0x1))
+	{
+		CANx->BTIMR = ( uint32_t)0xC1100000| \
+								((uint32_t)SystemCoreClock/(((((*(__IO uint32_t *)(0x40021004)) >> 8) & 0x7) < 0x4) ? 1 : (uint32_t)0x2<<(((*(__IO uint32_t *)(0x40021004)) >> 8) & 0x3))/4000000 - 1);
+	}
+	else
+	{
+		return CAN_InitStatus_Failed;
+	}
+	(*(__IO uint32_t *)(0x40006400)) &= ~0x1;
+	wait_ack = 0;
+	while(((*(__IO uint32_t *)(0x40006404)) & 0x1) && (wait_ack != 0x0000FFFF))
+	{
+		wait_ack++;
+	}
+
+	if((*(__IO uint32_t *)(0x40006404)) & 0x1){
+		return CAN_InitStatus_Failed;
+	}
+
+	(*(__IO uint32_t *)(0x4000660C)) |= 0x1;	
+	(*(__IO uint32_t *)(0x40006640)) = 0x0;
+	(*(__IO uint32_t *)(0x40006644)) = 0x0;
+	(*(__IO uint32_t *)(0x4000661C)) |= 0x1;	
+	(*(__IO uint32_t *)(0x40006600)) &= ~0x1; 	
+	(*(__IO uint32_t *)(0x40006580)) |= 0x3;
+	while(!((*(__IO uint32_t *)(0x4000640C)) & 0x3));
+	(*(__IO uint32_t *)(0x4000640C)) = 0x38;
+
+	(*(__IO uint32_t *)(0x40021010)) |= 0x2000000;
+	(*(__IO uint32_t *)(0x40021010)) &= ~(0x2000000);
+
+	(*(__IO uint32_t *)(0x40006600)) |= 0x1; 	
+	(*(__IO uint32_t *)(0x4000660C)) |= 0x1;	
+	(*(__IO uint32_t *)(0x4000661C)) |= 0x1;	
+	(*(__IO uint32_t *)(0x40006600)) &= ~0x1; 	
+
+	CANx->CANFD_CR |= (1<<7);
+	CAN1->CANFD_CR &= ~(1);
 
 	CANx->CTLR &= (~(uint32_t)CAN_CTLR_SLEEP);
 	CANx->CTLR |= CAN_CTLR_INRQ ;
+
+	wait_ack = 0;
 
 	while (((CANx->STATR & CAN_STATR_INAK) != CAN_STATR_INAK) && (wait_ack != INAK_TIMEOUT))
 	{
@@ -184,78 +233,6 @@ uint8_t CAN_Init(CAN_TypeDef* CANx, CAN_InitTypeDef* CAN_InitStruct)
 }
 
 /*********************************************************************
- * @fn      CAN_FilterInit
- *
- * @brief   Initializes the CAN peripheral according to the specified
- *        parameters in the CAN_FilterInitStruct.
- *
- * @param   CAN_FilterInitStruct - pointer to a CAN_FilterInitTypeDef
- *        structure that contains the configuration information.
- *
- * @return  none
- */
-void CAN_FilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct)
-{
-	uint32_t filter_number_bit_pos = 0;
-
-	filter_number_bit_pos = ((uint32_t)1) << CAN_FilterInitStruct->CAN_FilterNumber;
-	CAN1->FCTLR |= FCTLR_FINIT;
-	CAN1->FWR &= ~(uint32_t)filter_number_bit_pos;
-
-	if (CAN_FilterInitStruct->CAN_FilterScale == CAN_FilterScale_16bit)
-	{
-		CAN1->FSCFGR &= ~(uint32_t)filter_number_bit_pos;
-		
-		CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR1 = 
-		((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdLow) << 16) |
-				(0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdLow);
-		
-		CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
-		((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdHigh) << 16) |
-				(0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdHigh);
-	}
-
-	if (CAN_FilterInitStruct->CAN_FilterScale == CAN_FilterScale_32bit)
-	{
-		CAN1->FSCFGR |= filter_number_bit_pos;
-		
-		CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR1 = 
-		((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdHigh) << 16) |
-				(0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterIdLow);
-		
-		CAN1->sFilterRegister[CAN_FilterInitStruct->CAN_FilterNumber].FR2 = 
-		((0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdHigh) << 16) |
-				(0x0000FFFF & (uint32_t)CAN_FilterInitStruct->CAN_FilterMaskIdLow);
-	}
-
-	if (CAN_FilterInitStruct->CAN_FilterMode == CAN_FilterMode_IdMask)
-	{
-		CAN1->FMCFGR &= ~(uint32_t)filter_number_bit_pos;
-	}
-	else 
-	{
-		CAN1->FMCFGR |= (uint32_t)filter_number_bit_pos;
-	}
-
-	if (CAN_FilterInitStruct->CAN_FilterFIFOAssignment == CAN_Filter_FIFO0)
-	{
-		CAN1->FAFIFOR &= ~(uint32_t)filter_number_bit_pos;
-	}
-
-	if (CAN_FilterInitStruct->CAN_FilterFIFOAssignment == CAN_Filter_FIFO1)
-	{
-		CAN1->FAFIFOR |= (uint32_t)filter_number_bit_pos;
-	}
-	
-	if (CAN_FilterInitStruct->CAN_FilterActivation == ENABLE)
-	{
-		CAN1->FWR |= filter_number_bit_pos;
-	}
-
-	CAN1->FCTLR &= ~FCTLR_FINIT;
-}
-
-/*********************************************************************
  * @fn      CAN_StructInit
  *
  * @brief   Fills each CAN_InitStruct member with its default value.
@@ -278,23 +255,6 @@ void CAN_StructInit(CAN_InitTypeDef* CAN_InitStruct)
 	CAN_InitStruct->CAN_BS1 = CAN_BS1_4tq;
 	CAN_InitStruct->CAN_BS2 = CAN_BS2_3tq;
 	CAN_InitStruct->CAN_Prescaler = 1;
-}
-
-/*********************************************************************
- * @fn      CAN_SlaveStartBank
- *
- * @brief   This function applies only to CH32 Connectivity line devices.
- *
- * @param   CAN_BankNumber - Select the start slave bank filter from 1..27.
- *
- * @return  none
- */
-void CAN_SlaveStartBank(uint8_t CAN_BankNumber) 
-{
-	CAN1->FCTLR |= FCTLR_FINIT;
-	CAN1->FCTLR &= (uint32_t)0xFFFFC0F1 ;
-	CAN1->FCTLR |= (uint32_t)(CAN_BankNumber)<<8;
-	CAN1->FCTLR &= ~FCTLR_FINIT;
 }
 
 /*********************************************************************
@@ -536,7 +496,6 @@ void CAN_CancelTransmit(CAN_TypeDef* CANx, uint8_t Mailbox)
  * @param   CANx - where x can be 1 to select the CAN peripheral.
  *          FIFONumber - Receive FIFO number.
  *            CAN_FIFO0.
- *            CAN_FIFO1.
  *          RxMessage -  pointer to a structure receive message which contains
  *        CAN Id, CAN DLC, CAN datas and FMI number.
  *
@@ -571,10 +530,6 @@ void CAN_Receive(CAN_TypeDef* CANx, uint8_t FIFONumber, CanRxMsg* RxMessage)
 	{
 		CANx->RFIFO0 |= CAN_RFIFO0_RFOM0;
 	}
-	else 
-	{
-		CANx->RFIFO1 |= CAN_RFIFO1_RFOM1;
-	}
 }
 
 /*********************************************************************
@@ -585,7 +540,6 @@ void CAN_Receive(CAN_TypeDef* CANx, uint8_t FIFONumber, CanRxMsg* RxMessage)
  * @param   CANx - where x can be 1 to select the CAN peripheral.
  *          FIFONumber - Receive FIFO number.
  *            CAN_FIFO0.
- *            CAN_FIFO1.
  *
  * @return  none
  */
@@ -594,10 +548,6 @@ void CAN_FIFORelease(CAN_TypeDef* CANx, uint8_t FIFONumber)
 	if (FIFONumber == CAN_FIFO0)
 	{
 		CANx->RFIFO0 |= CAN_RFIFO0_RFOM0;
-	}
-	else 
-	{
-		CANx->RFIFO1 |= CAN_RFIFO1_RFOM1;
 	}
 }
 
@@ -609,7 +559,6 @@ void CAN_FIFORelease(CAN_TypeDef* CANx, uint8_t FIFONumber)
  * @param   CANx - where x can be 1 to select the CAN peripheral.
  *          FIFONumber - Receive FIFO number.
  *            CAN_FIFO0.
- *            CAN_FIFO1.
  *
  * @return  message_pending: which is the number of pending message.
  */
@@ -620,10 +569,6 @@ uint8_t CAN_MessagePending(CAN_TypeDef* CANx, uint8_t FIFONumber)
 	if (FIFONumber == CAN_FIFO0)
 	{
 		message_pending = (uint8_t)(CANx->RFIFO0&(uint32_t)0x03);
-	}
-	else if (FIFONumber == CAN_FIFO1)
-	{
-		message_pending = (uint8_t)(CANx->RFIFO1&(uint32_t)0x03);
 	}
 	else
 	{
@@ -846,9 +791,6 @@ uint8_t CAN_GetLSBTransmitErrorCounter(CAN_TypeDef* CANx)
  *            CAN_IT_FMP0.
  *            CAN_IT_FF0.
  *            CAN_IT_FOV0.
- *            CAN_IT_FMP1.
- *            CAN_IT_FF1.
- *            CAN_IT_FOV1.
  *            CAN_IT_EWG.
  *            CAN_IT_EPV.
  *            CAN_IT_LEC.
@@ -884,9 +826,6 @@ void CAN_ITConfig(CAN_TypeDef* CANx, uint32_t CAN_IT, FunctionalState NewState)
  *            CAN_FLAG_RQCP0.
  *            CAN_FLAG_RQCP1.
  *            CAN_FLAG_RQCP2.
- *            CAN_FLAG_FMP1.
- *            CAN_FLAG_FF1.
- *            CAN_FLAG_FOV1.
  *            CAN_FLAG_FMP0.
  *            CAN_FLAG_FF0.
  *            CAN_FLAG_FOV0.
@@ -945,17 +884,6 @@ FlagStatus CAN_GetFlagStatus(CAN_TypeDef* CANx, uint32_t CAN_FLAG)
 			bitstatus = RESET;
 		}
 	}
-	else 
-	{ 
-		if ((uint32_t)(CANx->RFIFO1 & (CAN_FLAG & 0x000FFFFF)) != (uint32_t)RESET)
-		{ 
-			bitstatus = SET;
-		}
-		else
-		{ 
-			bitstatus = RESET;
-		}
-	}
 
 	return  bitstatus;
 }
@@ -970,8 +898,6 @@ FlagStatus CAN_GetFlagStatus(CAN_TypeDef* CANx, uint32_t CAN_FLAG)
  *            CAN_FLAG_RQCP0.
  *            CAN_FLAG_RQCP1.
  *            CAN_FLAG_RQCP2.
- *            CAN_FLAG_FF1.
- *            CAN_FLAG_FOV1.
  *            CAN_FLAG_FF0.
  *            CAN_FLAG_FOV0.
  *            CAN_FLAG_WKU.
@@ -996,10 +922,6 @@ void CAN_ClearFlag(CAN_TypeDef* CANx, uint32_t CAN_FLAG)
 		{
 			CANx->RFIFO0 = (uint32_t)(flagtmp);
 		}
-		else if ((CAN_FLAG & CAN_FLAGS_RFIFO1)!=(uint32_t)RESET)
-		{
-			CANx->RFIFO1 = (uint32_t)(flagtmp);
-		}
 		else if ((CAN_FLAG & CAN_FLAGS_TSTATR)!=(uint32_t)RESET)
 		{
 			CANx->TSTATR = (uint32_t)(flagtmp);
@@ -1022,9 +944,6 @@ void CAN_ClearFlag(CAN_TypeDef* CANx, uint32_t CAN_FLAG)
  *            CAN_IT_FMP0.
  *            CAN_IT_FF0.
  *            CAN_IT_FOV0.
- *            CAN_IT_FMP1.
- *            CAN_IT_FF1.
- *            CAN_IT_FOV1.
  *            CAN_IT_WKU.
  *            CAN_IT_SLK.
  *            CAN_IT_EWG.
@@ -1057,18 +976,6 @@ ITStatus CAN_GetITStatus(CAN_TypeDef* CANx, uint32_t CAN_IT)
 			
 			case CAN_IT_FOV0:
 				itstatus = CheckITStatus(CANx->RFIFO0, CAN_RFIFO0_FOVR0);  
-				break;
-			
-			case CAN_IT_FMP1:
-				itstatus = CheckITStatus(CANx->RFIFO1, CAN_RFIFO1_FMP1);  
-				break;
-			
-			case CAN_IT_FF1:
-				itstatus = CheckITStatus(CANx->RFIFO1, CAN_RFIFO1_FULL1);  
-				break;
-			
-			case CAN_IT_FOV1:
-				itstatus = CheckITStatus(CANx->RFIFO1, CAN_RFIFO1_FOVR1);  
 				break;
 			
 			case CAN_IT_WKU:
@@ -1122,8 +1029,6 @@ ITStatus CAN_GetITStatus(CAN_TypeDef* CANx, uint32_t CAN_IT)
  *            CAN_IT_TME.
  *            CAN_IT_FF0.
  *            CAN_IT_FOV0.
- *            CAN_IT_FF1.
- *            CAN_IT_FOV1.
  *            CAN_IT_WKU.
  *            CAN_IT_SLK.
  *            CAN_IT_EWG.
@@ -1148,14 +1053,6 @@ void CAN_ClearITPendingBit(CAN_TypeDef* CANx, uint32_t CAN_IT)
 
 		case CAN_IT_FOV0:
 			CANx->RFIFO0 = CAN_RFIFO0_FOVR0; 
-			break;
-
-		case CAN_IT_FF1:
-			CANx->RFIFO1 = CAN_RFIFO1_FULL1;  
-			break;
-
-		case CAN_IT_FOV1:
-			CANx->RFIFO1 = CAN_RFIFO1_FOVR1; 
 			break;
 
 		case CAN_IT_WKU:
@@ -1572,7 +1469,6 @@ uint8_t CANFD_Transmit(CAN_TypeDef* CANx, CanFDTxMsg* TxMessage)
  * @param   CANx - where x can be 1 to select the CAN peripheral.
  *          FIFONumber - Receive FIFO number.
  *            CAN_FIFO0.
- *            CAN_FIFO1.
  *          RxMessage -  pointer to a structure receive message which contains
  *        CAN Id, CAN DLC, CAN datas and FMI number.
  *
@@ -1630,10 +1526,6 @@ ErrorStatus CANFD_Receive(CAN_TypeDef* CANx, uint8_t FIFONumber, CanFDRxMsg* RxM
     {
         CANx->RFIFO0 |= CAN_RFIFO0_RFOM0;
     }
-    else
-    {
-        CANx->RFIFO1 |= CAN_RFIFO1_RFOM1;
-    }
 
     sta = READY;
 
@@ -1686,7 +1578,6 @@ void CANFD_TransmitMailbox_DMAAdr(CAN_TypeDef *CANx, uint8_t MailboxNumber, uint
  * @param   CANx - where x can be 1 to select the CAN peripheral.
  *          FIFONumber - Receive FIFO number.
  *            CAN_FIFO0.
- *            CAN_FIFO1.
  *          address - DMA address.
  *
  * @return  none.

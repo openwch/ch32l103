@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : ch32l103_dbgmcu.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/05/06
+ * Version            : V1.0.1
+ * Date               : 2025/04/17
  * Description        : This file provides all the DBGMCU firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -23,7 +23,7 @@
  */
 uint32_t DBGMCU_GetREVID(void)
 {
-	return (CHIPID >> 16);
+	return (CHIPID & IDCODE_DEVID_MASK);
 }
 
 /*********************************************************************
@@ -35,7 +35,7 @@ uint32_t DBGMCU_GetREVID(void)
  */
 uint32_t DBGMCU_GetDEVID(void)
 {
-	return (CHIPID & IDCODE_DEVID_MASK);
+	return (CHIPID >> 16);
 }
 
 /*********************************************************************
