@@ -2,11 +2,11 @@
 * File Name          : main.c
 * Author             : WCH
 * Version            : V1.0.0
-* Date               : 2021/06/06
+* Date               : 2024/01/19
 * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* Attention: This software (modified or not) and binary are used for 
+* Attention: This software (modified or not) and binary are used for
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
 
@@ -17,7 +17,7 @@
  *if you need to modify the debugging serial port, please do not use USART2
 */
 
-#include "UART.h"
+#include "ch32l103_usbfs_device.h"
 #include "debug.h"
 
 /*********************************************************************
@@ -29,24 +29,28 @@
  */
 int main(void)
 {
-	Delay_Init();
-	USART_Printf_Init(115200);
-	printf("SystemClk:%d\r\n",SystemCoreClock);
-	RCC_Configuration( );
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    SystemCoreClockUpdate();
+    Delay_Init( );
+    USART_Printf_Init( 115200 );
+    printf("SystemClk:%d\r\n",SystemCoreClock);
+    RCC_Configuration( );
 
-	/* Tim2 init */
-	TIM2_Init( );
+    /* Tim2 init */
+    TIM2_Init( );
 
-	/* Usart1 init */
-	UART2_Init( 1, DEF_UARTx_BAUDRATE, DEF_UARTx_STOPBIT, DEF_UARTx_PARITY );
+    /* Usart1 init */
+    UART2_Init( 1, DEF_UARTx_BAUDRATE, DEF_UARTx_STOPBIT, DEF_UARTx_PARITY );
 
-	/* USB20 device init */
-	USBFS_RCC_Init( );
-	USBFS_Device_Init( ENABLE );
+    /* USB20 device init */
+    USBFS_RCC_Init( );
+    USBFS_Device_Init( ENABLE );
 
-	while(1)
-	{
-			UART2_DataRx_Deal( );
-			UART2_DataTx_Deal( );
-	}
+    printf( "main\r\n" );
+
+    while(1)
+    {
+        UART2_DataRx_Deal( );
+        UART2_DataTx_Deal( );
+    }
 }

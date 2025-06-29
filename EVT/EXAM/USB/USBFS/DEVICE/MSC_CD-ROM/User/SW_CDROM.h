@@ -2,9 +2,9 @@
  * File Name          : SW_CDROM.h
  * Author             : WCH
  * Version            : V1.0.0
- * Date               : 2022/08/08
+ * Date               : 2024/01/19
  * Description        : header file for CD-ROM.c
- *********************************************************************************
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -141,6 +141,7 @@ extern void CDROM_Up_OnePack( void );
 extern void CDROM_Out_EP_Deal( uint8_t *pbuf, uint16_t packlen );
 extern void CDROM_In_EP_Deal( void );
 extern void CDROM_Down_OnePack( uint8_t *pbuf, uint16_t packlen );
+
 #ifdef __cplusplus
 }
 #endif

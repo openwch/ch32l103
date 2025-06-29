@@ -24,29 +24,13 @@
  *
  * @return  none
  */
-uint8_t HUB_GetPortStatus( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_port, uint8_t *pbuf )
+uint8_t HUB_GetPortStatus( uint8_t hub_ep0_size, uint8_t hub_port, uint8_t *pbuf )
 {
-    uint8_t s = ERR_USB_UNSUPPORT;
     uint16_t len;
-    
-    if( usb_port == DEF_USBFS_PORT_INDEX )
-    {
-#if DEF_USBFS_PORT_EN
-        memcpy( pUSBFS_SetupRequest, GetPortStatus, sizeof( USB_SETUP_REQ ) );
-        pUSBFS_SetupRequest->wIndex = (uint16_t)hub_port;
-        s = USBFSH_CtrlTransfer( hub_ep0_size, pbuf, &len );
-#endif            
-    }
-    else if( usb_port == DEF_USBHS_PORT_INDEX )
-    {
-#if DEF_USBHS_PORT_EN     
-        memcpy( pUSBHS_SetupRequest, GetPortStatus, sizeof( USB_SETUP_REQ ) );
-        pUSBHS_SetupRequest->wIndex = (uint16_t)hub_port;
-        s = USBHSH_CtrlTransfer( hub_ep0_size, pbuf, &len );
-#endif      
-    }
    
-    return s;
+    memcpy( pUSBFS_SetupRequest, GetPortStatus, sizeof( USB_SETUP_REQ ) );
+    pUSBFS_SetupRequest->wIndex = (uint16_t)hub_port;
+    return USBFSH_CtrlTransfer( hub_ep0_size, pbuf, &len );
 }
 
 /*********************************************************************
@@ -58,30 +42,12 @@ uint8_t HUB_GetPortStatus( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_p
  *
  * @return  none
  */
-uint8_t HUB_ClearPortFeature( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector )
+uint8_t HUB_ClearPortFeature( uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector )
 {
-    uint8_t s = ERR_USB_UNSUPPORT;
-    
-    if( usb_port == DEF_USBFS_PORT_INDEX )
-    {
-#if DEF_USBFS_PORT_EN
-        memcpy( pUSBFS_SetupRequest, ClearPortFeature, sizeof( USB_SETUP_REQ ) );
-        pUSBFS_SetupRequest->wValue = (uint16_t)selector;
-        pUSBFS_SetupRequest->wIndex = (uint16_t)hub_port;
-        s = USBFSH_CtrlTransfer( hub_ep0_size, NULL, NULL );
-#endif            
-    }
-    else if( usb_port == DEF_USBHS_PORT_INDEX )
-    {
-#if DEF_USBHS_PORT_EN     
-        memcpy( pUSBHS_SetupRequest, ClearPortFeature, sizeof( USB_SETUP_REQ ) );
-        pUSBHS_SetupRequest->wValue = (uint16_t)selector;
-        pUSBHS_SetupRequest->wIndex = (uint16_t)hub_port;
-        s = USBHSH_CtrlTransfer( hub_ep0_size, NULL, NULL );
-#endif      
-    }
-   
-    return s;
+    memcpy( pUSBFS_SetupRequest, ClearPortFeature, sizeof( USB_SETUP_REQ ) );
+    pUSBFS_SetupRequest->wValue = (uint16_t)selector;
+    pUSBFS_SetupRequest->wIndex = (uint16_t)hub_port;
+    return USBFSH_CtrlTransfer( hub_ep0_size, NULL, NULL );
 }
 
 /*********************************************************************
@@ -93,30 +59,12 @@ uint8_t HUB_ClearPortFeature( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hu
  *
  * @return  none
  */
-uint8_t HUB_SetPortFeature( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector )
+uint8_t HUB_SetPortFeature( uint8_t hub_ep0_size, uint8_t hub_port, uint8_t selector )
 {
-    uint8_t s = ERR_USB_UNSUPPORT;
-    
-    if( usb_port == DEF_USBFS_PORT_INDEX )
-    {
-#if DEF_USBFS_PORT_EN
-        memcpy( pUSBFS_SetupRequest, SetPortFeature, sizeof( USB_SETUP_REQ ) );
-        pUSBFS_SetupRequest->wValue = (uint16_t)selector;
-        pUSBFS_SetupRequest->wIndex = (uint16_t)hub_port;
-        s = USBFSH_CtrlTransfer( hub_ep0_size, NULL, NULL );
-#endif            
-    }
-    else if( usb_port == DEF_USBHS_PORT_INDEX )
-    {
-#if DEF_USBHS_PORT_EN     
-        memcpy( pUSBHS_SetupRequest, SetPortFeature, sizeof( USB_SETUP_REQ ) );
-        pUSBHS_SetupRequest->wValue = (uint16_t)selector;
-        pUSBHS_SetupRequest->wIndex = (uint16_t)hub_port;
-        s = USBHSH_CtrlTransfer( hub_ep0_size, NULL, NULL );
-#endif      
-    }
-   
-    return s;
+    memcpy( pUSBFS_SetupRequest, SetPortFeature, sizeof( USB_SETUP_REQ ) );
+    pUSBFS_SetupRequest->wValue = (uint16_t)selector;
+    pUSBFS_SetupRequest->wIndex = (uint16_t)hub_port;
+    return USBFSH_CtrlTransfer( hub_ep0_size, NULL, NULL );
 }
 
 /*********************************************************************
@@ -128,43 +76,21 @@ uint8_t HUB_SetPortFeature( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t hub_
  *
  * @return  none
  */
-uint8_t HUB_GetClassDevDescr( uint8_t usb_port, uint8_t hub_ep0_size, uint8_t *pbuf, uint16_t *plen )
+uint8_t HUB_GetClassDevDescr( uint8_t hub_ep0_size, uint8_t *pbuf, uint16_t *plen )
 {
-    uint8_t s = ERR_USB_UNSUPPORT;
+    uint8_t s;
     
-    if( usb_port == DEF_USBFS_PORT_INDEX )
+    memcpy( pUSBFS_SetupRequest, GetHubDescr, sizeof( USB_SETUP_REQ ) );
+    s = USBFSH_CtrlTransfer( hub_ep0_size, pbuf, plen );
+    if( s != ERR_SUCCESS )
     {
-#if DEF_USBFS_PORT_EN
-        memcpy( pUSBFS_SetupRequest, GetHubDescr, sizeof( USB_SETUP_REQ ) );
+        return s;
+    }
+    else
+    {
+        pUSBFS_SetupRequest->wLength = *plen = (uint16_t)pbuf[ 0 ];
         s = USBFSH_CtrlTransfer( hub_ep0_size, pbuf, plen );
-        if( s != ERR_SUCCESS )
-        {
-            return s;
-        }
-        else
-        {
-            pUSBFS_SetupRequest->wLength = *plen = (uint16_t)pbuf[ 0 ];
-            s = USBFSH_CtrlTransfer( hub_ep0_size, pbuf, plen );
-        }
-        
-#endif            
     }
-    else if( usb_port == DEF_USBHS_PORT_INDEX )
-    {
-#if DEF_USBHS_PORT_EN     
-        memcpy( pUSBHS_SetupRequest, GetHubDescr, sizeof( USB_SETUP_REQ ) );
-        s = USBHSH_CtrlTransfer( hub_ep0_size, pbuf, plen );
-        if( s != ERR_SUCCESS )
-        {
-            return s;
-        }
-        else
-        {
-            pUSBHS_SetupRequest->wLength = *plen = (uint16_t)pbuf[ 0 ];
-            s = USBHSH_CtrlTransfer( hub_ep0_size, pbuf, plen );
-        }
-#endif      
-    }
-   
+
     return s;
 }

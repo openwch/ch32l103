@@ -4,7 +4,7 @@
  * Version            : V1.0.0
  * Date               : 2022/08/18
  * Description        : All descriptors for the keyboard and mouse composite device.
- *********************************************************************************
+*********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
@@ -64,7 +64,7 @@
 /* USB Device Descriptor Length */
 /* Note: If a descriptor does not exist, set the length to 0. */
 #define DEF_USBD_DEVICE_DESC_LEN      ( (uint16_t)MyDevDescr[ 0 ] )
-#define DEF_USBD_CONFIG_DESC_LEN      ( (uint16_t)MyCfgDescr[ 2 ] + ( (uint16_t)MyCfgDescr[ 3 ] << 8 ) )
+#define DEF_USBD_CONFIG_DESC_LEN   ( (uint16_t)MyCfgDescr[ 2 ] + ( (uint16_t)MyCfgDescr[ 3 ] << 8 ) )
 #define DEF_USBD_REPORT_DESC_LEN_KB   0x3E
 #define DEF_USBD_REPORT_DESC_LEN_MS   0x34
 #define DEF_USBD_LANG_DESC_LEN        ( (uint16_t)MyLangDescr[ 0 ] )

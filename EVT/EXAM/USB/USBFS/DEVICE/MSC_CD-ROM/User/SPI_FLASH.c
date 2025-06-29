@@ -2,19 +2,19 @@
  * File Name          : SPI_FLAH.c
  * Author             : WCH
  * Version            : V1.0.1
- * Date               : 2022/11/24
+ * Date               : 2024/01/19
  * Description        : SPI FLASHChip operation file
- *********************************************************************************
- * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
- * microcontroller manufactured by Nanjing Qinheng Microelectronics.
- *******************************************************************************/
+*********************************************************************************
+* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+* Attention: This software (modified or not) and binary are used for 
+* microcontroller manufactured by Nanjing Qinheng Microelectronics.
+*******************************************************************************/
 
 /******************************************************************************/
 /* Header Files */
 #include <SPI_FLASH.h>
 #include <SW_CDROM.h>
-#include "ch32f20x_spi.h"
+#include "ch32l103_spi.h"
 
 /******************************************************************************/
 volatile uint8_t   Flash_Type = 0x00;                                           /* FLASH chip: 0: W25XXXseries */
@@ -34,7 +34,7 @@ void FLASH_Port_Init( void )
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     SPI_InitTypeDef  SPI_InitStructure = {0};
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_SPI1 , ENABLE);
+    RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA | RCC_PB2Periph_SPI1 , ENABLE);
 
     /* CS# */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;

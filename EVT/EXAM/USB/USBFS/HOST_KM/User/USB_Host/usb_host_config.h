@@ -22,12 +22,12 @@ extern "C" {
 /* Header File */
 #include "string.h"
 #include "debug.h"
-#include "ch32f20x_usb.h"
-#include "ch32f20x_usbfs_host.h"
-#include "ch32f20x_usbhs_host.h"
+#include "ch32l103_usb.h"
+#include "ch32l103_usbfs_host.h"
 #include "usb_host_hid.h"
 #include "usb_host_hub.h"
 #include "app_km.h"
+#include "ch32l103_rcc.h"
 
 /******************************************************************************/
 /* Debug Macro Definition */
@@ -38,15 +38,14 @@ extern "C" {
 #define DUG_PRINTF( format, arg... )    do{ if( 0 )printf( format, ##arg ); }while( 0 );
 #endif
 
+
 /******************************************************************************/
 /* USB Host Communication Related Macro Definition */
 
 /* USB Host Port General Control */
-#define DEF_TOTAL_ROOT_HUB          2
+#define DEF_TOTAL_ROOT_HUB          1
 #define DEF_USBFS_PORT_EN           1
-#define DEF_USBHS_PORT_EN           0
-#define DEF_USBFS_PORT_INDEX        0x00                                        
-#define DEF_USBHS_PORT_INDEX        0x01
+#define DEF_USBFS_PORT_INDEX        0x00
 #define DEF_ONE_USB_SUP_DEV_TOTAL   5
 #define DEF_NEXT_HUB_PORT_NUM_MAX   4
 #define DEF_INTERFACE_NUM_MAX       4
@@ -128,10 +127,10 @@ typedef struct _ROOT_HUB_DEVICE
 
 /* USB Host Control Structure */
 typedef struct __HOST_CTL
-{                                   
+{
     uint8_t  InterfaceNum;
-    uint8_t  ErrorCount;	
-    
+    uint8_t  ErrorCount;
+
     struct interface
     {
         uint8_t  Type;
@@ -168,7 +167,7 @@ typedef struct __HOST_CTL
 
 /*******************************************************************************/
 /* Struct Declaration */
-extern struct   _ROOT_HUB_DEVICE RootHubDev[ ];
+extern struct   _ROOT_HUB_DEVICE RootHubDev;
 extern struct   __HOST_CTL HostCtl[ ];
 
 
