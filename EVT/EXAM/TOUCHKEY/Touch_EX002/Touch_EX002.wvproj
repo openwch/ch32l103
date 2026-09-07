@@ -1,5 +1,6 @@
 {
 	"version": "1.0",
+	"hasAllParsed": true,
 	"isNormalMRSProject": true,
 	"basic": {
 		"chipInfo": {
@@ -7,10 +8,13 @@
 			"toolchain": "RISC-V",
 			"series": "CH32L103",
 			"rtos": "NoneOS",
-			"mcu": "CH32L103C8T6",
+			"mcu": "CH32L103C8T",
 			"description": "===CH32V006 series is based on barley RISC-V2C core design of industrial-grade general-purpose microcontrollers, support for 48MHz system frequency, with a wide range of voltage, low power consumption, single and dual-wire debugging and so on.CH32V006 series chip built-in 1 group of 12-bit analog-to-digital converter ADC, the sampling rate of up to 3Msps; built-in OPA op-amps to support the high-speed mode to increase the swing rate of the pressure, and the positive side of its It supports 3-channel polling; it provides 2 sets of voltage comparator CMP, 7-channel DMA controller, 8-channel TouchKey, multi-group timer, 2 sets of USART serial port, I2C, SPI and other rich peripheral resources.",
 			"link": "WCH-Link",
-			"peripheral_version": "===1.0"
+			"peripheral_version": "===1.0",
+			"calibrateSupport": false,
+			"UIConfigSupport": false,
+			"externalFlashSupport": false
 		},
 		"linkedFolders": [
 			{
@@ -70,24 +74,6 @@
 					"${project}/TKYLIB/tkyconfig.h",
 					"${project}/TKYLIB/WCH_touchKey.c"
 				],
-				"riscvTargetProcessor": {
-					"architecture": "rv32i",
-					"multiply_extension": true,
-					"atomic_extension": true,
-					"floating_point": "none",
-					"compressed_extension": true,
-					"extra_compressed_extension": true,
-					"bit_extension": false,
-					"multiplication_subset_of_the_M_extension": false,
-					"integer_ABI": "ilp32",
-					"floating_point_ABI": "none",
-					"tuning": "default",
-					"code_model": "default",
-					"small_data_limit": 8,
-					"align": "default",
-					"save_restore": true,
-					"other_target_flags": ""
-				},
 				"optimization": {
 					"level": "size",
 					"message_length": true,
@@ -106,6 +92,7 @@
 					"code_generation_without_hardware_floating": false,
 					"use_pipelines": false,
 					"show_caret_indicating_the_column": false,
+					"calling_convention_variant": false,
 					"other_optimization_flags": ""
 				},
 				"warnings": {
@@ -130,7 +117,7 @@
 				},
 				"debugging": {
 					"debug_level": "default",
-					"debug_format": "default",
+					"debug_format": "dwarf4",
 					"generate_prof_information": false,
 					"generate_gprof_information": false,
 					"other_debugging_flags": ""
@@ -310,7 +297,8 @@
 					}
 				},
 				"archiver": {
-					"archiver_flags": "-r"
+					"archiver_flags": "-r",
+					"libOutputPrefix": "lib"
 				},
 				"createFlash": {
 					"enabled": true,
@@ -318,6 +306,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -341,9 +330,28 @@
 					"show_totals": false,
 					"other_flags": ""
 				},
-				"component_toolchain": "${WCH:Toolchain:GCC8}",
-				"name": "obj",
-				"configVariables": []
+				"configVariables": [],
+				"riscvTargetProcessor": {
+					"architecture": "rv32i",
+					"multiply_extension": true,
+					"atomic_extension": true,
+					"floating_point": "none",
+					"compressed_extension": true,
+					"extra_compressed_extension": true,
+					"bit_extension": false,
+					"multiplication_subset_of_the_M_extension": false,
+					"vector_cryptography_extensions": "",
+					"integer_ABI": "ilp32",
+					"floating_point_ABI": "none",
+					"tuning": "default",
+					"code_model": "default",
+					"small_data_limit": 8,
+					"align": "default",
+					"save_restore": true,
+					"other_target_flags": ""
+				},
+				"component_toolchain": "${WCH:Toolchain:GCC15}",
+				"name": "obj"
 			},
 			{
 				"buildArtifact": {
@@ -359,24 +367,6 @@
 				"post_script": "",
 				"post_script_description": "",
 				"excludeResources": [],
-				"riscvTargetProcessor": {
-					"architecture": "rv32e",
-					"multiply_extension": false,
-					"atomic_extension": false,
-					"floating_point": "none",
-					"compressed_extension": true,
-					"extra_compressed_extension": true,
-					"bit_extension": false,
-					"multiplication_subset_of_the_M_extension": true,
-					"integer_ABI": "ilp32e",
-					"floating_point_ABI": "none",
-					"tuning": "default",
-					"code_model": "default",
-					"small_data_limit": 0,
-					"align": "default",
-					"save_restore": true,
-					"other_target_flags": ""
-				},
 				"optimization": {
 					"level": "size",
 					"message_length": true,
@@ -395,6 +385,7 @@
 					"code_generation_without_hardware_floating": false,
 					"use_pipelines": false,
 					"show_caret_indicating_the_column": false,
+					"calling_convention_variant": false,
 					"other_optimization_flags": ""
 				},
 				"warnings": {
@@ -590,7 +581,8 @@
 					}
 				},
 				"archiver": {
-					"archiver_flags": "-r"
+					"archiver_flags": "-r",
+					"libOutputPrefix": "lib"
 				},
 				"createFlash": {
 					"enabled": true,
@@ -598,6 +590,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -621,9 +614,28 @@
 					"show_totals": false,
 					"other_flags": ""
 				},
+				"configVariables": [],
+				"riscvTargetProcessor": {
+					"architecture": "rv32e",
+					"multiply_extension": false,
+					"atomic_extension": false,
+					"floating_point": "none",
+					"compressed_extension": true,
+					"extra_compressed_extension": true,
+					"bit_extension": false,
+					"multiplication_subset_of_the_M_extension": true,
+					"vector_cryptography_extensions": "",
+					"integer_ABI": "ilp32e",
+					"floating_point_ABI": "none",
+					"tuning": "default",
+					"code_model": "default",
+					"small_data_limit": 0,
+					"align": "default",
+					"save_restore": true,
+					"other_target_flags": ""
+				},
 				"component_toolchain": "${WCH:Toolchain:GCC12}",
-				"name": "dbg",
-				"configVariables": []
+				"name": "dbg"
 			}
 		]
 	},
@@ -641,6 +653,8 @@
 		"disablepowerout": false,
 		"clearcodeflash": false,
 		"disablecodeprotect": false,
+		"flashType": "",
+		"asmFile_path": "",
 		"exepath": "",
 		"exearguments": ""
 	},
@@ -654,14 +668,14 @@
 			"configOptions": [
 				"-f \"${WCH:OpenOCD:default}/bin/wch-riscv.cfg\""
 			],
-			"host": "localhost",
+			"host": "127.0.0.1",
 			"port": 3333,
 			"skipDownloadBeforeDebug": false,
 			"enablePageEraser": false,
 			"enableNoZeroWaitingAreaFlash": false
 		},
 		"gdbCfg": {
-			"executable": "${WCH:Toolchain:GCC8}",
+			"executable": "${WCH:Toolchain:GCC15}",
 			"options": [],
 			"commands": [
 				"set mem inaccessible-by-default off",
@@ -702,22 +716,24 @@
 			},
 			"debugInRAM": false
 		},
-		"svdpath": "${WCH:SDK:default}/RISC-V/CH32V006/NoneOS/CH32V00Xxx.svd",
+		"svdpath": "${WCH:SDK:default}/RISC-V/CH32L103/NoneOS/CH32L103xx.svd",
 		"output": {
 			"showDebugGDBTrace": true,
 			"saveDebugOutputToFile": false,
 			"showDebugOutputTimestamps": true
 		},
 		"reserve": {
-			"PROGRAM_NAME": "obj/Touch_8_Keys.elf",
-			"PROJECT_ATTR": "Touch_8_Keys",
+			"PROGRAM_NAME": "obj/Touch_EX002.elf",
+			"PROJECT_ATTR": "Touch_EX002",
 			"PROJECT_BUILD_CONFIG_AUTO_ATTR": true,
 			"PROJECT_BUILD_CONFIG_ID_ATTR": "",
 			"ATTR_BUILD_BEFORE_LAUNCH_ATTR": 2,
 			"GdbServerAllocateConsole": true,
 			"GdbServerAllocateTelnetConsole": false,
+			"SkipDownloadBeforeDebug": false,
 			"StartGdbCLient": true,
-			"UPDATE_THREADLIST_ON_SUSPEND": false
+			"UPDATE_THREADLIST_ON_SUSPEND": false,
+			"DebugInRam": false
 		}
 	}
 }

@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2026.06
+南京沁恒微电子股份有限公司 2026.08
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -25,6 +25,8 @@ https://wch.cn
   |      |      |      |-- APPLICATION
   |      |      |      |      |-- WS2812_LED：通过SPI\PWM操作WS2812例程
   |      |      |      |      |-- PD_Electric_Fan：风扇应用例程
+  |      |      |      |      |-- WUI
+  |      |      |      |      |      |-- wui_demo: gui lcd 例程
   |      |      |      |-- BKP：BKP例程
   |      |      |      |-- CAN  
   |      |      |      |      |-- CANFD：CANFD正常模式、标准帧和扩展帧数据例程

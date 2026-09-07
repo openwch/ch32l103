@@ -1,26 +1,7 @@
 /*
- *  shell implementation for finsh shell.
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
- * COPYRIGHT (C) 2006 - 2013, RT-Thread Development Team
- *
- *  This file is part of RT-Thread (http://www.rt-thread.org)
- *  Maintainer: bernard.xiong <bernard.xiong at gmail.com>
- *
- *  All rights reserved.
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
@@ -34,22 +15,20 @@
 #include "finsh.h"
 
 #ifndef FINSH_THREAD_PRIORITY
-#define FINSH_THREAD_PRIORITY 20
+    #define FINSH_THREAD_PRIORITY 20
 #endif
 #ifndef FINSH_THREAD_STACK_SIZE
-#define FINSH_THREAD_STACK_SIZE 2048
+    #define FINSH_THREAD_STACK_SIZE 2048
 #endif
 #ifndef FINSH_CMD_SIZE
-#define FINSH_CMD_SIZE      80
+    #define FINSH_CMD_SIZE      80
 #endif
 
 #define FINSH_OPTION_ECHO   0x01
-#if defined(FINSH_USING_MSH) || (defined(RT_USING_DFS) && defined(DFS_USING_WORKDIR))
+
 #define FINSH_PROMPT        finsh_get_prompt()
-const char* finsh_get_prompt(void);
-#else
-#define FINSH_PROMPT        "finsh>>"
-#endif
+const char *finsh_get_prompt(void);
+int finsh_set_prompt(const char *prompt);
 
 #ifdef FINSH_USING_HISTORY
     #ifndef FINSH_HISTORY_LINES
@@ -70,7 +49,7 @@ const char* finsh_get_prompt(void);
 #endif /* FINSH_USING_AUTH */
 
 #ifndef FINSH_THREAD_NAME
-#define FINSH_THREAD_NAME   "tshell"
+    #define FINSH_THREAD_NAME   "tshell"
 #endif
 
 enum input_stat
@@ -85,7 +64,8 @@ struct finsh_shell
 
     enum input_stat stat;
 
-    rt_uint8_t echo_mode:1;
+    rt_uint8_t echo_mode: 1;
+    rt_uint8_t prompt_mode: 1;
 
 #ifdef FINSH_USING_HISTORY
     rt_uint16_t current_history;
@@ -94,15 +74,11 @@ struct finsh_shell
     char cmd_history[FINSH_HISTORY_LINES][FINSH_CMD_SIZE];
 #endif
 
-#ifndef FINSH_USING_MSH_ONLY
-    struct finsh_parser parser;
-#endif
+    char line[FINSH_CMD_SIZE + 1];
+    rt_uint16_t line_position;
+    rt_uint16_t line_curpos;
 
-    char line[FINSH_CMD_SIZE];
-    rt_uint8_t line_position;
-    rt_uint8_t line_curpos;
-
-#ifndef RT_USING_POSIX
+#if !defined(RT_USING_POSIX_STDIO) && defined(RT_USING_DEVICE)
     rt_device_t device;
 #endif
 
@@ -115,13 +91,15 @@ void finsh_set_echo(rt_uint32_t echo);
 rt_uint32_t finsh_get_echo(void);
 
 int finsh_system_init(void);
-void finsh_set_device(const char* device_name);
-const char* finsh_get_device(void);
+const char *finsh_get_device(void);
+int finsh_getchar(void);
+
+rt_uint32_t finsh_get_prompt_mode(void);
+void finsh_set_prompt_mode(rt_uint32_t prompt_mode);
 
 #ifdef FINSH_USING_AUTH
-rt_err_t finsh_set_password(const char *password);
-const char *finsh_get_password(void);
+    rt_err_t finsh_set_password(const char *password);
+    const char *finsh_get_password(void);
 #endif
 
 #endif
-

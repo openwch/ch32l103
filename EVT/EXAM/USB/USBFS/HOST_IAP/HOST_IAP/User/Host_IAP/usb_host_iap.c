@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : iap.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/01/19
+ * Version            : V1.0.1
+ * Date               : 2026/08/19
  * Description        : IAP
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -153,21 +153,10 @@ uint8_t IAP_Flash_Read(uint32_t address, uint8_t* buff, uint32_t length)
  */
 uint8_t mFLASH_ProgramPage_Fast(uint32_t addr, uint32_t* buffer)
 {
-    uint16_t i;
-    uint32_t adr = addr;
-    uint32_t* buf = buffer;
-
+	uint32_t adr = addr;
     adr &= 0xFFFFFF80;
-
-    FLASH_BufReset();
-
-    for (i = 0; i < 64; ++i)
-    {
-        FLASH_BufLoad(adr+i*4,buf[i]);
-    }
-
-    FLASH_ProgramPage_Fast(adr);
-
+	
+    FLASH_ROM_WRITE(adr ,buffer,256);
     return 0;
 }
 
@@ -227,11 +216,9 @@ uint8_t IAP_Flash_Write(uint32_t address, uint8_t* buff, uint32_t length)
             /* Determine if the length of the written packet is less than the page size */
             /* If it is less than, the original content of the memory needs to be read out first and modified before the operation can be performed */
             write_len_once = DEF_FLASH_PAGE_SIZE;
-            FLASH_Unlock_Fast();
-            FLASH_ErasePage_Fast(page_addr);
+            FLASH_ROM_ERASE(page_addr,256);
             if(write_len < DEF_FLASH_PAGE_SIZE)
             {
-                FLASH_Unlock_Fast();
                 IAP_Flash_Read(page_addr, temp_buf, DEF_FLASH_PAGE_SIZE);
 
                 for(j = 0; j < write_len; j++)
@@ -254,7 +241,6 @@ uint8_t IAP_Flash_Write(uint32_t address, uint8_t* buff, uint32_t length)
             /* Incorrect read length */
             return 0xFD;
         }
-        FLASH_Lock_Fast();
     }
     else
     {
@@ -313,8 +299,7 @@ uint8_t IAP_Flash_Erase(uint32_t address, uint32_t length)
                 /* ERR: Risk of code running away */
                 return 0xFF;
             }
-            FLASH_Unlock_Fast();
-            FLASH_ErasePage_Fast(page_addr);
+            FLASH_ROM_ERASE(page_addr,256);
             page_addr += DEF_FLASH_PAGE_SIZE;
         }
     }

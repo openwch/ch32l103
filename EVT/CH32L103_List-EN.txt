@@ -1,5 +1,5 @@
 
-Nanjing Qinheng Microelectronics Co., Ltd. 2026.06
+Nanjing Qinheng Microelectronics Co., Ltd. 2026.08
 Please check our website for the latest information.
 https://wch-ic.com
 
@@ -25,6 +25,8 @@ Directory
   |      |      |      |-- APPLICATION
   |      |      |      |      |-- WS2812_LED: Operating WS2812 via SPI\PWM Routine
   |      |      |      |      |-- PD_Electric_Fan：electric fan routine
+  |      |      |      |      |-- WUI
+  |      |      |      |      |      |-- wui_demo: gui lcd demo
   |      |      |      |-- BKP：BKP routine
   |      |      |      |-- CAN  
   |      |      |      |      |-- CANFD：CANFD normal mode, standard frame, and extended frame data routines

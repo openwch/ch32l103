@@ -1,21 +1,7 @@
 /*
- * File      : serial.h
- * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2006 - 2012, RT-Thread Development Team
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
@@ -39,8 +25,10 @@
 #define BAUD_RATE_115200                115200
 #define BAUD_RATE_230400                230400
 #define BAUD_RATE_460800                460800
+#define BAUD_RATE_500000                500000
 #define BAUD_RATE_921600                921600
 #define BAUD_RATE_2000000               2000000
+#define BAUD_RATE_2500000               2500000
 #define BAUD_RATE_3000000               3000000
 
 #define DATA_BITS_5                     5
@@ -91,6 +79,9 @@
 #define RT_SERIAL_TX_DATAQUEUE_SIZE     2048
 #define RT_SERIAL_TX_DATAQUEUE_LWM      30
 
+#define RT_SERIAL_FLOWCONTROL_CTSRTS     1
+#define RT_SERIAL_FLOWCONTROL_NONE       0
+
 /* Default config for serial_configure structure */
 #define RT_SERIAL_CONFIG_DEFAULT           \
 {                                          \
@@ -101,6 +92,7 @@
     BIT_ORDER_LSB,    /* LSB first sent */ \
     NRZ_NORMAL,       /* Normal mode */    \
     RT_SERIAL_RB_BUFSZ, /* Buffer size */  \
+    RT_SERIAL_FLOWCONTROL_NONE, /* Off flowcontrol */ \
     0                                      \
 }
 
@@ -114,11 +106,12 @@ struct serial_configure
     rt_uint32_t bit_order               :1;
     rt_uint32_t invert                  :1;
     rt_uint32_t bufsz                   :16;
-    rt_uint32_t reserved                :4;
+    rt_uint32_t flowcontrol             :1;
+    rt_uint32_t reserved                :5;
 };
 
 /*
- * Serial FIFO mode 
+ * Serial FIFO mode
  */
 struct rt_serial_rx_fifo
 {
@@ -135,7 +128,7 @@ struct rt_serial_tx_fifo
     struct rt_completion completion;
 };
 
-/* 
+/*
  * Serial DMA mode
  */
 struct rt_serial_rx_dma
@@ -149,7 +142,6 @@ struct rt_serial_tx_dma
     struct rt_data_queue data_queue;
 };
 
-
 struct rt_serial_device
 {
     struct rt_device          parent;
@@ -159,9 +151,10 @@ struct rt_serial_device
 
     void *serial_rx;
     void *serial_tx;
+
+    struct rt_device_notify rx_notify;
 };
 typedef struct rt_serial_device rt_serial_t;
-
 
 /**
  * uart operators
@@ -174,9 +167,8 @@ struct rt_uart_ops
     int (*putc)(struct rt_serial_device *serial, char c);
     int (*getc)(struct rt_serial_device *serial);
 
-    rt_size_t (*dma_transmit)(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction);
+    rt_ssize_t (*dma_transmit)(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction);
 };
-
 
 void rt_hw_serial_isr(struct rt_serial_device *serial, int event);
 

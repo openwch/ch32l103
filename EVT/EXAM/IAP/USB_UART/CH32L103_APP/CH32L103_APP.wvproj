@@ -10,9 +10,14 @@
 			"rtos": "NoneOS",
 			"mcu": "CH32L103C8T",
 			"description": "ROM(byte): 64K, SRAM(byte): 20K, CHIP PINS: 48, GPIO PORTS: 37.\\nCH32L103 is an industrial-grade low-power general purpose microcontroller based on Highland Barley RISC-V core design. The CH32L103 has built-in USB and PD PHY, support PDUSB, including USB Host host and USB Device device function, USB PD and type C fast charge function, built-in low power timer, It provides a set of OPA operation amplifier, 3 sets of CMP voltage comparators, 4 sets of USART serial ports, 2 I2C interfaces, 2 SPI interfaces, 1 set of CAN interfaces, multiple sets of timers, 12-bit ADC, 10 Touchkeys and other peripheral resources.",
+			"tempratureScope": "",
+			"artifactType": "executable",
 			"link": "WCH-Link",
 			"peripheral_version": "1.0",
-			"calibrateSupport": false
+			"calibrateSupport": false,
+			"calibrateCommand": "",
+			"UIConfigSupport": false,
+			"externalFlashSupport": false
 		},
 		"linkedFolders": [
 			{
@@ -101,7 +106,7 @@
 				},
 				"debugging": {
 					"debug_level": "default",
-					"debug_format": "default",
+					"debug_format": "dwarf4",
 					"generate_prof_information": false,
 					"generate_gprof_information": false,
 					"other_debugging_flags": ""
@@ -282,6 +287,7 @@
 					"copy_only_section_text": false,
 					"copy_only_section_data": false,
 					"copy_only_sections": [],
+					"create_algorithm_file": false,
 					"other_flags": ""
 				},
 				"createList": {
@@ -325,7 +331,7 @@
 					"save_restore": true,
 					"other_target_flags": ""
 				},
-				"component_toolchain": "${WCH:Toolchain:GCC8}",
+				"component_toolchain": "${WCH:Toolchain:GCC15}",
 				"name": "obj"
 			}
 		]
@@ -344,6 +350,8 @@
 		"disablepowerout": false,
 		"clearcodeflash": false,
 		"disablecodeprotect": false,
+		"flashType": "",
+		"asmFile_path": "",
 		"exepath": "",
 		"exearguments": ""
 	},
@@ -364,7 +372,7 @@
 			"enableNoZeroWaitingAreaFlash": false
 		},
 		"gdbCfg": {
-			"executable": "${WCH:Toolchain:GCC8}",
+			"executable": "${WCH:Toolchain:GCC15}",
 			"options": [],
 			"commands": [
 				"set mem inaccessible-by-default off",

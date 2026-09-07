@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : iap.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/01/13
+ * Version            : V1.0.2
+ * Date               : 2026/08/19
  * Description        : IAP
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -36,13 +36,7 @@ u8 IAP_Deal_Buf[USBD_DATA_SIZE+4];
  */
 void CH32_IAP_Program(u32 adr, u32* buf)
 {
-    u8 i;
-
-    FLASH_BufReset();
-    for(i=0; i<64; i++){
-        FLASH_BufLoad(adr+4*i, buf[i]);
-    }
-    FLASH_ProgramPage_Fast(adr);
+    FLASH_ROM_WRITE(adr, buf ,256);
 }
 
 /*********************************************************************
@@ -62,7 +56,7 @@ u8 RecData_Deal(void)
 
      switch ( isp_cmd_t->other.buf[0]) {
      case CMD_IAP_ERASE:
-         FLASH_Unlock_Fast();
+
          s = ERR_SUCCESS;
          break;
 
@@ -72,8 +66,7 @@ u8 RecData_Deal(void)
          }
          CodeLen += Lenth;
          if (CodeLen >= 256) {
-             FLASH_Unlock_Fast();
-             FLASH_ErasePage_Fast(Program_addr);
+             FLASH_ROM_ERASE(Program_addr,256);
              CH32_IAP_Program(Program_addr, (u32*) Fast_Program_Buf);
              CodeLen -= 256;
              for (i = 0; i < CodeLen; i++) {
@@ -95,7 +88,7 @@ u8 RecData_Deal(void)
                     Fast_Program_Buf[CodeLen + i] = 0xff;
                 }
 
-                FLASH_ErasePage_Fast(Program_addr);
+                FLASH_ROM_ERASE(Program_addr,256);
                 CH32_IAP_Program(Program_addr, (u32*) Fast_Program_Buf);
                 CodeLen = 0;             
             }
@@ -118,9 +111,8 @@ u8 RecData_Deal(void)
          End_Flag = 1;
          Program_addr = FLASH_Base;
          Verify_addr = FLASH_Base;
-         FLASH_ErasePage_Fast(CalAddr & 0xFFFFFF00);
-         FLASH->CTLR |= ((uint32_t)0x00008000);  //FLASH_Lock_Fast
-         FLASH->CTLR |= ((uint32_t)0x00000080);  //FLASH_Lock
+         FLASH_ROM_ERASE(CalAddr & 0xFFFFFF00,256);
+
          s = ERR_End;
          break;
 
@@ -152,8 +144,6 @@ u8 UART_RecData_Deal(void)
     Lenth = isp_cmd_t->UART.Len;
     switch ( isp_cmd_t->UART.Cmd) {
     case CMD_IAP_ERASE:
-
-        FLASH_Unlock_Fast();
         s = ERR_SUCCESS;
         break;
 
@@ -163,8 +153,7 @@ u8 UART_RecData_Deal(void)
         }
         CodeLen += Lenth;
         if (CodeLen >= 256) {
-            FLASH_Unlock_Fast();
-            FLASH_ErasePage_Fast(Program_addr);
+            FLASH_ROM_ERASE(Program_addr,256);
             CH32_IAP_Program(Program_addr, (u32*) Fast_Program_Buf);
             CodeLen -= 256;
             for (i = 0; i < CodeLen; i++) {
@@ -188,7 +177,7 @@ u8 UART_RecData_Deal(void)
             {
                 Fast_Program_Buf[CodeLen + i] = 0xff;
             }
-            FLASH_ErasePage_Fast(Program_addr);
+            FLASH_ROM_ERASE(Program_addr,256);
             CH32_IAP_Program(Program_addr, (u32*) Fast_Program_Buf);
             CodeLen = 0;
           }
@@ -209,9 +198,7 @@ u8 UART_RecData_Deal(void)
         End_Flag = 1;
         Program_addr = FLASH_Base;
         Verify_addr = FLASH_Base;
-        FLASH_ErasePage_Fast(CalAddr & 0xFFFFFF00);
-        FLASH->CTLR |= ((uint32_t)0x00008000);
-        FLASH->CTLR |= ((uint32_t)0x00000080);
+        FLASH_ROM_ERASE(CalAddr & 0xFFFFFF00,256);
 
         s = ERR_End;
         break;

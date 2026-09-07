@@ -1,21 +1,7 @@
 /*
- * File      : pin.h
- * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2015, RT-Thread Development Team
+ * Copyright (c) 2006-2021, RT-Thread Development Team
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
@@ -27,7 +13,6 @@
 #define PIN_H__
 
 #include <rtthread.h>
-#include <rtdevice.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +24,8 @@ struct rt_device_pin
     struct rt_device parent;
     const struct rt_pin_ops *ops;
 };
+
+#define PIN_NONE                (-1)
 
 #define PIN_LOW                 0x00
 #define PIN_HIGH                0x01
@@ -53,8 +40,6 @@ struct rt_device_pin
 #define PIN_MODE_OUTPUT_AF_OD   0x06
 #define PIN_MODE_OUTPUT_AF_PP   0x07
 
-
-
 #define PIN_IRQ_MODE_RISING             0x00
 #define PIN_IRQ_MODE_FALLING            0x01
 #define PIN_IRQ_MODE_RISING_FALLING     0x02
@@ -64,50 +49,49 @@ struct rt_device_pin
 #define PIN_IRQ_DISABLE                 0x00
 #define PIN_IRQ_ENABLE                  0x01
 
-#define PIN_IRQ_PIN_NONE                -1
+#define PIN_IRQ_PIN_NONE                PIN_NONE
 
 struct rt_device_pin_mode
 {
-    rt_uint16_t pin;
-    rt_uint16_t mode;
+    rt_base_t pin;
+    rt_uint8_t mode; /* e.g. PIN_MODE_OUTPUT */
 };
-struct rt_device_pin_status
+
+struct rt_device_pin_value
 {
-    rt_uint16_t pin;
-    rt_uint16_t status;
+    rt_base_t pin;
+    rt_uint8_t value; /* PIN_LOW or PIN_HIGH */
 };
+
 struct rt_pin_irq_hdr
 {
-    rt_int16_t        pin;
-    rt_uint16_t       mode;
+    rt_base_t        pin;
+    rt_uint8_t       mode; /* e.g. PIN_IRQ_MODE_RISING */
     void (*hdr)(void *args);
     void             *args;
 };
 struct rt_pin_ops
 {
-    void (*pin_mode)(struct rt_device *device, rt_base_t pin, rt_base_t mode);
-    void (*pin_write)(struct rt_device *device, rt_base_t pin, rt_base_t value);
-    int (*pin_read)(struct rt_device *device, rt_base_t pin);
-
-    /* TODO: add GPIO interrupt */
-    rt_err_t (*pin_attach_irq)(struct rt_device *device, rt_int32_t pin,
-                      rt_uint32_t mode, void (*hdr)(void *args), void *args);
-    rt_err_t (*pin_dettach_irq)(struct rt_device *device, rt_int32_t pin);
-    rt_err_t (*pin_irq_enable)(struct rt_device *device, rt_base_t pin, rt_uint32_t enabled);
+    void (*pin_mode)(struct rt_device *device, rt_base_t pin, rt_uint8_t mode);
+    void (*pin_write)(struct rt_device *device, rt_base_t pin, rt_uint8_t value);
+    rt_int8_t  (*pin_read)(struct rt_device *device, rt_base_t pin);
+    rt_err_t (*pin_attach_irq)(struct rt_device *device, rt_base_t pin,
+            rt_uint8_t mode, void (*hdr)(void *args), void *args);
+    rt_err_t (*pin_detach_irq)(struct rt_device *device, rt_base_t pin);
+    rt_err_t (*pin_irq_enable)(struct rt_device *device, rt_base_t pin, rt_uint8_t enabled);
+    rt_base_t (*pin_get)(const char *name);
 };
 
 int rt_device_pin_register(const char *name, const struct rt_pin_ops *ops, void *user_data);
+void rt_pin_mode(rt_base_t pin, rt_uint8_t mode);
+void rt_pin_write(rt_base_t pin, rt_uint8_t value);
+rt_int8_t rt_pin_read(rt_base_t pin);
+rt_base_t rt_pin_get(const char *name);
+rt_err_t rt_pin_attach_irq(rt_base_t pin, rt_uint8_t mode,
+                           void (*hdr)(void *args), void  *args);
+rt_err_t rt_pin_detach_irq(rt_base_t pin);
+rt_err_t rt_pin_irq_enable(rt_base_t pin, rt_uint8_t enabled);
 
-void rt_pin_mode(rt_base_t pin, rt_base_t mode);
-void rt_pin_write(rt_base_t pin, rt_base_t value);
-int  rt_pin_read(rt_base_t pin);
-rt_err_t rt_pin_attach_irq(rt_int32_t pin, rt_uint32_t mode,
-                             void (*hdr)(void *args), void  *args);
-rt_err_t rt_pin_dettach_irq(rt_int32_t pin);
-rt_err_t rt_pin_irq_enable(rt_base_t pin, rt_uint32_t enabled);
-
-int rt_device_pin_irq_register(const char *name, const struct rt_pin_ops *ops,
-                                                              void *user_data);
 #ifdef __cplusplus
 }
 #endif

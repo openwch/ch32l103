@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : Internal_Flash.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/01/19
+ * Version            : V1.0.1
+ * Date               : 2026/08/19
  * Description        : Internal Flash program
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -34,21 +34,10 @@ void IFlash_Prog_512(uint32_t address,uint32_t *pbuf)
     address &= 0x00FFFFFF;
     address |= 0x08000000;
     NVIC_DisableIRQ(USBFS_IRQn);
-    FLASH_Unlock_Fast();
 
-    for (j = 0; j < 2; j++)
-    {
-        FLASH_ErasePage_Fast(address);
-        FLASH_BufReset();
-        for(i=0; i<64; i++)
-        {
-            FLASH_BufLoad(address+4*i, *pbuf);
-            pbuf++;
-        }
-        FLASH_ProgramPage_Fast(address);
-        address += 256;
-    }
-    FLASH_Lock_Fast();
+    FLASH_ROM_ERASE(address, 512);
+    FLASH_ROM_WRITE(address, pbuf, 512);
+
     NVIC_EnableIRQ(USBFS_IRQn);
 }
 

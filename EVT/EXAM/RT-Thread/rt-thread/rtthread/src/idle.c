@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2018, RT-Thread Development Team
+ * Copyright (c) 2006-2022, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,52 +13,56 @@
  * 2016-08-09     ArdaFu       add method to get the handler of the idle thread.
  * 2018-02-07     Bernard      lock scheduler to protect tid->cleanup.
  * 2018-07-14     armink       add idle hook list
+ * 2018-11-22     Jesven       add per cpu idle task
+ *                             combine the code of primary and secondary cpu
+ * 2021-11-15     THEWON       Remove duplicate work between idle and _thread_exit
  */
 
 #include <rthw.h>
 #include <rtthread.h>
 
-#ifdef RT_USING_MODULE
-#include <dlmodule.h>
-#endif
 
-#if defined (RT_USING_HOOK)
+
+#ifdef RT_USING_HOOK
 #ifndef RT_USING_IDLE_HOOK
 #define RT_USING_IDLE_HOOK
-#endif
-#endif
+#endif /* RT_USING_IDLE_HOOK */
+#endif /* RT_USING_HOOK */
 
 #ifndef IDLE_THREAD_STACK_SIZE
 #if defined (RT_USING_IDLE_HOOK) || defined(RT_USING_HEAP)
-#define IDLE_THREAD_STACK_SIZE  512
-#else
 #define IDLE_THREAD_STACK_SIZE  256
-#endif
-#endif
+#else
+#define IDLE_THREAD_STACK_SIZE  128
+#endif /* (RT_USING_IDLE_HOOK) || defined(RT_USING_HEAP) */
+#endif /* IDLE_THREAD_STACK_SIZE */
 
-static struct rt_thread idle;
-ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t rt_thread_stack[IDLE_THREAD_STACK_SIZE];
 
-extern rt_list_t rt_thread_defunct;
+#define _CPUS_NR                1
+
+static rt_list_t _rt_thread_defunct = RT_LIST_OBJECT_INIT(_rt_thread_defunct);
+
+static struct rt_thread idle_thread[_CPUS_NR];
+rt_align(RT_ALIGN_SIZE)
+static rt_uint8_t idle_thread_stack[_CPUS_NR][IDLE_THREAD_STACK_SIZE];
+
+
 
 #ifdef RT_USING_IDLE_HOOK
+#ifndef RT_IDLE_HOOK_LIST_SIZE
+#define RT_IDLE_HOOK_LIST_SIZE  4
+#endif /* RT_IDLE_HOOK_LIST_SIZE */
 
-#ifndef RT_IDEL_HOOK_LIST_SIZE
-#define RT_IDEL_HOOK_LIST_SIZE          4
-#endif
-
-static void (*idle_hook_list[RT_IDEL_HOOK_LIST_SIZE])();
+static void (*idle_hook_list[RT_IDLE_HOOK_LIST_SIZE])(void);
 
 /**
- * @ingroup Hook
- * This function sets a hook function to idle thread loop. When the system performs
- * idle loop, this hook function should be invoked.
+ * @brief This function sets a hook function to idle thread loop. When the system performs
+ *        idle loop, this hook function should be invoked.
  *
- * @param hook the specified hook function
+ * @param hook the specified hook function.
  *
- * @return RT_EOK: set OK
- *         -RT_EFULL: hook list is full
+ * @return RT_EOK: set OK.
+ *         -RT_EFULL: hook list is full.
  *
  * @note the hook function must be simple and never be blocked or suspend.
  */
@@ -71,7 +75,7 @@ rt_err_t rt_thread_idle_sethook(void (*hook)(void))
     /* disable interrupt */
     level = rt_hw_interrupt_disable();
 
-    for (i = 0; i < RT_IDEL_HOOK_LIST_SIZE; i++)
+    for (i = 0; i < RT_IDLE_HOOK_LIST_SIZE; i++)
     {
         if (idle_hook_list[i] == RT_NULL)
         {
@@ -87,12 +91,12 @@ rt_err_t rt_thread_idle_sethook(void (*hook)(void))
 }
 
 /**
- * delete the idle hook on hook list
+ * @brief delete the idle hook on hook list.
  *
- * @param hook the specified hook function
+ * @param hook the specified hook function.
  *
- * @return RT_EOK: delete OK
- *         -RT_ENOSYS: hook was not found
+ * @return RT_EOK: delete OK.
+ *         -RT_ENOSYS: hook was not found.
  */
 rt_err_t rt_thread_idle_delhook(void (*hook)(void))
 {
@@ -103,7 +107,7 @@ rt_err_t rt_thread_idle_delhook(void (*hook)(void))
     /* disable interrupt */
     level = rt_hw_interrupt_disable();
 
-    for (i = 0; i < RT_IDEL_HOOK_LIST_SIZE; i++)
+    for (i = 0; i < RT_IDLE_HOOK_LIST_SIZE; i++)
     {
         if (idle_hook_list[i] == hook)
         {
@@ -118,164 +122,157 @@ rt_err_t rt_thread_idle_delhook(void (*hook)(void))
     return ret;
 }
 
-#endif
+#endif /* RT_USING_IDLE_HOOK */
 
-/* Return whether there is defunctional thread to be deleted. */
-rt_inline int _has_defunct_thread(void)
+/**
+ * @brief Enqueue a thread to defunct queue.
+ *
+ * @note It must be called between rt_hw_interrupt_disable and rt_hw_interrupt_enable
+ */
+void rt_thread_defunct_enqueue(rt_thread_t thread)
 {
-    /* The rt_list_isempty has prototype of "int rt_list_isempty(const rt_list_t *l)".
-     * So the compiler has a good reason that the rt_thread_defunct list does
-     * not change within rt_thread_idle_excute thus optimize the "while" loop
-     * into a "if".
-     *
-     * So add the volatile qualifier here. */
-    const volatile rt_list_t *l = (const volatile rt_list_t *)&rt_thread_defunct;
-
-    return l->next != l;
+    rt_list_insert_after(&_rt_thread_defunct, &thread->tlist);
 }
 
 /**
- * @ingroup Thread
- *
- * This function will perform system background job when system idle.
+ * @brief Dequeue a thread from defunct queue.
  */
-void rt_thread_idle_excute(void)
+rt_thread_t rt_thread_defunct_dequeue(void)
 {
-    /* Loop until there is no dead thread. So one call to rt_thread_idle_excute
-     * will do all the cleanups. */
-    while (_has_defunct_thread())
+    rt_base_t level;
+    rt_thread_t thread = RT_NULL;
+    rt_list_t *l = &_rt_thread_defunct;
+
+    if (l->next != l)
     {
-        rt_base_t lock;
+        thread = rt_list_entry(l->next,
+                struct rt_thread,
+                tlist);
+        level = rt_hw_interrupt_disable();
+        rt_list_remove(&(thread->tlist));
+        rt_hw_interrupt_enable(level);
+    }
+
+    return thread;
+}
+
+/**
+ * @brief This function will perform system background job when system idle.
+ */
+static void rt_defunct_execute(void)
+{
+    /* Loop until there is no dead thread. So one call to rt_defunct_execute
+     * will do all the cleanups. */
+    while (1)
+    {
         rt_thread_t thread;
-#ifdef RT_USING_MODULE
-        struct rt_dlmodule *module = RT_NULL;
-#endif
-        RT_DEBUG_NOT_IN_INTERRUPT;
+        rt_bool_t object_is_systemobject;
+        void (*cleanup)(struct rt_thread *tid);
 
-        /* disable interrupt */
-        lock = rt_hw_interrupt_disable();
 
-        /* re-check whether list is empty */
-        if (_has_defunct_thread())
+        /* get defunct thread */
+        thread = rt_thread_defunct_dequeue();
+        if (thread == RT_NULL)
         {
-            /* get defunct thread */
-            thread = rt_list_entry(rt_thread_defunct.next,
-                                   struct rt_thread,
-                                   tlist);
-#ifdef RT_USING_MODULE
-            module = (struct rt_dlmodule*)thread->module_id;
-            if (module)
-            {
-                dlmodule_destroy(module);
-            }
-#endif
-            /* remove defunct thread */
-            rt_list_remove(&(thread->tlist));
-
-            /* lock scheduler to prevent scheduling in cleanup function. */
-            rt_enter_critical();
-
-            /* invoke thread cleanup */
-            if (thread->cleanup != RT_NULL)
-                thread->cleanup(thread);
-
-#ifdef RT_USING_SIGNALS
-            rt_thread_free_sig(thread);
-#endif
-
-            /* if it's a system object, not delete it */
-            if (rt_object_is_systemobject((rt_object_t)thread) == RT_TRUE)
-            {
-                /* detach this object */
-                rt_object_detach((rt_object_t)thread);
-                /* unlock scheduler */
-                rt_exit_critical();
-
-                /* enable interrupt */
-                rt_hw_interrupt_enable(lock);
-
-                return;
-            }
-
-            /* unlock scheduler */
-            rt_exit_critical();
-        }
-        else
-        {
-            /* enable interrupt */
-            rt_hw_interrupt_enable(lock);
-
-            /* may the defunct thread list is removed by others, just return */
-            return;
+            break;
         }
 
-        /* enable interrupt */
-        rt_hw_interrupt_enable(lock);
+        /* store the point of "thread->cleanup" avoid to lose */
+        cleanup = thread->cleanup;
+
+        /* if it's a system object, not delete it */
+        object_is_systemobject = rt_object_is_systemobject((rt_object_t)thread);
+        if (object_is_systemobject == RT_TRUE)
+        {
+            /* detach this object */
+            rt_object_detach((rt_object_t)thread);
+        }
+
+        /* invoke thread cleanup */
+        if (cleanup != RT_NULL)
+        {
+            cleanup(thread);
+        }
 
 #ifdef RT_USING_HEAP
-        /* release thread's stack */
-        RT_KERNEL_FREE(thread->stack_addr);
-        /* delete thread object */
-        rt_object_delete((rt_object_t)thread);
+        /* if need free, delete it */
+        if (object_is_systemobject == RT_FALSE)
+        {
+            /* release thread's stack */
+            RT_KERNEL_FREE(thread->stack_addr);
+            /* delete thread object */
+            rt_object_delete((rt_object_t)thread);
+        }
 #endif
     }
 }
 
-extern void rt_system_power_manager(void);
-static void rt_thread_idle_entry(void *parameter)
+static void idle_thread_entry(void *parameter)
 {
     while (1)
     {
-//        printf("idle\n");
 #ifdef RT_USING_IDLE_HOOK
         rt_size_t i;
+        void (*idle_hook)(void);
 
-        for (i = 0; i < RT_IDEL_HOOK_LIST_SIZE; i++)
+        for (i = 0; i < RT_IDLE_HOOK_LIST_SIZE; i++)
         {
-            if (idle_hook_list[i] != RT_NULL)
+            idle_hook = idle_hook_list[i];
+            if (idle_hook != RT_NULL)
             {
-                idle_hook_list[i]();
+                idle_hook();
             }
         }
-#endif
+#endif /* RT_USING_IDLE_HOOK */
+        rt_defunct_execute();
 
-        rt_thread_idle_excute();
-#ifdef RT_USING_PM        
+#ifdef RT_USING_PM
+        void rt_system_power_manager(void);
         rt_system_power_manager();
-#endif
+#endif /* RT_USING_PM */
     }
 }
 
+
 /**
- * @ingroup SystemInit
- *
- * This function will initialize idle thread, then start it.
+ * @brief This function will initialize idle thread, then start it.
  *
  * @note this function must be invoked when system init.
  */
 void rt_thread_idle_init(void)
 {
-    /* initialize thread */
-    rt_thread_init(&idle,
-                   "tidle",
-                   rt_thread_idle_entry,
-                   RT_NULL,
-                   &rt_thread_stack[0],
-                   sizeof(rt_thread_stack),
-                   RT_THREAD_PRIORITY_MAX - 1,
-                   32);
+    rt_ubase_t i;
+#if RT_NAME_MAX > 0
+    char idle_thread_name[RT_NAME_MAX];
+#endif /* RT_NAME_MAX > 0 */
 
-    /* startup */
-    rt_thread_startup(&idle);
+    for (i = 0; i < _CPUS_NR; i++)
+    {
+#if RT_NAME_MAX > 0
+        rt_snprintf(idle_thread_name, RT_NAME_MAX, "tidle%d", i);
+#endif /* RT_NAME_MAX > 0 */
+        rt_thread_init(&idle_thread[i],
+#if RT_NAME_MAX > 0
+                idle_thread_name,
+#else
+                "tidle",
+#endif /* RT_NAME_MAX > 0 */
+                idle_thread_entry,
+                RT_NULL,
+                &idle_thread_stack[i][0],
+                sizeof(idle_thread_stack[i]),
+                RT_THREAD_PRIORITY_MAX - 1,
+                32);
+        /* startup */
+        rt_thread_startup(&idle_thread[i]);
+    }
 }
 
 /**
- * @ingroup Thread
- *
- * This function will get the handler of the idle thread.
- *
+ * @brief This function will get the handler of the idle thread.
  */
 rt_thread_t rt_thread_idle_gethandler(void)
 {
-    return (rt_thread_t)(&idle);
+    int id = 0;
+    return (rt_thread_t)(&idle_thread[id]);
 }

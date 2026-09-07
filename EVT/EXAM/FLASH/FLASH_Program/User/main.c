@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2026/08/18
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -14,6 +14,8 @@
  *@Note
  *FLASH erase/read/write, fast programming and OptionBytes programming:
  *Includes Fast Erase and Program.
+ *It is recommended to use the erase function - FLASH_ROM_ERASE.
+ *It is recommended to use the program function - FLASH_ROM_WRITE. 
  *
 */
 
