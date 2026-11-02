@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : PD_Prot.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/04/06
+ * Version            : V1.0.1
+ * Date               : 2026/10/13
  * Description        :
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -13,9 +13,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "debug.h"
-#include "PD_Prot.h"
-#include "PD_User.H"
-#include "PD_VDM.h"
+
+#include "PD_DEF.h"
 
 
 extern st_VDM VDM_State;
@@ -66,7 +65,7 @@ const u8 enum_Idle_CtrlMsg[] = {
 /* PD_Ctrl_GetSinkCap		 	*/		enum_PD_Ctrl_GetSinkCap,
 /* PD_Ctrl_DRSwap			 	*/		enum_PD_Ctrl_DRSwap,
 /* PD_Ctrl_PRSwap			 	*/		enum_PD_Ctrl_PRSwap,
-/* PD_Ctrl_VconnSwap		 	*/		enum_PD_Ctrl_Reserved,			//根据协议版本选择Reject或NotSupported
+/* PD_Ctrl_VconnSwap		 	*/		enum_PD_Ctrl_Reserved,			//Select Reject or NotSupported based on the protocol version
 /* PD_Ctrl_Wait				 	*/		enum_PD_Ctrl_Ignore,
 /* PD_Ctrl_SoftReset		 	*/		enum_PD_Ctrl_SoftReset,
 /* PD_Ctrl_DataReset		 	*/		enum_PD_Ctrl_Reserved,
@@ -470,7 +469,7 @@ void pProt_RX_SrcCap(void)
  */
 void pProt_TX_Request(void)
 {
-//生成Request
+//Generate Request
 
 	st_Request_Fixed *pRequest = (st_Request_Fixed *)&PD_TX_BUF[1];
 	st_SrcCap_Fixed *pSinkCap = (st_SrcCap_Fixed *)&SinkCap[SinkCapCnt-1];

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2026/06/05
+ * Version            : V1.0.2
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -23,18 +23,17 @@
 #include "debug.h"
 
 /* Global define */
-#define _KEEP_RAM   __attribute__((section(".keep_ram"))) //space for keep RAM.
-
+#define _KEEP_RAM           __attribute__((section(".keep_ram"))) //space for keep RAM.
+#define DATA_SIZE           256U 
+#define RAM_TEST_PATTERN    0x5555FFFFU
 /* Global Variable */
 
+_KEEP_RAM   u32 DataBuf[DATA_SIZE];
 
-
-
-_KEEP_RAM   u32 DataBuf[256];
 /*********************************************************************
  * @fn      TestDataWrite
  *
- * @brief   Write 0x22222222 to certain address of RAM.
+ * @brief   Write data to certain address of RAM.
  *
  * @return  none
  */
@@ -42,9 +41,9 @@ void TestDataWrite(void)
 {
     uint32_t i=0;
     /* Write data in RAM */
-    for( i=0; i<256; i++ )
+    for( i=0; i<DATA_SIZE; i++ )
     {
-       DataBuf[i] = 0x22222222;
+       DataBuf[i] = RAM_TEST_PATTERN;
     }
     printf("Write data in RAM Successfully!\r\n");
 
@@ -61,9 +60,9 @@ void TestDataRead(void)
 {
     uint32_t i=0;
     printf("Read data in RAM:\r\n");
-    for( i=0; i<256; i++ )
+    for( i=0; i<DATA_SIZE; i++ )
     {
-        printf("DataBuf#%d = 0x%08lx\r\n",i,DataBuf[i]);
+        printf("DataBuf#%d = 0x%08x\r\n",i,DataBuf[i]);
     }
 }
 
@@ -82,9 +81,9 @@ int main(void)
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA|RCC_PB2Periph_GPIOB|
             RCC_PB2Periph_GPIOC|RCC_PB2Periph_GPIOD|RCC_PB2Periph_AFIO, ENABLE);
     GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE); 
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     GPIO_Init(GPIOB, &GPIO_InitStructure);
     GPIO_Init(GPIOC, &GPIO_InitStructure);
@@ -94,7 +93,7 @@ int main(void)
     SystemCoreClockUpdate();
     Delay_Init();
     USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
+    printf("SystemClk:%u\r\n", SystemCoreClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_PWR, ENABLE);
@@ -104,12 +103,9 @@ int main(void)
     while(1)
     {
         TestDataRead();
-        printf("3.Stop RAM LV Mode Test\r\n");
+        printf("STANDBY RAM LV Mode Test\r\n");
         TestDataWrite();
         PWR_WakeUpPinCmd(ENABLE);
         PWR_EnterSTANDBYMode_RAM();
-        printf("\r\n3.Out \r\n");
-        printf("\r\n ########## \r\n");
-
     }
 }

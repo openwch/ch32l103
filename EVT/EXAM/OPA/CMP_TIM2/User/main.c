@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/05
+ * Version            : V1.0.1
+ * Date               : 2026/10/18
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -133,7 +133,9 @@ void TIM2_IRQHandler(void)
 
     if( TIM_GetITStatus( TIM2, TIM_IT_CC1 ) != RESET )
     {
+#if 0
         printf( "CH1_Val:%d\r\n", TIM_GetCapture1( TIM2 ) );
+#endif
         TIM_SetCounter( TIM2, 0 );
     }
 

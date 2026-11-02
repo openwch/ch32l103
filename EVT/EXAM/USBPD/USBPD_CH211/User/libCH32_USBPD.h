@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT  *******************************
  * File Name          : libCH32_USBPD.h
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/10/27
+ * Version            : V1.0.2
+ * Date               : 2026/10/13
  * Description        :
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -16,7 +16,7 @@
 
 
 
-#define Check_CC_Valid		( !GPIO_ReadInputDataBit(GPIOB,PD_DEVICE.GpioCC) && ((*PD_DEVICE.PortCC)&PA_CC_AI) )	//µÍÓÚIOÇÒ¸ßÓÚCMP
+#define Check_CC_Valid		( !GPIO_ReadInputDataBit(GPIOB,PD_DEVICE.GpioCC) && ((*PD_DEVICE.PortCC)&PA_CC_AI) )	//Lower than IO and higher than CMP
 
 
 //#define CC1_Float			{GPIOA->CFGLR&=~0xF00000;GPIOA->CFGLR|=0x400000;}    

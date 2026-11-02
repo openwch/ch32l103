@@ -21,15 +21,13 @@
 
 
 
-#include <CH211_I2C.h>
+
 #include "string.h"
 #include "debug.h"
-#include "libCH32_USBPD.h"
 
-#include "PD_Prot.h"
-#include "PD_User.h"
 
-u16 PD_BUF[5];
+#include "PD_DEF.h"
+
 
 /*********************************************************************
  * @fn      LED_Init

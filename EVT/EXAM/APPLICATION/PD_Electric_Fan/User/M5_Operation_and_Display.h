@@ -36,7 +36,7 @@ typedef struct
     Keyrecover_Type Speedadjust;
     Keyrecover_Type oscillate;
     Keyrecover_Type Timeoff;
-} Key_Manager_Type;//恢复性按键管理结构体
+} Key_Manager_Type;//Recoverable key management structure
 
 
 typedef struct
@@ -67,10 +67,10 @@ typedef struct
 
 typedef struct
 {
-    _iq24 Preramp;                  //斜坡前给定(unit-rad/s_per)/(unit-W/s_per)
-    _iq24 Aftramp;                  //斜坡后给定(unit-rad/s_per)/(unit-W/s_per)
-    _iq24 AccStep;                  //加速步长(unit-rad/s^2_per)/(unit-W/s^2_per)
-    _iq24 DecStep;                  //减速步长(unit-rad/s^2_per)/(unit-W/s^2_per)
+    _iq24 Preramp;                  //Pre-ramp reference (unit-rad/s_per)/(unit-W/s_per)
+    _iq24 Aftramp;                  //Post-ramp reference (unit-rad/s_per)/(unit-W/s_per)
+    _iq24 AccStep;                  //Acceleration step (unit-rad/s^2_per)/(unit-W/s^2_per)
+    _iq24 DecStep;                  //Deceleration step (unit-rad/s^2_per)/(unit-W/s^2_per)
     uint8_t  Point_adncnt;
     int8_t   Direction;
 
@@ -128,16 +128,16 @@ typedef struct
 #define POWEROFF_VOLT               _IQ(0.65)           // Power-off voltage threshold(unit-Vper)
 #define POWERVERY_DCVOLTAVERSIZE    4                   // Power-on check voltage average calculation length
 
-//蜂鸣器控制参数
-#define BUZZ_PROCESS_FREQ           SPEED_LOOP_CAL_FREQ //判定频率(unit-Hz)
-#define BUZZ_EFFECTIVE_TIME1        0.3                 //有效时间1(unit-s)
-#define BUZZ_EFFECTIVE_TIME2        0.6                 //有效时间1(unit-s)
+//Buzzer control parameters
+#define BUZZ_PROCESS_FREQ           SPEED_LOOP_CAL_FREQ //Determination frequency (unit-Hz)
+#define BUZZ_EFFECTIVE_TIME1        0.3                 //Effective time 1 (unit-s)
+#define BUZZ_EFFECTIVE_TIME2        0.6                 //Effective time 2 (unit-s)
 
-#define BUZZ_TIMER_PRESCALER      1                     //蜂鸣器定时器预分频系数
-//蜂鸣器定时器时钟频率(unit-Hz)
+#define BUZZ_TIMER_PRESCALER      1                     //Buzzer timer prescaler
+//Buzzer timer clock frequency (unit-Hz)
 #define BUZZ_TIMER_CLOCK_FREQ      (SYSTEM_CLOCK_FREQ/(BUZZ_TIMER_PRESCALER+1))
-#define BUZZ_TIMER_FREQ           4000                  //蜂鸣器开关频率(unit-Hz)
-//蜂鸣器定时器周期
+#define BUZZ_TIMER_FREQ           4000                  //Buzzer toggle frequency (unit-Hz)
+//Buzzer timer period
 #define BUZZ_TIMER_PERIOD         BUZZ_TIMER_CLOCK_FREQ/BUZZ_TIMER_FREQ
 
 

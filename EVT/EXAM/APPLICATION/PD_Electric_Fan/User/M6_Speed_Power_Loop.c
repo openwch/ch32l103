@@ -8,11 +8,11 @@
 void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 /* Private variables --------------------------------------------------------*/
-static uint8_t PD_CNT = PD_PERIOD;  //PD处理计数
+static uint8_t PD_CNT = PD_PERIOD;  //PD processing counter
 /* Variables ----------------------------------------------------------------*/
 /******************************************************************************
 * Function Name  : SysTick_Handler
-* Description    : 转速环处理中断.
+* Description    : Speed loop processing interrupt.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -21,46 +21,46 @@ void SysTick_Handler(void)
 {
     _iq CRef2R_cq=0;
     PD_CNT--;
-    //程序用于以中断时间(0.5ms)为基准的变量递减处理
+    //Variable decrement processing based on the interrupt time (0.5ms)
     Time_Delay_Process();
 
     if(PD_CNT == 0)
     {
-        //PD处理
+        //PD processing
         PD_Process();
-        PD_CNT = PD_PERIOD;  //PD处理计数
+        PD_CNT = PD_PERIOD;  //PD processing counter
     }
-    //上下电控制处理逻辑
+    //Power-on/off control processing logic
     Poweroperation_Process(&Ramp_M,&ADC_M,&Powerctr_M,&RunningStatus_M,MLBG_M.Cal_Struc.Angspeed_Aver1);
 
-    //蜂鸣器控制处理
+    //Buzzer control processing
     BUZZ_PROCESS(&BUZZ_M);
 
-    //上电有效后按键才可以按
+    //Keys can be pressed only after power-on is valid
     if(Powerctr_M.Poweron==TRUE)
     {
-        //按键检测
+        //Key detection
         KeyCheck_Process(&Key_M,&Ramp_M);
     }
     switch(RunningStatus_M)
     {
     case RUN:
-               //LBG观测转速数组更新
+               //LBG observed speed array update
                Buffer_Update(&(LBG_SpeedBuffer_M[0]), &(MLBG_M.SpeedBuffPara), MLBG_M.Cal_Struc.Angspeed_Inst);
 
-               //LBG观测平均转速计算
+               //LBG observed average speed calculation
                MLBG_M.Cal_Struc.Angspeed_Aver1 = LPF_1st_Process(&(MLBG_M.Cal_Struc.SpeedLPF1st_M),\
-                       MLBG_M.Cal_Struc.Angspeed_Inst);//观测转速低通滤波
+                       MLBG_M.Cal_Struc.Angspeed_Inst);//Low-pass filtering of the observed speed
 
                LBG_Status_M.Reliable =  Speed_Reliable_Verify(&(MLBG_M.SpeedBuffPara),&LBG_SpeedBuffer_M[0],\
                        MLBG_M.Cal_Struc.Angspeed_Aver1,LBG_Status_M.VarianceThresh);
 
-   //            //转速稳定性判定
+   //            //Speed stability determination
                Speed_Stable_Verify(&LBG_Status_M, MLBG_M.Cal_Struc.Angspeed_Aver1);
                if(LBG_Status_M.Stable==FALSE)
                    Protection_SetFault(SPEED_ABNORMAL_M);
    //
-   //             //堵转判定
+   //             //Stall determination
                if((Ramp_M.Decemark==FALSE))
                {
                    Motor_Stall_Verify(Ramp_M.Aftramp, MLBG_M.Cal_Struc.EalphaNew , MLBG_M.Cal_Struc.EbetaNew, MStruc_M.CRef2R.cq,&LBG_Status_M,MLBG_M.Cal_Struc.Angspeed_Aver1);
@@ -68,28 +68,28 @@ void SysTick_Handler(void)
                     Protection_SetFault(MOTOR_STALL_M);
 
                    Speed_Outrange_Verify(_IQabs(MLBG_M.Cal_Struc.Angspeed_Aver2),&LBG_Status_M);
-                   //欠速保护触发堵转保护
+                   //Underspeed protection triggers stall protection
                        if(LBG_Status_M.Underspeed==TRUE)
                            Protection_SetFault(MOTOR_STALL_M);
                }
 
 
-               //转速环调节
+               //Speed loop regulation
    #if     (CLOSE_LOOP==SPEED_LOOP)
                    Speed_Ramp_Process(&Ramp_M);
                    CRef2R_cq = PI_Calculaion_Delta (Ramp_M.Aftramp, MLBG_M.Cal_Struc.Angspeed_Aver2, &(Mpid_M.Speed));
    #elif   (CLOSE_LOOP==POWER_LOOP)
                    Power_Cal.AngPower_Inst= _IQabs(_IQMPY_MACRO(MStruc_M.VRef2RC.cd,MStruc_M.C2R.cd))+_IQabs(_IQMPY_MACRO(MStruc_M.VRef2RC.cq,MStruc_M.C2R.cq));
-                   Power_Cal.AngPower_Aver1 = LPF_1st_Process(&(Power_Cal.PowerLPF1st),Power_Cal.AngPower_Inst);//功率低通滤波
+                   Power_Cal.AngPower_Aver1 = LPF_1st_Process(&(Power_Cal.PowerLPF1st),Power_Cal.AngPower_Inst);//Low-pass filtering of the power
                    Power_Ramp_Process(&Ramp_M);
                    CRef2R_cq = PI_Calculaion_Delta (Ramp_M.Aftramp, Power_Cal.AngPower_Aver1, &(Power_Cal.Power));
                    CRef2R_cq=CRef2R_cq*Ramp_M.Direction;
    #endif
 
-   //            //设定转速和欠速一致 停留太久触发欠速保护
+   //            //The reference speed matches the underspeed; staying too long triggers the underspeed protection
                if((_IQabs(MLBG_M.Cal_Struc.Angspeed_Aver2)<LBG_UNDERSPEED_THRESH_M)&&(Ramp_M.Decemark==FALSE))
                {
-                   //这里固定IQ 客户用的电机加大电流 输出角度压不住
+                   //IQ is fixed here; for the customer's motor with increased current, the output angle cannot hold
                    MStruc_M.CRef2R.cq=_IQ(0.35)*Ramp_M.Direction;
 
    #if     (CLOSE_LOOP==SPEED_LOOP)
@@ -103,7 +103,7 @@ void SysTick_Handler(void)
                else
                    MStruc_M.CRef2R.cq=CRef2R_cq;
 
-               //d轴电流切换处理
+               //D-axis current switching processing
                if((DCurrProcess_M.Stage == 1)&&(_IQabs(MStruc_M.CRef2R.cd) <= DCurrProcess_M.Target1)&&(_IQabs(MLBG_M.Cal_Struc.Angspeed_Aver1)>=(_IQ(0.1))))
                    Dcurr_Process_Init(&DCurrProcess_M,2);
 
@@ -114,10 +114,10 @@ void SysTick_Handler(void)
                    break;
        }
 
-       //母线电压过压
+       //Bus voltage overvoltage
        DCOvervolt_Protection(ADC_M.DCVoltAver, &DCBusProtecion_M);
 
-       //母线电压欠压
+       //Bus voltage undervoltage
 //       DCUndervolt_Protection(ADC_M.DCVoltAver, &DCBusProtecion_M);
 
        SysTick->SR &= ~(1 << 0);
@@ -125,7 +125,7 @@ void SysTick_Handler(void)
 
 /************************************************************************************************************
 * Function Name  : Systick_Init
-* Description    : SYS定时器初始化
+* Description    : SYS timer initialization
 * Input          : NewState - ENABLE or DISABLE.
 * Output         : None
 * Return         : None
@@ -136,12 +136,12 @@ void Systick_Init(void)
     SysTick->CMP   =0;
     SysTick->SR   &= ~(1 << 0);
     SysTick->CNT   = 0;
-    SysTick->CMP   = TIMER_PERIDO_SYSTICK;  //比较值
-    SysTick->CTLR |=(1 << 1)|(1 << 3)|(1 << 5);//使能中断 自动重装载使能 向上计数 初始值更新
+    SysTick->CMP   = TIMER_PERIDO_SYSTICK;  //Compare value
+    SysTick->CTLR |=(1 << 1)|(1 << 3)|(1 << 5);//Enable interrupt, auto-reload enable, up counting, update initial value
 }
 /************************************************************************************************************
 * Function Name  : SYS_TIM_Cmd
-* Description    : SYS定时器使能
+* Description    : SYS timer enable
 * Input          : NewState - ENABLE or DISABLE.
 * Output         : None
 * Return         : None

@@ -40,7 +40,7 @@ volatile uint8_t  USBFS_HidIdle[ 2 ];
 volatile uint8_t  USBFS_HidProtocol[ 2 ];
 
 /* Endpoint Buffer */
-__attribute__ ((aligned(4))) uint8_t USBFS_EP0_Buf[ DEf_USBD_LS_UEP0_SIZE ];    //ep0(8)
+__attribute__ ((aligned(4))) uint8_t USBFS_EP0_Buf[ DEF_USBD_LS_UEP0_SIZE ];    //ep0(8)
 __attribute__ ((aligned(4))) uint8_t USBFS_EP1_Buf[ DEF_USBD_LS_PACK_SIZE ];    //ep1_in(8)
 __attribute__ ((aligned(4))) uint8_t USBFS_EP2_Buf[ DEF_USBD_LS_PACK_SIZE ];    //ep2_in(8)
 
@@ -353,6 +353,10 @@ void USBFS_IRQHandler( void )
                                             break;
                                     }
                                 }
+                                else
+                                {
+                                    errflag = 0xFF;
+                                }
                             }
                             else
                             {
@@ -464,6 +468,10 @@ void USBFS_IRQHandler( void )
                                 errflag = 0xFF;
                                 break;
                         }
+                    }
+                    else
+                    {
+                        errflag = 0xFF;
                     }
                 }
                 else

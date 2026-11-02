@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : M5_Waveform_Configure.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/04
+ * Version            : V1.0.1
+ * Date               : 2026/10/08
  * Description        : Waveform display channel configuration
 
 *********************************************************************************
@@ -20,7 +20,7 @@
 /* Variables ----------------------------------------------------------------*/
 /******************************************************************************
 * Function Name  : Waveform_Display
-* Description    : 波形显示变量设置
+* Description    : Waveform display variable setting
 * Input          : None
 * Return         : None
 ******************************************************************************/

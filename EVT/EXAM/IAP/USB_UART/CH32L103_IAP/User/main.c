@@ -22,7 +22,7 @@
 #include "debug.h"
 #include "iap.h"
 
-extern u8 End_Flag;
+extern vu8 End_Flag;
 
 #define UPGRADE_MODE_COMMAND   0
 #define UPGRADE_MODE_IO        1
@@ -35,7 +35,8 @@ extern u8 End_Flag;
  *
  * @return  none
  */
-void IAP_2_APP(void) {
+void IAP_2_APP(void) 
+{
     USBFS_Device_Init(DISABLE);
     GPIO_Cfg_Float();
     RCC_PB2PeriphClockCmd( RCC_PB2Periph_AFIO, DISABLE );
@@ -61,8 +62,8 @@ int main(void)
     SystemCoreClockUpdate();
     Delay_Init();
     USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
-    printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+    printf("SystemClk:%u\r\n", SystemCoreClock);
+    printf("ChipID:%08u\r\n", DBGMCU_GetCHIPID() );
     printf("IAP\r\n");
 #if UPGRADE_MODE == UPGRADE_MODE_COMMAND
     if(*(uint32_t*)FLASH_Base  != 0xFFFFFFFF )
@@ -70,7 +71,10 @@ int main(void)
         if(*(uint32_t*)CalAddr != CheckNum)
         {
             IAP_2_APP();
-            while(1);
+            while(1)
+            {
+
+            }
         }
     }
 #elif UPGRADE_MODE == UPGRADE_MODE_IO
@@ -87,7 +91,8 @@ int main(void)
     USART2_CFG(460800);
     while(1)
     {
-        if( USART_GetFlagStatus(USART2, USART_FLAG_RXNE) != RESET) {
+        if( USART_GetFlagStatus(USART2, USART_FLAG_RXNE) != RESET) 
+        {
             UART_Rx_Deal();
         }
 #if UPGRADE_MODE == UPGRADE_MODE_COMMAND
@@ -95,7 +100,10 @@ int main(void)
         {
             Delay_Ms(10);
             IAP_2_APP();
-            while(1);
+            while(1)
+            {
+
+            }
         }
 #endif
     }

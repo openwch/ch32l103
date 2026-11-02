@@ -5,14 +5,20 @@
 	"basic": {
 		"chipInfo": {
 			"vendor": "WCH",
+			"toolchain": "RISC-V",
+			"series": "CH32L103",
 			"rtos": "NoneOS",
 			"mcu": "CH32L103C8T",
+			"description": "",
+			"tempratureScope": "",
+			"artifactType": "executable",
 			"link": "WCH-Link",
+			"peripheral_version": "1.0",
 			"calibrateSupport": false,
+			"calibrateCommand": "",
 			"UIConfigSupport": false,
-			"externalFlashSupport": false,
-			"series": "CH32L103",
-			"toolchain": "RISC-V"
+			"UIConfigCommand": "",
+			"externalFlashSupport": false
 		},
 		"linkedFolders": [
 			{
@@ -415,6 +421,7 @@
 			},
 			"debugInRAM": false
 		},
+		"svdpath": "${WCH:SDK:default}/RISC-V/CH32L103/NoneOS/CH32L103xx.svd",
 		"output": {
 			"showDebugGDBTrace": true,
 			"saveDebugOutputToFile": false,

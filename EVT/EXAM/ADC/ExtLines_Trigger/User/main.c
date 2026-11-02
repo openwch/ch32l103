@@ -24,7 +24,8 @@
 
 /* Global Variable */
 s16 Calibrattion_Val = 0;
-
+vu8 IntResponse = 0;
+vu16 ADC_val;
 /*********************************************************************
  * @fn      ADC_Function_Init
  *
@@ -143,7 +144,15 @@ int main(void)
     printf("CalibrattionValue:%d\n", Calibrattion_Val);
     EXTI_Event_Init();
 
-    while(1);
+    while(1)
+    {
+        if(IntResponse == 1)
+        {
+           printf("ADC Extline trigger conversion...\r\n"); 
+           printf("JADC%04d\r\n", Get_ConversionVal(ADC_val));
+           IntResponse = 0;
+        }
+    }
 }
 
 void ADC_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -157,13 +166,10 @@ void ADC_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
  */
 void ADC_IRQHandler()
 {
-    u16 ADC_val;
-
     if(ADC_GetITStatus(ADC1, ADC_IT_JEOC))
     {
-        printf("ADC Extline trigger conversion...\r\n");
+        IntResponse = 1;
         ADC_val = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1);
-        printf("JADC%04d\r\n", Get_ConversionVal(ADC_val));
     }
 
     ADC_ClearITPendingBit(ADC1, ADC_IT_JEOC);

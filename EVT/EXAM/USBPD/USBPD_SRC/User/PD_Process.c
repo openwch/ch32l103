@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : PD_process.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2024/11/06
+* Version            : V1.0.1
+* Date               : 2026/10/14
 * Description        : This file provides all the PD firmware functions.
 *********************************************************************************
 * Copyright (c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -22,12 +22,12 @@ __attribute__ ((aligned(4))) uint8_t PD_Tx_Buf[ 34 ];                           
 /******************************************************************************/
 UINT8 PD_Ack_Buf[ 2 ];                                                          /* PD-ACK buffer */
 
-UINT8  Tmr_Ms_Cnt_Last;                                                         /* System timer millisecond timing final value */
-UINT8  Tmr_Ms_Dlt;                                                              /* System timer millisecond timing this interval value */
-PD_CONTROL PD_Ctl;                                                              /* PD Control Related Structures */
+__IO UINT8  Tmr_Ms_Cnt_Last;                                                         /* System timer millisecond timing final value */
+__IO UINT8  Tmr_Ms_Dlt;                                                              /* System timer millisecond timing this interval value */
+PD_CONTROL PD_Ctl={0};                                                              /* PD Control Related Structures */
 UINT8  Adapter_SrcCap[ 30 ];                                                    /* Contents of the SrcCap message for the adapter */
 
-UINT8  PDO_Len;
+__IO UINT8  PDO_Len;
 
 /* SrcCap Table */
 UINT8 SrcCap_5V3A_Tab[ 4 ]  = { 0X2C, 0X91, 0X01, 0X3E };
@@ -89,14 +89,13 @@ void USBPD_IRQHandler(void)
         USBPD->PORT_CC2 &= ~CC_LVE;
         /* Interrupts are turned off and can be turned on after the main function has finished processing the data */
         NVIC_DisableIRQ(USBPD_IRQn);
-        PD_Ctl.Flag.Bit.Msg_Recvd = 1;   /* Packet received flag */
-        USBPD->STATUS = IF_TX_END;
+        PD_Ctl.Flag.Bit.Msg_Recvd = 1;                                          /* Packet received flag */
+        USBPD->STATUS |= IF_TX_END;
     }
     if(USBPD->STATUS & IF_RX_RESET)
     {
-        USBPD->STATUS = IF_RX_RESET;
+        USBPD->STATUS |= IF_RX_RESET;
         PD_SINK_Init( );
-        printf("IF_RX_RESET\r\n");
     }
 }
 
@@ -347,9 +346,9 @@ UINT8 PD_Detect( void )
         }
         else
         {
-            if ((((cmp_cc1 & bCC_CMP_66) == bCC_CMP_66) & ((cmp_cc1 & bCC_CMP_220) == 0x00)) == 1)
+            if ((((cmp_cc1 & bCC_CMP_66) == bCC_CMP_66) && ((cmp_cc1 & bCC_CMP_220) == 0x00)) == 1)
             {
-                if ((((cmp_cc2 & bCC_CMP_22) == bCC_CMP_22) & ((cmp_cc2 & bCC_CMP_66) == 0x00)) == 1)
+                if ((((cmp_cc2 & bCC_CMP_22) == bCC_CMP_22) && ((cmp_cc2 & bCC_CMP_66) == 0x00)) == 1)
                 {
                   ret = 1;
                 }
@@ -358,7 +357,7 @@ UINT8 PD_Detect( void )
                   ret = 1;
                 }
             }
-            if ((((cmp_cc2 & bCC_CMP_66) == bCC_CMP_66) & ((cmp_cc2 & bCC_CMP_220) == 0x00)) == 1)
+            if ((((cmp_cc2 & bCC_CMP_66) == bCC_CMP_66) && ((cmp_cc2 & bCC_CMP_220) == 0x00)) == 1)
             {
                 if(ret)
                 {
@@ -523,13 +522,13 @@ void PD_Phy_SendPack( UINT8 mode, UINT8 *pbuf, UINT8 len, UINT8 sop )
 void PD_Load_Header( UINT8 ex, UINT8 msg_type )
 {
     /* Message Header
-       BIT15:    Extended;
-       BIT14-12: Number of Data Objects
-       BIT11--9: Message ID
-       BIT8:     PortPower Role/Cable Plug  0: SINK; 1: SOURCE
-       BIT7---6: Revision, 00: V1.0; 01: V2.0; 10: V3.0;
-       BIT5:     Port Data Role, 0: UFP; 1: DFP
-       BIT4---0: Message Type
+       BIT15 - Extended;
+       BIT[14:12] - Number of Data Objects
+       BIT[11:9] - Message ID
+       BIT8 - PortPower Role/Cable Plug  0: SINK; 1: SOURCE
+       BIT[7:6] - Revision, 00: V1.0; 01: V2.0; 10: V3.0;
+       BIT5 - Port Data Role, 0: UFP; 1: DFP
+       BIT[4:0] - Message Type
     */
     PD_Tx_Buf[ 0 ] = msg_type;
     if( PD_Ctl.Flag.Bit.PD_Role )

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.2
- * Date               : 2025/12/16
+ * Version            : V1.0.3
+ * Date               : 2026/10/18
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -40,12 +40,13 @@ void Touch_Key_Init(void)
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_ADC1, ENABLE );
     RCC_ADCCLKConfig(RCC_PCLK2_Div4);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4 \
+	                             |GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	ADC_TKey_MulShieldCmd(ADC1,ENABLE);
-	TKey1->CFG |= (0x3ff<<9);
+	TKey1->CFG |= (0x1ff<<9);
 
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
@@ -150,7 +151,7 @@ int main(void)
 	{
         for(i=0;i<9;i++)
         {
-            ADC_val = Touch_Key_Adc(ADC_Channel_1+i);
+            ADC_val = Touch_Key_Adc(ADC_Channel_0+i);
             buf[i] = ADC_val;
         }
 

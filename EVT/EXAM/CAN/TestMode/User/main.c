@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.2
- * Date               : 2025/12/16
+ * Version            : V1.0.3
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -87,7 +87,7 @@ struct CANFilterStruct_t
     };
 }CANFilterStruct[CANSOFTFILTER_MAX_GROUP_NUM];
 
-uint8_t interrupt_rx_flag = 0;
+volatile uint8_t interrupt_rx_flag = 0;
 volatile u8 canexbuf_interrupt[8];
 
 void USB_LP_CAN1_RX0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -103,7 +103,11 @@ void USB_LP_CAN1_RX0_IRQHandler()
     if (CAN_GetITStatus(CAN1,CAN_IT_FMP0))
     {
         px = CAN_Receive_Msg(pbuf);
-        for (int i = 0; i < px; i++) 
+        if(px > 8)
+        {
+            px = 8;
+        }
+        for (int i = 0; i < px; i++)
         {
             canexbuf_interrupt[i] = pbuf[i];
         }
@@ -128,7 +132,7 @@ void USB_LP_CAN1_RX0_IRQHandler()
  */
 void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct)
 {
-    if(CAN_FilterInitStruct->CAN_FilterNumber > sizeof(CANFilterStruct) / sizeof(*CANFilterStruct)){
+    if(CAN_FilterInitStruct->CAN_FilterNumber >= sizeof(CANFilterStruct) / sizeof(*CANFilterStruct)){
         return;
     }
     if(CAN_FilterInitStruct->CAN_FilterActivation)
@@ -406,7 +410,7 @@ int main(void)
             printf("Receive Data:\r\n");
 
             for(i = 0; i < 8; i++) {
-                printf("%02x\r\n", txbuf[i]);
+                printf("%02x\r\n", rxbuf[i]);
             }
         }
         else

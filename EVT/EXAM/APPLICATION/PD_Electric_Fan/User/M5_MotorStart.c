@@ -27,36 +27,36 @@
  */
 void Motor_Start_Init_M(void)
 {
-    rampctr_Initial(&Ramp_M);//斜坡初始化，放在最前面，含有转向的定义
+    rampctr_Initial(&Ramp_M);//ramp initialization, placed first, contains the direction definition
 
-    KeyandLED_Status_Init(&Key_M);//按键和指示灯状态初始化
+    KeyandLED_Status_Init(&Key_M);//key and LED status initialization
 
-    Operation_Status_Init(&Operation_M);//操作状态初始化
+    Operation_Status_Init(&Operation_M);//operation status initialization
 
-    Protection_and_Emergency_Init();//保护参数和状态初始化
+    Protection_and_Emergency_Init();//protection parameters and status initialization
 
-    PID_ParaBase_Cal_M(&MBase_M,&Mpid_M);//重新计算PI参数
-    PID_Output_Init(&Mpid_M,Ramp_M.Direction);//PID调节器输出初始化
+    PID_ParaBase_Cal_M(&MBase_M,&Mpid_M);//recalculate PI parameters
+    PID_Output_Init(&Mpid_M,Ramp_M.Direction);//PID regulator output initialization
 
 #if (CLOSE_LOOP==POWER_LOOP)
-    PowerCal_Init(&Power_Cal);//功率环初始化
+    PowerCal_Init(&Power_Cal);//power loop initialization
 #endif
 
-    Motor_Status_Initial_M(&MStruc_M);//电机状态初始化
+    Motor_Status_Initial_M(&MStruc_M);//motor status initialization
 
-    Dcurr_Process_Init(&DCurrProcess_M,1);//D轴电流处理初始化
+    Dcurr_Process_Init(&DCurrProcess_M,1);//D-axis current process initialization
 
-    SVPWM_2R_Status_Init_M(&SVPWM_Cal_M);//SVPWM计算状态初始化
+    SVPWM_2R_Status_Init_M(&SVPWM_Cal_M);//SVPWM calculation status initialization
 
-    LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M.Direction);//LBG观测器初始化
+    LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M.Direction);//LBG observer initialization
 
-    Buffer_Clear(&(LBG_SpeedBuffer_M[0]),&(MLBG_M.SpeedBuffPara));//LBG观测转速数组初始化
+    Buffer_Clear(&(LBG_SpeedBuffer_M[0]),&(MLBG_M.SpeedBuffPara));//LBG observed speed array initialization
 
-    ADC_Offset_Reading(ADC1,&ADC_M,1);//ADC1采样偏置读取
+    ADC_Offset_Reading(ADC1,&ADC_M,1);//ADC1 sampling offset reading
 
-    Flystart_Status_Init(&Flystart_M,Ramp_M.Direction); //反电动势检测
+    Flystart_Status_Init(&Flystart_M,Ramp_M.Direction); //back-EMF detection
 
     SVPWM_Zerovolt_Output(&SVPWM_Cal_M);
 
-    TIM_CtrlPWMOutputs(TIM1,ENABLE);//使能PWM输出
+    TIM_CtrlPWMOutputs(TIM1,ENABLE);//enable PWM output
 }

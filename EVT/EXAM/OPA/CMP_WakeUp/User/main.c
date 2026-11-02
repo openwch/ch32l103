@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/05
+ * Version            : V1.0.1
+ * Date               : 2026/10/18
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -104,7 +104,9 @@ void CMPWakeUp_IRQHandler(void)
 {
     if(EXTI_GetITStatus(EXTI_Line22)!=RESET)
     {
+#if 0
         printf("Run at EXTI\r\n");
+#endif
         EXTI_ClearITPendingBit(EXTI_Line22);     /* Clear Flag */
     }
 }

@@ -222,9 +222,9 @@ void Ramp_Set(Rampctr_Type *Ramp_M)
 }
 /******************************************************************************
 * Function Name  : Speed_Ramp_Process
-* Description    : 转速斜坡处理，在循环中执行，加减速的计算频率要和中断的频率一致；
-* Input          : 转速斜坡结构体指针
-* Output         : 斜坡处理后的转速
+* Description    : Speed ramp processing, executed in the loop; the acceleration and deceleration calculation frequency must match the interrupt frequency;
+* Input          : Speed ramp structure pointer
+* Output         : Speed after ramp processing
 * Return         : None
 ******************************************************************************/
 void Speed_Ramp_Process(Rampctr_Type *Speed_Ramp)
@@ -232,22 +232,22 @@ void Speed_Ramp_Process(Rampctr_Type *Speed_Ramp)
     _iq24 Speed_Ref_Output;
     Speed_Ref_Output = Speed_Ramp->Aftramp;
 
-    //新的转速和当前转速都>=0
+    //Both the new speed and the current speed are >= 0
     if((Speed_Ref_Output >=_IQ24(0.0)) && (Speed_Ramp->Preramp >=_IQ24(0.0)))
     {
-        if(Speed_Ref_Output < Speed_Ramp->Preramp)//加速处理
+        if(Speed_Ref_Output < Speed_Ramp->Preramp)//Acceleration processing
         {
             Speed_Ref_Output += Speed_Ramp->AccStep;
-            if(Speed_Ref_Output > Speed_Ramp->Preramp)//终值处理
+            if(Speed_Ref_Output > Speed_Ramp->Preramp)//Final value processing
             {
                Speed_Ref_Output = Speed_Ramp->Preramp;
             }
             else;
         }
-        else if(Speed_Ref_Output > Speed_Ramp->Preramp)//减速处理
+        else if(Speed_Ref_Output > Speed_Ramp->Preramp)//Deceleration processing
         {
             Speed_Ref_Output -= Speed_Ramp->DecStep;
-            if(Speed_Ref_Output < Speed_Ramp->Preramp)//终值处理
+            if(Speed_Ref_Output < Speed_Ramp->Preramp)//Final value processing
             {
                Speed_Ref_Output = Speed_Ramp->Preramp;
             }
@@ -256,28 +256,28 @@ void Speed_Ramp_Process(Rampctr_Type *Speed_Ramp)
         else;
     }
 
-    //新的转速<0,当前转速>0
+    //New speed < 0, current speed > 0
     else if((Speed_Ref_Output >=_IQ24(0.0)) && (Speed_Ramp->Preramp < _IQ24(0.0)))
     {
         Speed_Ref_Output -= Speed_Ramp->DecStep;
     }
 
-    //新的转速和当前转速都<0
+    //Both the new speed and the current speed are < 0
     else if((Speed_Ref_Output < _IQ24(0.0)) && (Speed_Ramp->Preramp < _IQ24(0.0)))
      {
-         if(Speed_Ref_Output < Speed_Ramp->Preramp)//减速处理
+         if(Speed_Ref_Output < Speed_Ramp->Preramp)//Deceleration processing
          {
             Speed_Ref_Output += Speed_Ramp->DecStep;
             if(Speed_Ref_Output > Speed_Ramp->Preramp)
             {
-                Speed_Ref_Output = Speed_Ramp->Preramp;//终值处理
+                Speed_Ref_Output = Speed_Ramp->Preramp;//Final value processing
             }
             else;
          }
-         else if(Speed_Ref_Output > Speed_Ramp->Preramp)//加速处理
+         else if(Speed_Ref_Output > Speed_Ramp->Preramp)//Acceleration processing
          {
             Speed_Ref_Output -= Speed_Ramp->AccStep;
-            if(Speed_Ref_Output < Speed_Ramp->Preramp)//终值处理
+            if(Speed_Ref_Output < Speed_Ramp->Preramp)//Final value processing
             {
                 Speed_Ref_Output = Speed_Ramp->Preramp;
             }
@@ -286,7 +286,7 @@ void Speed_Ramp_Process(Rampctr_Type *Speed_Ramp)
          else;
      }
 
-    //新的转速>=0，当前转速<0
+    //New speed >= 0, current speed < 0
     else if((Speed_Ref_Output < _IQ24(0.0)) && (Speed_Ramp->Preramp >= _IQ24(0.0)))
     {
         Speed_Ref_Output += Speed_Ramp->DecStep;
@@ -297,28 +297,28 @@ void Speed_Ramp_Process(Rampctr_Type *Speed_Ramp)
 }
 /******************************************************************************
 * Function Name  : Power_Ramp_Process
-* Description    : 功率斜坡处理，在循环中执行，加减速的计算频率要和中断的频率一致；
-* Input          : 斜坡结构体指针
-* Output         : 斜坡处理后的功率
+* Description    : Power ramp processing, executed in the loop; the acceleration and deceleration calculation frequency must match the interrupt frequency;
+* Input          : Ramp structure pointer
+* Output         : Power after ramp processing
 * Return         : None
 ******************************************************************************/
 void Power_Ramp_Process(Rampctr_Type *Power_Ramp)
 {
     _iq24 Power_Ref_Output;
     Power_Ref_Output = Power_Ramp->Aftramp;
-        if(Power_Ref_Output < Power_Ramp->Preramp)//斜坡上升处理
+        if(Power_Ref_Output < Power_Ramp->Preramp)//Ramp-up processing
         {
             Power_Ref_Output += Power_Ramp->AccStep;
-            if(Power_Ref_Output > Power_Ramp->Preramp)//终值处理
+            if(Power_Ref_Output > Power_Ramp->Preramp)//Final value processing
             {
                 Power_Ref_Output = Power_Ramp->Preramp;
             }
             else;
         }
-        else if(Power_Ref_Output > Power_Ramp->Preramp)//斜坡下降处理
+        else if(Power_Ref_Output > Power_Ramp->Preramp)//Ramp-down processing
         {
             Power_Ref_Output -= Power_Ramp->DecStep;
-            if(Power_Ref_Output < Power_Ramp->Preramp)//终值处理
+            if(Power_Ref_Output < Power_Ramp->Preramp)//Final value processing
             {
                 Power_Ref_Output = Power_Ramp->Preramp;
             }
@@ -392,18 +392,18 @@ void Poweroperation_Process(Rampctr_Type *SpeedRamp,ADCStruc_Type *ADCStruc,Powe
 }
 /******************************************************************************
 * Function Name  : BUZZ_TIMER_Init
-* Description    : 蜂鸣器控制定时器初始化
+* Description    : Buzzer control timer initialization
 * Input          : None
 * Output         : None
 * Return         : None
 ******************************************************************************/
 void BUZZ_TIMER_Init(void)
 {
-    TIM_TimeBaseInitTypeDef TimeBaseInitStructure={0};  //使用的定时器初始化用结构体
+    TIM_TimeBaseInitTypeDef TimeBaseInitStructure={0};  //Timer initialization structure
     TIM_OCInitTypeDef TIM_OCInitStructure={0};
     GPIO_InitTypeDef GPIO_InitStructure={0};
 
-    //时钟使能
+    //Enable clock
     RCC_PB1PeriphClockCmd(RCC_PB1Periph_TIM2, ENABLE);
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA, ENABLE);
 
@@ -413,7 +413,7 @@ void BUZZ_TIMER_Init(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    //捕获定时器配置
+    //Capture timer configuration
     TIM_DeInit(TIM2);
     TIM_TimeBaseStructInit(&TimeBaseInitStructure);
     TimeBaseInitStructure.TIM_Prescaler = BUZZ_TIMER_PRESCALER;
@@ -422,35 +422,35 @@ void BUZZ_TIMER_Init(void)
     TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseInit(TIM2,&TimeBaseInitStructure);
 
-    //通道2配置，用于产生PWM波
+    //Channel 2 configuration, used to generate the PWM wave
     TIM_OCStructInit(&TIM_OCInitStructure);
-    //大于比较寄存器值为有效，否则为无效
+    //Valid when greater than the compare register value, otherwise invalid
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
-    //正向通道比较输出使能
+    //Enable the forward channel compare output
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-    //捕获比较寄存器幅值为定时器周期值
+    //Capture/compare register value is set to the timer period
     TIM_OCInitStructure.TIM_Pulse = BUZZ_TIMER_PERIOD/2;
-    //正通道高比较输出高电平有效
+    //Forward channel compare output is active high
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-   //互补通道空闲状态为低电平
+   //Complementary channel idle state is low level
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-    TIM_OC2Init(TIM2, &TIM_OCInitStructure);//捕获比较通道2初始化
-    TIM_OC2PreloadConfig(TIM2, TIM_OCPreload_Enable);//使能捕获比较通道2的预装载
-    TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Disable); //不使能通道2的PWM输出
+    TIM_OC2Init(TIM2, &TIM_OCInitStructure);//Initialize capture/compare channel 2
+    TIM_OC2PreloadConfig(TIM2, TIM_OCPreload_Enable);//Enable preload of capture/compare channel 2
+    TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Disable); //Disable the PWM output of channel 2
 
-    //清除定时器的中断标志
+    //Clear the timer interrupt flags
     TIM_ClearFlag(TIM2, TIM_FLAG_Update | TIM_FLAG_CC1 | TIM_FLAG_CC2 | \
                   TIM_FLAG_CC3 | TIM_FLAG_CC4 | TIM_FLAG_Trigger | TIM_FLAG_CC1OF | \
                   TIM_FLAG_CC2OF | TIM_FLAG_CC3OF | TIM_FLAG_CC4OF);
 
-    TIM_ClearFlag(TIM2, TIM_FLAG_Update);      //清除更新事件中断标志
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);      //Clear the update event interrupt flag
     TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
-    TIM_SetCounter(TIM2,0);                    //定时器计数器清零
+    TIM_SetCounter(TIM2,0);                    //Clear the timer counter
 }
 
 /******************************************************************************
 * Function Name  : BUZZ_Parameter_define
-* Description    : 蜂鸣器控制参数定义
+* Description    : Buzzer control parameter definition
 * Input          : None
 * Output         : None
 * Return         : None
@@ -468,7 +468,7 @@ void BUZZ_Parameter_define(Buzzctrl_Type *BUZZCtr)
 
 /******************************************************************************
 * Function Name  : BUZZ_PROCESS
-* Description    : 蜂鸣器
+* Description    : Buzzer
 * Input          : None
 * Output         : None
 * Return         : None
@@ -477,7 +477,7 @@ void BUZZ_PROCESS(Buzzctrl_Type *BUZZCtr)
 {
     if(BUZZCtr->Effective ==TRUE)
    {
-        TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Enable); //使能通道2的PWM输出
+        TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Enable); //Enable the PWM output of channel 2
 
         if(BUZZCtr->BuzzMark==1)
         {
@@ -493,7 +493,7 @@ void BUZZ_PROCESS(Buzzctrl_Type *BUZZCtr)
 
    if(BUZZCtr->Effectivecnt == 1)
    {
-        TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Disable); //不使能通道2的PWM输出
+        TIM_CCxCmd(TIM2, TIM_Channel_2, TIM_CCx_Disable); //Disable the PWM output of channel 2
         if((BUZZCtr->VdcFirstPoweron==TRUE)&&(BUZZCtr->VdcPoweron==FALSE))
         {
             BUZZCtr->VdcPoweron=TRUE;

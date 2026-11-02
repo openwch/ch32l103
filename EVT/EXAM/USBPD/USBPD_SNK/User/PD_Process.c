@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : PD_process.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2024/10/25
+* Version            : V1.0.2
+* Date               : 2026/10/16
 * Description        : This file provides all the PD firmware functions.
 *********************************************************************************
 * Copyright (c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -22,14 +22,14 @@ __attribute__ ((aligned(4))) uint8_t PD_Tx_Buf[ 34 ];                           
 /******************************************************************************/
 UINT8 PD_Ack_Buf[ 2 ];                                                          /* PD-ACK buffer */
 
-UINT8  Tmr_Ms_Cnt_Last;                                                         /* System timer millisecond timing final value */
-UINT8  Tmr_Ms_Dlt;                                                              /* System timer millisecond timing this interval value */
+__IO UINT8  Tmr_Ms_Cnt_Last;                                                         /* System timer millisecond timing final value */
+__IO UINT8  Tmr_Ms_Dlt;                                                              /* System timer millisecond timing this interval value */
 
-PD_CONTROL PD_Ctl;                                                              /* PD Control Related Structures */
+PD_CONTROL PD_Ctl={0};                                                              /* PD Control Related Structures */
 
 UINT8  Adapter_SrcCap[ 30 ];                                                    /* SrcCap message from the adapter */
 
-UINT8  PDO_Len;
+__IO UINT8  PDO_Len;
 
 /* SrcCap Table */
 UINT8 SrcCap_5V3A_Tab[ 4 ]  = { 0X2C, 0X91, 0X01, 0X3E };
@@ -99,12 +99,8 @@ void USBPD_IRQHandler(void)
     {
         USBPD->STATUS |= IF_RX_RESET;
         PD_SINK_Init( );
-        printf("IF_RX_RESET\r\n");
     }
-    if(USBPD->STATUS & BUF_ERR)
-      {
-          printf("BUFERR\r\n");
-      }
+
 }
 
 /*********************************************************************
@@ -397,13 +393,13 @@ void PD_Phy_SendPack( UINT8 mode, UINT8 *pbuf, UINT8 len, UINT8 sop )
 void PD_Load_Header( UINT8 ex, UINT8 msg_type )
 {
     /* Message Header
-       BIT15:    Extended;
-       BIT14-12: Number of Data Objects
-       BIT11--9: Message ID
-       BIT8:     PortPower Role/Cable Plug  0: SINK; 1: SOURCE
-       BIT7---6: Revision, 00: V1.0; 01: V2.0; 10: V3.0;
-       BIT5:     Port Data Role, 0: UFP; 1: DFP
-       BIT4---0: Message Type
+       BIT15 - Extended;
+       BIT[14:12] - Number of Data Objects
+       BIT[11:9] - Message ID
+       BIT8 - PortPower Role/Cable Plug  0: SINK; 1: SOURCE
+       BIT[7:6] - Revision, 00: V1.0; 01: V2.0; 10: V3.0;
+       BIT5 - Port Data Role, 0: UFP; 1: DFP
+       BIT[4:0] - Message Type
     */
     PD_Tx_Buf[ 0 ] = msg_type;
     if( PD_Ctl.Flag.Bit.PD_Role )
@@ -578,16 +574,18 @@ void PD_Save_Adapter_SrcCap( void )
     PDO_Len = i;
 
     /* Modify SrcCap information */
-    /* BIT31-30: Fixed Supply */
-    /* BIT29:    Dual-Role Power */
-    /* BIT28:    USB Suspend Power */
-    /* BIT27:    Unconstrained Power */
-    /* BIT26:    USB Communications */
-    /* BIT25:    Dual-Role Data */
-    /* BIT24:    Unchunked Extended Message */
-    /* BIT23-20:  */
-    /* BIT19-10: Voltage in 50mV units */
-    /* BIT9-0:   Current in 10mA units */
+       /* BIT[31:30] - Fixed Supply */
+       /* BIT29 - Dual-Role Power */
+       /* BIT28 - USB Suspend Power */
+       /* BIT27 - Unconstrained Power */
+       /* BIT26 - USB Communications */
+       /* BIT25 - Dual-Role Data */
+       /* BIT24 - Unchunked Extended Message Supported */
+       /* BIT23 - EPR Mode Capable */
+       /* BIT22 - Reserved,shall be set to zero */
+       /* BIT[21:20] - Peak Current */
+       /* BIT[19:10] - Voltage in 50mV units */
+       /* BIT[9:0] - Maximum Current in 10mA units */
     PD_Rx_Buf[ 5 ] = 0x3E;
 
     /* Save the adapter's SrcCap information */
@@ -696,7 +694,6 @@ void PD_Main_Proc( )
 
         case STA_TX_SOFTRST:
             /* Status: send software reset */
-            /* Send soft reset, if sent successfully, mode unchanged, count +1 for retry */
             PD_Load_Header( 0x00, DEF_TYPE_SOFT_RESET );
             status = PD_Send_Handle( NULL, 0 );
             if( status == DEF_PD_TX_OK )

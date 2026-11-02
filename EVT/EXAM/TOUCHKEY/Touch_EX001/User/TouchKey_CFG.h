@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name : TouchKey_CFG.h
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2023/10/17
-* Description        : 触摸按键参数配置头文件
+* Version            : V1.1
+* Date               : 2026/10/13
+* Description        : Touch button parameter configuration header file.
 * ********************************************************************************
 * Copyright(c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
 * Attention : This software(modified or not) and binary are used for

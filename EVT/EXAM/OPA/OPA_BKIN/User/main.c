@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/12/16
+ * Version            : V1.0.2
+ * Date               : 2026/10/18
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -129,7 +129,7 @@ int main(void)
 
     OPCM_Unlock();
     OPA1_Init();
-    TIM1_PWM_In( 1000, 4800-1, 500 );
+    TIM1_PWM_In( 1000-1, 4800-1, 500 );
     while(1);
 }
 

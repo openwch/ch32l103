@@ -54,7 +54,8 @@ void GPIO_Toggle_INIT(void)
 void APP_2_IAP(void)
 {
     NVIC_SystemReset();
-    while(1){
+    while(1)
+    {
     }
 }
 
@@ -95,8 +96,8 @@ int main(void)
     SystemCoreClockUpdate();
     Delay_Init();
     USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
-    printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+    printf("SystemClk:%u\r\n", SystemCoreClock);
+    printf( "ChipID:%08u\r\n", DBGMCU_GetCHIPID() );
     printf("APP\r\n");
     GPIO_Toggle_INIT();
 
@@ -113,16 +114,19 @@ int main(void)
         {
              Delay_Ms(10);
              APP_2_IAP();
-             while(1);
+             while(1)
+             {
+                
+             }
         }
     }
 }
 
 void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 /*********************************************************************
- * @fn      USART3_IRQHandler
+ * @fn      USART2_IRQHandler
  *
- * @brief   This function handles USART3 global interrupt request.
+ * @brief   This function handles USART2 global interrupt request.
  *
  * @return  none
  */

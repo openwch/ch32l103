@@ -50,7 +50,6 @@ static long clear(void)
 }
 MSH_CMD_EXPORT(clear, clear the terminal screen);
 
-/* ∏¥Œª√¸¡Ó */
 static long reboot(void)
 {
     NVIC_SystemReset();

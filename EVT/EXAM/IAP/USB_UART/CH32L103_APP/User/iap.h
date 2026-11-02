@@ -64,15 +64,9 @@ struct{
 } isp_cmd;
 
 typedef void (*iapfun)(void);
-extern u32 Program_Verify_addr;
-extern u32 User_APP_Addr_offset;
-extern u8 EP2_IN_Flag;
-extern u8 EP2_OUT_Flag;
-extern u16 EP2_Rx_Cnt;
-extern u8 EP2_Tx_Buffer[2];
-extern u16 EP2_Tx_Cnt;
+
 extern u8 IAP_Deal_Buf[USBD_DATA_SIZE+4];
-extern u8 End_Flag;
+
 
 u8 RecData_Deal(void);
 void USART2_CFG(u32 baudrate);

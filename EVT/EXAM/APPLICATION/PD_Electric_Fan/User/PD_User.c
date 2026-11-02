@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : PD_PHY.C
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2022/04/28
+* Version            : V1.1
+* Date               : 2026/10/08
 * Description        : 
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -12,7 +12,7 @@
 
 
 /*******************************************************************************/
-/* 头文件包含 */
+/* Header file inclusion */
 #include <stdio.h>
 #include <string.h>
 #include "debug.h"

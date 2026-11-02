@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2026/01/06
+ * Version            : V1.0.2
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -122,10 +122,10 @@ int main(void)
 #elif(StopMode == STOP_3)
     PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
 #elif(StopMode == STOP_4)
-    PWR->CTLR |=(1<<20);
-    PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+    PWR_EnterSTOPMode_RAM_LV(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
 #endif 
     SystemInit();
+    Delay_Ms(20);
     printf("\r\n ########## \r\n");
 
     while(1)
@@ -148,8 +148,7 @@ void EXTI0_IRQHandler(void)
 {
     if(EXTI_GetITStatus(EXTI_Line0)!=RESET)
     {
-        SystemInit();
-        printf("EXTI0 Wake_up\r\n");
+        
         EXTI_ClearITPendingBit(EXTI_Line0);     /* Clear Flag */
     }
 }

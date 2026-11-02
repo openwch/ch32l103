@@ -236,7 +236,7 @@ void KeyCheck_Process(Key_Manager_Type *KeyM, Rampctr_Type *Ramp_M)
 
 /*******************************************************************************
 * Function Name  : PD_Seek
-* Description    : PD通信
+* Description    : PD communication
 * Input          : none
 * Output         : none
 * Return         : none
@@ -282,14 +282,14 @@ void PD_Process(void)
           }
       }
 
-      if ( PD_PHY.IdleCnt < 0xFFFF ) PD_PHY.IdleCnt ++;       //Idle计数自增
+      if ( PD_PHY.IdleCnt < 0xFFFF ) PD_PHY.IdleCnt ++;       //Idle counter increment
 
-      PD_DEVICE.pDevChk();        //检查连接状态
+      PD_DEVICE.pDevChk();        //Check connection status
  }
 }
 /*******************************************************************************
 * Function Name  : PD_Process
-* Description    : PD处理
+* Description    : PD processing
 * Input          : none
 * Output         : none
 * Return         : none

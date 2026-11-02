@@ -51,8 +51,8 @@ typedef struct {
 typedef struct {
 
     void (*pDevChk)();
-    void (*pUserUnattached)();      //连接成功调用用户程序
-    void (*pUserAttached)();        //连接移除调用用户程序
+    void (*pUserUnattached)();      //Call the user program when the connection succeeds
+    void (*pUserAttached)();        //Call the user program when the connection is removed
 
     u8 DevRole;     //Sink   Src   DRP   DRP.TrySink   DRP.TrySrc
     u8 DevStat;     //0:Sink   1:Src
@@ -64,11 +64,11 @@ typedef struct {
     u16 TryCnt;
     u16 Timeout;
 
-    uint16_t *PortCC;       //使用的CC的端口控制寄存器
-    uint32_t GpioCC;        //使用的CC的GPIO
+    uint16_t *PortCC;       //Port control register of the CC in use
+    uint32_t GpioCC;        //GPIO of the CC in use
 
-    uint16_t *PortVconn;        //使用的CC的端口控制寄存器
-    uint32_t GpioVconn;     //使用的CC的GPIO
+    uint16_t *PortVconn;        //Port control register of the CC in use
+    uint32_t GpioVconn;     //GPIO of the CC in use
 
 } st_PD_DEVICE;
 
@@ -86,32 +86,32 @@ typedef struct {
     u8 RxMsgID;
     u8 RxEmarkMsgID;
     u8 RetryCnt;
-    u8 PDExist;             //首包消息不检查MsgID
+    u8 PDExist;             //Do not check MsgID for the first packet message
     u8 PDVconnExist;
-    u16 IdleCnt;                //PD Idle计数
+    u16 IdleCnt;                //PD Idle count
 
 
 
-    st_Prot_Header Header;      //当前Header默认值，包括DRP状态
+    st_Prot_Header Header;      //Default value of the current Header, including the DRP state
 
     u8 WaitTxGcrc;
     u8 WaitRxGcrc;
 
-    u8 WaitMsgTx;       //等待发送消息标志
-    u16 MsgTxCnt;       //消息发送计时ms
+    u8 WaitMsgTx;       //Flag for waiting to send a message
+    u16 MsgTxCnt;       //Message send timing in ms
 
-    u8 WaitMsgRx;       //等待接收消息标志
-    u16 MsgRxCnt;       //消息接收超时ms
+    u8 WaitMsgRx;       //Flag for waiting to receive a message
+    u16 MsgRxCnt;       //Message receive timeout in ms
 
-    u8 VoltChanging;        //调压标志位
-    u8 tSrcTransition;      //等待开始调压    25-35
-    u16 tPSTransition;      //调压阶段      450-550
+    u8 VoltChanging;        //Voltage adjustment flag
+    u8 tSrcTransition;      //Waiting to start voltage adjustment    25-35
+    u16 tPSTransition;      //Voltage adjustment phase      450-550
 
-    void (*pRxFinish)();        //接收成功：接收到消息并已回复GoodCRC
-    void (*pRxTimeout)();       //接收超时：未能在定时时间内收取到消息，不判断收取消息的类型
-    void (*pTxFinish)();        //发送成功：发送消息成功并已收取到GoodCRC
-    void (*pTxTimeout)();       //发送超时：重试次数内未能收取到正确的GoodCRC
-    void (*pRxHRST)();          //接收到HRST，及发送完HRST
+    void (*pRxFinish)();        //Receive success: the message is received and GoodCRC has been replied
+    void (*pRxTimeout)();       //Receive timeout: the message was not received within the timing time, and the type of the received message is not determined
+    void (*pTxFinish)();        //Send success: the message was sent successfully and GoodCRC has been received
+    void (*pTxTimeout)();       //Send timeout: the correct GoodCRC was not received within the retry count
+    void (*pRxHRST)();          //HRST received, and HRST sent
 
     u8 RxFinish;
     u8 RxHRST;
