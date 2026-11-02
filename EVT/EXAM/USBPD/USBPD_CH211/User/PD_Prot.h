@@ -16,8 +16,8 @@
 /*******************************************************************************/
 
 #include "debug.h"
-#include "libCH32_USBPD.h"
-#include "ch32l103_usbpd.h"
+
+
 
 
 void pDevice_Attached(void);		

@@ -160,7 +160,7 @@ void DCurrProcess_Parameter_Define(DCurrProcess_Type * DCurrProcess)
 }
 /******************************************************************************
 * Function Name  : PowerCal_Prameter_Define
-* Description    : 功率环参数配置.
+* Description    : Power loop parameter configuration.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -173,14 +173,14 @@ void PowerCal_Prameter_Define(Motor_Power_Type *MPower )
     MPower->Power.Lower_Lim = POWER_REGULATOR_LLIM_M;
     MPower->Power.Deltalim  = POWER_REGULATOR_DLIM_M;
 
-    //观测器使用转速滤波器参数计算
+    //Calculation of the speed filter parameters used by the observer
     MPower->PowerLPF1st.Input_Coef = _IQdiv(POWERLPF_WcT_M,(POWERLPF_WcT_M + UNIT_Q24));
     MPower->PowerLPF1st.Output_Coef = _IQdiv(UNIT_Q24,(POWERLPF_WcT_M + UNIT_Q24));
 
 }
 /******************************************************************************
 * Function Name  : PowerCal_Init
-* Description    : 功率环初始化.
+* Description    : Power loop initialization.
 * Input          : None
 * Output         : None
 * Return         : None

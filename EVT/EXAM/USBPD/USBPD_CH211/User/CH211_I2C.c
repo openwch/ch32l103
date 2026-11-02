@@ -231,9 +231,17 @@ void CH211_I2C_SetBit( u8 addr , u8 setbits , u8 resetbits )
  */
 void CH211_Param_Init(void)
 {
-	CH211_I2C_WriteByte(HVCP_CTRL, CP_LE | CP_LX);
-	CH211_I2C_WriteByte(CC_CTRL, CC2_GE|CC1_GE|CC2_OE|CC1_OE);
+	uint32_t ch32_id;
+    
+    CH211_I2C_WriteByte(HVCP_CTRL, CP_LE | CP_LX);
 
+    ch32_id = DBGMCU_GetCHIPID();
+    // CH32L103 K8Ux & F8P6 with Rd
+    if( ((ch32_id >> 16) == 0x1032) || ((ch32_id >> 16) == 0x103D) )
+        CH211_I2C_SetBit(CC_CTRL, CC2_GE|CC1_GE|CC2_OE|CC1_OE, 0);
+    else
+        CH211_I2C_SetBit(CC_CTRL, CC2_GE|CC1_GE|CC2_OE|CC1_OE, CC1_PD|CC2_PD);
+    
 }
 
 

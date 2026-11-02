@@ -1,8 +1,8 @@
 /*********************************************************************
  * File Name          : flash.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2026/08/27
+ * Version            : V1.0.1
+ * Date               : 2026/10/13
  * Description        : file for spi flash.
  *********************************************************************************
 * Copyright (c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -60,8 +60,8 @@ void SPI_FLASH_Init(void)
  * @fn      SPI_Flash_ReadSR
  *
  * @brief   Read W25Qxx status register. 
- *        ！！BIT7  6   5   4   3   2   1   0
- *        ！！SPR   RV  TB  BP2 BP1 BP0 WEL BUSY
+ *        ! ! BIT7  6   5   4   3   2   1   0
+ *        ! ! SPR   RV  TB  BP2 BP1 BP0 WEL BUSY
  *
  * @return  byte - status register value.
  */
@@ -182,7 +182,7 @@ uint32_t SPI_Flash_ReadJedecDeviceID(void)
  *
  * @brief   Erase one sector(4Kbyte).
  *
- * @param   Dst_Addr - 0 ！！ 2047
+ * @param   Dst_Addr - 0 ! ! 2047
  *
  * @return  none
  */

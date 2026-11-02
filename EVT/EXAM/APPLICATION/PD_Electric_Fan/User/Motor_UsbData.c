@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : ch32v30x_usbotg_device.c
 * Author             : WCH
-* Version            : V1.0.0
-* Date               : 2021/06/06
+* Version            : V1.0.1
+* Date               : 2026/10/08
 * Description        : This file provides all the USBOTG firmware functions.
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
 * SPDX-License-Identifier: Apache-2.0
@@ -21,7 +21,7 @@
 
 
 /******************************************************************************/
-/* 全局变量 */
+/* Global variables */
 /* Endpoint Buffer */
 __attribute__ ((aligned(4))) UINT8 EP0_DatabufHD[64]; //ep0(64)
 
@@ -32,25 +32,25 @@ PUINT8  pEP0_RAM_Addr;                       //ep0(64)
 PUINT8  pEP2_RAM_Addr;                       //ep2_out(64)+ep2_in(64)
 
 const UINT8 *pDescr;
-volatile UINT8  USBHD_Dev_SetupReqCode = 0xFF;                                  /* USB2.0高速设备Setup包命令码 */
-volatile UINT16 USBHD_Dev_SetupReqLen = 0x00;                                   /* USB2.0高速设备Setup包长度 */
-volatile UINT8  USBHD_Dev_SetupReqValueH = 0x00;                                /* USB2.0高速设备Setup包Value高字节 */
-volatile UINT8  USBHD_Dev_Config = 0x00;                                        /* USB2.0高速设备配置值 */
-volatile UINT8  USBHD_Dev_Address = 0x00;                                       /* USB2.0高速设备地址值 */
-volatile UINT8  USBHD_Dev_SleepStatus = 0x00;                                   /* USB2.0高速设备睡眠状态 */
-volatile UINT8  USBHD_Dev_EnumStatus = 0x00;                                    /* USB2.0高速设备枚举状态 */
-volatile UINT8  USBHD_Dev_Endp0_Tog = 0x01;                                     /* USB2.0高速设备端点0同步标志 */
-volatile UINT8  USBHD_Dev_Speed = 0x00;                                         /* USB2.0高速设备速度 */
+volatile UINT8  USBHD_Dev_SetupReqCode = 0xFF;                                  /* USB2.0 high-speed device Setup packet command code */
+volatile UINT16 USBHD_Dev_SetupReqLen = 0x00;                                   /* USB2.0 high-speed device Setup packet length */
+volatile UINT8  USBHD_Dev_SetupReqValueH = 0x00;                                /* USB2.0 high-speed device Setup packet Value high byte */
+volatile UINT8  USBHD_Dev_Config = 0x00;                                        /* USB2.0 high-speed device configuration value */
+volatile UINT8  USBHD_Dev_Address = 0x00;                                       /* USB2.0 high-speed device address value */
+volatile UINT8  USBHD_Dev_SleepStatus = 0x00;                                   /* USB2.0 high-speed device sleep status */
+volatile UINT8  USBHD_Dev_EnumStatus = 0x00;                                    /* USB2.0 high-speed device enumeration status */
+volatile UINT8  USBHD_Dev_Endp0_Tog = 0x01;                                     /* USB2.0 high-speed device endpoint 0 toggle flag */
+volatile UINT8  USBHD_Dev_Speed = 0x00;                                         /* USB2.0 high-speed device speed */
 
-volatile UINT16 USBHD_Endp1_Up_Flag = 0x00;                                     /* USB2.0高速设备端点1数据上传状态: 0:空闲; 1:正在上传; */
-volatile UINT8  USBHD_Endp1_Down_Flag = 0x00;                                   /* USB2.0高速设备端点1下传成功标志 */
-volatile UINT8  USBHD_Endp1_Down_Len = 0x00;                                    /* USB2.0高速设备端点1下传长度 */
-volatile BOOL   USBHD_Endp1_T_Tog = 0;                                          /* USB2.0高速设备端点1发送tog位翻转 */
+volatile UINT16 USBHD_Endp1_Up_Flag = 0x00;                                     /* USB2.0 high-speed device endpoint 1 data upload status: 0: idle; 1: uploading; */
+volatile UINT8  USBHD_Endp1_Down_Flag = 0x00;                                   /* USB2.0 high-speed device endpoint 1 download success flag */
+volatile UINT8  USBHD_Endp1_Down_Len = 0x00;                                    /* USB2.0 high-speed device endpoint 1 download length */
+volatile BOOL   USBHD_Endp1_T_Tog = 0;                                          /* USB2.0 high-speed device endpoint 1 transmit tog bit toggle */
 volatile BOOL   USBHD_Endp1_R_Tog = 0;
 
-volatile UINT16 USBHD_Endp2_Up_Flag = 0x00;                                     /* USB2.0高速设备端点2数据上传状态: 0:空闲; 1:正在上传; */
-volatile UINT16 USBHD_Endp2_Up_LoadPtr = 0x00;                                  /* USB2.0高速设备端点2数据上传装载偏移 */
-volatile UINT8  USBHD_Endp2_Down_Flag = 0x00;                                   /* USB2.0高速设备端点2下传成功标志 */
+volatile UINT16 USBHD_Endp2_Up_Flag = 0x00;                                     /* USB2.0 high-speed device endpoint 2 data upload status: 0: idle; 1: uploading; */
+volatile UINT16 USBHD_Endp2_Up_LoadPtr = 0x00;                                  /* USB2.0 high-speed device endpoint 2 data upload load offset */
+volatile UINT8  USBHD_Endp2_Down_Flag = 0x00;                                   /* USB2.0 high-speed device endpoint 2 download success flag */
 
 volatile UINT32V Endp2_send_seq = 0x00;
 volatile UINT8   DevConfig;
@@ -62,7 +62,7 @@ volatile UINT8   em_status = 0;
 /* Device Descriptor */
 const UINT8  MyDevDescrHD[] =
 {
-        0x12,0x01,0x10,0x01,0xff,0x00,0x02,DevEP0SIZE,                   //设备描述符
+        0x12,0x01,0x10,0x01,0xff,0x00,0x02,DevEP0SIZE,                   //Device descriptor
         0x86,0x1a,0x23,0x55,0x04,0x03,0x00,0x00,
         0x00,0x01
 };
@@ -71,10 +71,10 @@ const UINT8  MyDevDescrHD[] =
 /* Configration Descriptor */
 const UINT8  MyCfgDescrHD[] =
 {
-        0x09,0x02,0x27,0x00,0x01,0x01,0x00,0x80,0xf0,              //配置描述符，接口描述符,端点描述符
+        0x09,0x02,0x27,0x00,0x01,0x01,0x00,0x80,0xf0,              //Configuration descriptor, interface descriptor, endpoint descriptor
         0x09,0x04,0x00,0x00,0x03,0xff,0x01,0x02,0x00,
-        0x07,0x05,0x82,0x02,0x20,0x00,0x00,                        //批量上传端点
-        0x07,0x05,0x02,0x02,0x20,0x00,0x00,                        //批量下传端点
+        0x07,0x05,0x82,0x02,0x20,0x00,0x00,                        //Bulk upload endpoint
+        0x07,0x05,0x02,0x02,0x20,0x00,0x00,                        //Bulk download endpoint
         0x07,0x05,0x81,0x03,0x08,0x00,0x01
 };
 
@@ -102,10 +102,10 @@ const UINT8 DataBuf[26]={0x30,0x00,0xc3,0x00,0xff,0xec,0x9f,0xec,0xff,0xec,0xdf,
                     0xff,0xec};
 
 
-/* USB全速模式,其他速度配置描述符 */
+/* USB full-speed mode, other speed configuration descriptor */
 UINT8 TAB_USB_FS_OSC_DESC[ sizeof( MyCfgDescrHD ) ] =
 {
-    0x09, 0x07,                                                                 /* 其他部分通过程序复制 */
+    0x09, 0x07,                                                                 /* Other parts are copied by the program */
 };
 
 t_sendUsbData sendUsbData = {0,0,0,0,0,0,0};
@@ -188,21 +188,21 @@ void MOTOR_USB_RCC_Init( void )
 void Motor_Usb_Init( void )
 {
 
-    //端点缓冲区初始化 //
+    //Endpoint buffer initialization //
     pEP0_RAM_Addr = EP0_DatabufHD;
     pEP2_RAM_Addr = EP2_DatabufHD;
 
-    // 使能usb时钟 //
+    // Enable USB clock //
     MOTOR_USB_RCC_Init( );
     Delay_Us(100);
-    // usb设备初始化 //
+    // USB device initialization //
     MOTOR_USBDeviceInit( );
 
     EXTEN->EXTEN_CTR &= ~EXTEN_USBD_PU_EN;
     Delay_Ms(50);
     EXTEN->EXTEN_CTR |= EXTEN_USBD_PU_EN;
-    // 使能usb中断//
-    //USB中断配置
+    // Enable USB interrupt//
+    //USB interrupt configuration
 }
 
 /*********************************************************************
@@ -224,7 +224,7 @@ void USBHD_IRQHandler( void )
     {
         switch ( USBOTG_FS->INT_ST & USBHD_UIS_TOKEN_MASK )
         {
-            // SETUP包处理 //
+            // SETUP packet handling //
             case USBHD_UIS_TOKEN_SETUP:
 
                 USBOTG_FS->UEP0_TX_CTRL = USBHD_UEP_T_TOG|USBHD_UEP_T_RES_NAK;
@@ -236,7 +236,7 @@ void USBHD_IRQHandler( void )
 
                 len = 0;
                 errflag = 0;
-                // 判断当前是标准请求还是其他请求
+                // Check whether the current request is a standard request or another request
                 if ( ( pSetupReqPakHD->bRequestType & USB_REQ_TYP_MASK ) != USB_REQ_TYP_STANDARD )
                 {
                     if ( ( chtype & USB_REQ_TYP_MASK ) != USB_REQ_TYP_STANDARD )
@@ -267,7 +267,7 @@ void USBHD_IRQHandler( void )
                 }
                 else
                 {
-                    // 处理标准USB请求包 //
+                    // Handle standard USB request packet //
                     switch( SetupReqCode )
                     {
                         case USB_GET_DESCRIPTOR:
@@ -275,29 +275,29 @@ void USBHD_IRQHandler( void )
                             switch( ((pSetupReqPakHD->wValue)>>8) )
                             {
                                 case USB_DESCR_TYP_DEVICE:
-                                   // 获取设备描述符 //
+                                   // Get device descriptor //
                                     pDescr = MyDevDescrHD;
                                     len = MyDevDescrHD[0];
                                     break;
 
                                 case USB_DESCR_TYP_CONFIG:
-                                    // 获取配置描述符//
+                                    // Get configuration descriptor//
                                     pDescr = MyCfgDescrHD;
                                     len = MyCfgDescrHD[2];
                                     break;
 
                                 case USB_DESCR_TYP_STRING:
-                                    // 获取字符串描述符 //
+                                    // Get string descriptor //
                                     switch( (pSetupReqPakHD->wValue)&0xff )
                                     {
                                         case 0:
-                                            // 语言字符串描述符 //
+                                            // Language string descriptor //
                                         pDescr = MyLangDescrHD;
                                         len = MyLangDescrHD[0];
                                             break;
 
                                         case 1:
-                                            //USB产商字符串描述符//
+                                            //USB manufacturer string descriptor//
                                             pDescr = MyManuInfoHD;
                                             len = MyManuInfoHD[0];
                                             break;
@@ -314,11 +314,11 @@ void USBHD_IRQHandler( void )
                                     }
                                     break;
                                     case USB_DESCR_TYP_SPEED:
-                                        // 其他速度配置描述符//
-                                        //其他速度配置描述符 //
+                                        // Other speed configuration descriptor//
+                                        //Other speed configuration descriptor //
                                         if( USBHD_Dev_Speed == 0x00 )
                                         {
-                                          // 全速模式//
+                                          // Full-speed mode//
                                           memcpy( &TAB_USB_FS_OSC_DESC[ 2 ], &MyCfgDescrHD[ 2 ], sizeof( MyCfgDescrHD ) - 2 );
                                           pDescr = ( PUINT8 )&TAB_USB_FS_OSC_DESC[ 0 ];
                                           len = sizeof( TAB_USB_FS_OSC_DESC );
@@ -340,27 +340,27 @@ void USBHD_IRQHandler( void )
                             break;
 
                         case USB_SET_ADDRESS:
-                            //设置地址 //
+                            //Set address //
                             SetupReqLen = (pSetupReqPakHD->wValue)&0xff;
                             break;
 
                         case USB_GET_CONFIGURATION:
-                            //获取配置值 //
+                            //Get configuration value //
                             pEP0_DataBuf[0] = DevConfig;
                             if ( SetupReqLen > 1 ) SetupReqLen = 1;
                             break;
 
                         case USB_SET_CONFIGURATION:
-                            // 设置配置值//
+                            // Set configuration value//
                             em_status = 1;
                             DevConfig = (pSetupReqPakHD->wValue)&0xff;
                             break;
 
                         case USB_CLEAR_FEATURE:
-                            //清除特性//
+                            //Clear feature//
                             if ( ( pSetupReqPakHD->bRequestType & USB_REQ_RECIP_MASK ) == USB_REQ_RECIP_ENDP )
                             {
-                                // 清除端点//
+                                // Clear endpoint//
                                 switch( (pSetupReqPakHD->wIndex)&0xff )
                                 {
                                 case 0x82:
@@ -395,7 +395,7 @@ void USBHD_IRQHandler( void )
 
 
                         case USB_GET_STATUS:
-                            // 根据当前端点实际状态进行应答 //
+                            // Respond according to the actual state of the current endpoint //
                             EP0_DatabufHD[ 0 ] = 0x00;
                             EP0_DatabufHD[ 1 ] = 0x00;
                             if( USBHD_Dev_SetupReqLen > 2 )
@@ -601,7 +601,7 @@ void DevEP2_OUT_Deal( UINT8 l )
     UINT8 i,j;
     UINT16 AddSum;
 //    PUINT8 inOutAddress;
-//    if(R8_UEP2_CTRL&RB_UEP_R_TOG)     //---当前将接收指向DATA1，那么当前已经接收待处理的数据是DATA0---
+//    if(R8_UEP2_CTRL&RB_UEP_R_TOG)     //---The receive currently points to DATA1, so the data already received and pending processing is DATA0---
 //    {
 //        inOutAddress = pEP2_OUT_DataBuf0;
 //    }
@@ -659,7 +659,7 @@ void DevEP2_OUT_Deal( UINT8 l )
                 {
                     switch(sendUsbData.recDataBuf[3])
                     {
-                        case 0x01:      //---设置取数据通道，并上传数据--- sendDataP---
+                        case 0x01:      //---Set the data fetch channel and upload data--- sendDataP---
                             AddSum = 0;
                             sendUsbData.recDataBuf[3] = 0x81;
                             for(j = 0; j < sendUsbData.recDataBuf[2]-1; j++)
@@ -671,7 +671,7 @@ void DevEP2_OUT_Deal( UINT8 l )
                             //----发送----
                             USBOTG_FS->UEP2_TX_LEN = sendUsbData.recDataBuf[2];
                             USBOTG_FS->UEP2_TX_CTRL = (USBOTG_FS->UEP2_TX_CTRL & ~USBHD_UEP_T_RES_MASK) | USBHD_UEP_T_RES_ACK;
-                            //------需要进行延时，以保证大批量数据传输和返回0x81指令不冲突------
+                            //------A delay is needed to ensure that large-volume data transmission does not conflict with returning the 0x81 command------
                             sendUsbData.delayNum = 250;
                             sendUsbData.sendDataLen = sendUsbData.recDataBuf[2] - 5;
                             for(j = 0; j < MaxUsbDataLen; j++)
@@ -688,7 +688,7 @@ void DevEP2_OUT_Deal( UINT8 l )
                             sendUsbData.sendDataLen = 0;
                             break;
                     }
-                    break;     //---跳出当前i循环----
+                    break;     //---Break out of the current i loop----
                 }
             }
         }
@@ -771,17 +771,17 @@ void SPI_Deal_sendMonitorData(void)
         if(reDataLen >= needSendLen[sendUsbData.sendDataLen])//头减尾>=14 且缓冲区为空
         {
             GPIO_ResetBits(GPIOB,GPIO_Pin_8);                              //拉低片选 告诉从机准备接收
-            __asm volatile ("nop");                                         //等待数据通过光耦
-            while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);     //等待发送缓冲区空
+            __asm volatile ("nop");                                         //Wait for data to pass through the optocoupler
+            while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);     //Wait for the transmit buffer to be empty
 
             SPI1->DATAR = 0x55AA;                                           //包头AA55
-            while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);     //等待发送缓冲区空
+            while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);     //Wait for the transmit buffer to be empty
 
             sendUsbData.heartBeat++;
             data=sendUsbData.heartBeat<<8;
             data|=usbFrameByteNum[sendUsbData.sendDataLen];
             SPI1->DATAR = data;                                            //心跳包+发送长度
-            while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);    //等待发送缓冲区空
+            while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);    //Wait for the transmit buffer to be empty
 
 
             frameByteNum = 4;
@@ -790,7 +790,7 @@ void SPI_Deal_sendMonitorData(void)
                 for(i = 0; i < sendUsbData.sendDataLen; i++)
                 {
                     SPI1->DATAR=sendUsbData.sendDataBuf[sendUsbData.end+i];
-                    while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);    //等待发送缓冲区空
+                    while((SPI1->STATR & SPI_I2S_FLAG_TXE) == (uint16_t)RESET);    //Wait for the transmit buffer to be empty
                     frameByteNum+=2;
                 }
                 sendUsbData.end += MaxUsbDataLen;
@@ -798,8 +798,8 @@ void SPI_Deal_sendMonitorData(void)
 
             while( (SPI1->STATR & SPI_I2S_FLAG_BSY) != (uint16_t)RESET);    //判断是否发送完毕 发送完毕
             __asm volatile ("nop");                                         //等待数据通过光耦
-            GPIO_SetBits(GPIOB,GPIO_Pin_8);                                //拉高片选
-                                          //尾指针累加
+            GPIO_SetBits(GPIOB,GPIO_Pin_8);                                //Pull chip select high
+                                          //Accumulate the tail pointer
         }
     }
 }
@@ -828,7 +828,7 @@ void SPI_FullDuplex_Init(void)
 
     GPIO_SetBits(GPIOB,GPIO_Pin_8);    //拉高片选
 
-    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;//2线全双工
+    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;//2-wire full duplex
     SPI_InitStructure.SPI_Mode = SPI_Mode_Master;     //主机
     SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;//16位
     SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
@@ -838,12 +838,12 @@ void SPI_FullDuplex_Init(void)
     SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;
     SPI_Init( SPI1, &SPI_InitStructure );
 
-    GPIO_ResetBits(GPIOB,GPIO_Pin_8); //拉低片选
+    GPIO_ResetBits(GPIOB,GPIO_Pin_8); //Pull chip select low
     SPI_Cmd( SPI1, ENABLE );           //启动SPI
 }
 /******************************************************************************
 * Function Name  : Usart_Init
-* Description    : SPI初始化
+* Description    : SPI initialization
 * Input          : uint32_t Baud 4000000
 * Output         : None
 * Return         : None
@@ -887,11 +887,11 @@ void Usart_Deal_sendMonitorData(void)
         if(getUsbBufLen() >= needSendLen[sendUsbData.sendDataLen])//头减尾>=14 且缓冲区为空
         {
             __asm volatile ("nop");                                         //等待数据通过光耦
-            while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);     //等待数据转移到移位寄存器
+            while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);     //Wait for data to be transferred to the shift register
             USART1->DATAR=0xAA;
-            while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);      //等待数据转移到移位寄存器
+            while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);      //Wait for data to be transferred to the shift register
             USART1->DATAR=0x55;
-            while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);      //等待数据转移到移位寄存器
+            while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);      //Wait for data to be transferred to the shift register
 
             USART1->DATAR=usbFrameByteNum[sendUsbData.sendDataLen];
             while((USART1->STATR & USART_FLAG_TXE) == (uint16_t)RESET);      //等待数据转移到移位寄存器

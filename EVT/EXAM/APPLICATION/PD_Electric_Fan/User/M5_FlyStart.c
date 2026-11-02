@@ -184,8 +184,8 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
                 case NEG_LOW:
                     MLBG_M.Cal_Struc.Inimark = FALSE;
                     Flystart->Switch_mark = TRUE;
-                    SVPWM_2R_Status_Init_M(&SVPWM_Cal_M);//0电压输出
-                    SVPWM_Lowside_Effective(&SVPWM_Cal_M);//下管全开
+                    SVPWM_2R_Status_Init_M(&SVPWM_Cal_M);//zero voltage output
+                    SVPWM_Lowside_Effective(&SVPWM_Cal_M);//all low-side switches on
 
                     Mpid_M.dCurr.Kp=Mpid_M.dCurr.Kp>>1;
                     Mpid_M.dCurr.Ki=Mpid_M.dCurr.Ki>>1;
@@ -195,7 +195,7 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
                     break;
                 case POSI_HIGH:
                     MLBG_M.Cal_Struc.Inimark=TRUE;
-                    Flystart_CtrLoop_Inital(Flystart,&Mpid_M,&MStruc_M,&MLBG_M,&DCurrProcess_M);//环路初始化
+                    Flystart_CtrLoop_Inital(Flystart,&Mpid_M,&MStruc_M,&MLBG_M,&DCurrProcess_M);//loop initialization
                     Ramp_M->Aftramp = Flystart->Speed_Filter;
                     Flystart->Switch_mark = TRUE;
 
@@ -204,7 +204,7 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
 
                     Mpid_M.qCurr.Kp=Mpid_M.qCurr.Kp>>1;
                     Mpid_M.qCurr.Ki=Mpid_M.qCurr.Ki>>1;
-                    RunningStatus_M = RUN;//进入运行
+                    RunningStatus_M = RUN;//enter running
                     break;
             }
         }
@@ -218,10 +218,10 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
                 case NEG_LOW:
                     Flystart->Switch_mark = TRUE;
                     MLBG_M.Cal_Struc.Inimark = FALSE;
-                    SVPWM_2R_Status_Init_M(&SVPWM_Cal_M);//0电压输出
+                    SVPWM_2R_Status_Init_M(&SVPWM_Cal_M);//zero voltage output
                     SVPWM_Lowside_Effective(&SVPWM_Cal_M);
 
-                    //PI恢复
+                    //PI restore
                     Mpid_M.dCurr.Kp=Mpid_M.dCurr.Kp>>1;
                     Mpid_M.dCurr.Ki=Mpid_M.dCurr.Ki>>1;
 
@@ -230,16 +230,16 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
                     break;
 
                 case NEG_HIGH:
-                    Flystart_CtrLoop_Inital(Flystart,&Mpid_M,&MStruc_M,&MLBG_M,&DCurrProcess_M);//环路初始化
+                    Flystart_CtrLoop_Inital(Flystart,&Mpid_M,&MStruc_M,&MLBG_M,&DCurrProcess_M);//loop initialization
 #if (CLOSE_LOOP==SPEED_LOOP)
                     Ramp_M->Aftramp = Flystart->Speed_Filter;
 #elif (CLOSE_LOOP==POWER_LOOP)
                     Ramp_M->Aftramp = _IQabs(Flystart->Speed_Filter);
 #endif
                     Flystart->Switch_mark = TRUE;
-                    RunningStatus_M = RUN;//进入运行
+                    RunningStatus_M = RUN;//enter running
 
-                    //PI恢复
+                    //PI restore
                     Mpid_M.dCurr.Kp=Mpid_M.dCurr.Kp>>1;
                     Mpid_M.dCurr.Ki=Mpid_M.dCurr.Ki>>1;
 
@@ -264,14 +264,14 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
                 if((Flystart->Stillcurrcnt <U16_MAX)&&(Flystart->Vefify_status==STILL))
                  Flystart->Stillcurrcnt ++;
             }
-            switch (Flystart->Vefify_status)//先开PWM进行制动，制动结束后开始定位和启动
+            switch (Flystart->Vefify_status)//enable PWM for braking first; start positioning and startup after braking
             {
                case STILL:
                    if(Flystart->Stillcurrcnt >=Flystart->Stillcurrcntset)
                    {
-                       PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID调节器输出初始化
-                       Motor_Status_Initial_M(&MStruc_M);//电机状态初始化
-                       LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG观测器初始化
+                       PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID regulator output initialization
+                       Motor_Status_Initial_M(&MStruc_M);//motor status initialization
+                       LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG observer initialization
 
                        MStruc_M.CRef2R.cd=DAXIS_CURR_REF_INIT1_M;
                        MStruc_M.CRef2R.cq=QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
@@ -283,64 +283,64 @@ void Flystart_Switch(Flystart_type *Flystart,Rampctr_Type *Ramp_M)
                case POSI_LOW:
                case NEG_HIGH:
                case NEG_LOW:
-                   if(Flystart->Breakcnt >=Flystart->Breakcntset)
-                   {
-                       PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID调节器输出初始化
-                       Motor_Status_Initial_M(&MStruc_M);//电机状态初始化
-                       LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG观测器初始化
-                       MStruc_M.CRef2R.cd=DAXIS_CURR_REF_INIT1_M;
-                       MStruc_M.CRef2R.cq=QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
-                       MLBG_M.Cal_Struc.Inimark=TRUE;
-                       RunningStatus_M = RUN;
+                    if(Flystart->Breakcnt >=Flystart->Breakcntset)
+                    {
+                        PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID regulator output initialization
+                        Motor_Status_Initial_M(&MStruc_M);//motor status initialization
+                        LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG observer initialization
+                        MStruc_M.CRef2R.cd=DAXIS_CURR_REF_INIT1_M;
+                        MStruc_M.CRef2R.cq=QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
+                        MLBG_M.Cal_Struc.Inimark=TRUE;
+                        RunningStatus_M = RUN;
 
 
                    }
-                   break;
+                    break;
 
-            }
-        }
-        else if (Ramp_M->Direction ==-1)
-        {
-            if((_IQabs(MStruc_M.C3S.PhaseA)<=Flystart->Stillcurrthresh)&&\
-               (_IQabs(MStruc_M.C3S.PhaseB)<=Flystart->Stillcurrthresh)&&\
-                (_IQabs(MStruc_M.C3S.PhaseC)<=Flystart->Stillcurrthresh))
-            {
-                if((Flystart->Breakcnt <U16_MAX)&&((Flystart->Vefify_status==POSI_LOW)||\
-                   (Flystart->Vefify_status==NEG_LOW)||(Flystart->Vefify_status==POSI_HIGH)))
-                 Flystart->Breakcnt ++;
+             }
+         }
+         else if (Ramp_M->Direction ==-1)
+          {
+             if((_IQabs(MStruc_M.C3S.PhaseA)<=Flystart->Stillcurrthresh)&&\
+                (_IQabs(MStruc_M.C3S.PhaseB)<=Flystart->Stillcurrthresh)&&\
+                 (_IQabs(MStruc_M.C3S.PhaseC)<=Flystart->Stillcurrthresh))
+             {
+                 if((Flystart->Breakcnt <U16_MAX)&&((Flystart->Vefify_status==POSI_LOW)||\
+                    (Flystart->Vefify_status==NEG_LOW)||(Flystart->Vefify_status==POSI_HIGH)))
+                  Flystart->Breakcnt ++;
 
-                if((Flystart->Stillcurrcnt <U16_MAX)&&(Flystart->Vefify_status==STILL))
-                 Flystart->Stillcurrcnt ++;
-            }
-            switch (Flystart->Vefify_status)//先开PWM进行制动，制动结束后开始定位和启动
-            {
-               case STILL:
-                   if(Flystart->Stillcurrcnt >=Flystart->Stillcurrcntset)
-                   {
-                       PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID调节器输出初始化
-                       Motor_Status_Initial_M(&MStruc_M);//电机状态初始化
-                       LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG观测器初始化
-                       MStruc_M.CRef2R.cd=DAXIS_CURR_REF_INIT1_M;
-                       MStruc_M.CRef2R.cq=QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
-                       MLBG_M.Cal_Struc.Inimark=TRUE;
-                       RunningStatus_M = RUN;
-                   }
-                   break;
-               case POSI_HIGH:
-               case POSI_LOW:
-               case NEG_LOW:
-                   if(Flystart->Breakcnt >=Flystart->Breakcntset)
-                   {
-                       PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID调节器输出初始化
-                       Motor_Status_Initial_M(&MStruc_M);//电机状态初始化
-                       LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG观测器初始化
-                       MStruc_M.CRef2R.cd = DAXIS_CURR_REF_INIT1_M;
-                       MStruc_M.CRef2R.cq = QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
-                       MLBG_M.Cal_Struc.Inimark=TRUE;
-                       RunningStatus_M = RUN;
-                   }
-                   break;
-            }
-        }
-     }
+                 if((Flystart->Stillcurrcnt <U16_MAX)&&(Flystart->Vefify_status==STILL))
+                  Flystart->Stillcurrcnt ++;
+             }
+             switch (Flystart->Vefify_status)//enable PWM for braking first; start positioning and startup after braking
+             {
+                case STILL:
+                    if(Flystart->Stillcurrcnt >=Flystart->Stillcurrcntset)
+                    {
+                        PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID regulator output initialization
+                        Motor_Status_Initial_M(&MStruc_M);//motor status initialization
+                        LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG observer initialization
+                        MStruc_M.CRef2R.cd=DAXIS_CURR_REF_INIT1_M;
+                        MStruc_M.CRef2R.cq=QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
+                        MLBG_M.Cal_Struc.Inimark=TRUE;
+                        RunningStatus_M = RUN;
+                    }
+                    break;
+                case POSI_HIGH:
+                case POSI_LOW:
+                case NEG_LOW:
+                     if(Flystart->Breakcnt >=Flystart->Breakcntset)
+                     {
+                         PID_Output_Init(&Mpid_M,Ramp_M->Direction);//PID regulator output initialization
+                         Motor_Status_Initial_M(&MStruc_M);//motor status initialization
+                         LBG_Status_Init(&MLBG_M,&LBG_Status_M,Ramp_M->Direction);//LBG observer initialization
+                         MStruc_M.CRef2R.cd = DAXIS_CURR_REF_INIT1_M;
+                         MStruc_M.CRef2R.cq = QAXIS_CURR_REF_INIT1_M*Ramp_M->Direction;
+                         MLBG_M.Cal_Struc.Inimark=TRUE;
+                         RunningStatus_M = RUN;
+                     }
+                     break;
+              }
+          }
+       }
 }

@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /* Global Variable */
-s16 Calibrattion_Val = 0;
+s16 Calibration_Val = 0;
 
 /*********************************************************************
  * @fn      ADC_Function_Init
@@ -38,14 +38,12 @@ void ADC_Function_Init(void)
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_ADC1, ENABLE);
     RCC_ADCCLKConfig(RCC_PCLK2_Div8);
 
-    ADC_OffsetCalibrationConfig(ADC1);
-
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     ADC_DeInit(ADC1);
-    Calibrattion_Val=Get_CalibrationValue(ADC1);
+    Calibration_Val=Get_CalibrationValue(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
     ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
@@ -109,15 +107,15 @@ u16 Get_ADC_Val(u8 ch)
  *
  * @param   val - Sampling value
  *
- * @return  val+Calibrattion_Val - Conversion Value.
+ * @return  val+Calibration_Val - Conversion Value.
  */
 u16 Get_ConversionVal(s16 val)
 {
-    if((val + Calibrattion_Val) < 0 || val==0)
+    if((val + Calibration_Val) < 0 || val==0)
         return 0;
-    if((Calibrattion_Val + val) > 4095||val==4095)
+    if((Calibration_Val + val) > 4095||val==4095)
         return 4095;
-    return (val + Calibrattion_Val);
+    return (val + Calibration_Val);
 }
 
 /*********************************************************************
@@ -137,7 +135,7 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
     ADC_Function_Init();
-    printf("CalibrattionValue:%d\n", Calibrattion_Val);
+    printf("CalibrationValue:%d\n", Calibration_Val);
 
     while(1)
     {

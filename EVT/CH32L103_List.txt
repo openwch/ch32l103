@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2026.08
+南京沁恒微电子股份有限公司 2026.10
 最新资料请到我们的网站上查询
 https://wch.cn
 
@@ -101,6 +101,8 @@ https://wch.cn
   |      |      |      |      |-- SPI_CRC：使用CRC错误校验，Master/Slave 模式收发例程
   |      |      |      |      |-- SPI_DMA：SPI使用DMA，Master/Slave 模式收发例程
   |      |      |      |      |-- SPI_FLASH：SPI接口操作FLASH外设例程
+  |      |      |      |      |-- SPI_DMA_EXT: SPI主从设备使用DMA全双工传输和接收例程
+  |      |      |      |      |-- SPI_SDCARD: SPI 驱动SD卡例程
   |      |      |      |-- SRC  
   |      |      |      |      |-- Core：内核系统头文件
   |      |      |      |      |-- Debug：延时函数、串口调试源文件及头文件
@@ -141,6 +143,7 @@ https://wch.cn
   |      |      |      |      |-- USART_SynchronousMode：同步模式，Master/Slave 模式收发例程
   |      |      |      |      |-- USART_Idle_Recv：串口使用DMA进行不定长接收例程
   |      |      |      |      |-- USART_SmartCard：串口智能卡例程
+  |      |      |      |      |-- USART_DMA_EXT: USART 通过DMA收发例程
   |      |      |      |-- USB
   |      |      |      |      |-- USBFS
   |      |      |      |      |      |-- DEVICE

@@ -30,7 +30,7 @@
 
 /*******************************************************************************
 * Function Name  : main
-* Description    : Ö÷³ÌÐò
+* Description    : main
 * Input          : None
 * Output         : None
 * Return         : None

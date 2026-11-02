@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/01/08
+ * Version            : V1.0.2
+ * Date               : 2026/10/13
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -21,8 +21,8 @@
 #include "debug.h"
 
 /* Global Variable */
-s16 Calibrattion_Val = 0;
-
+s16 Calibration_Val = 0;
+vu8 IntResponse = 0;
 /* WWDG Reset Enable Definition */
 #define WDT_RST_ENABLE   0
 #define WDT_RST_DISABLE  1
@@ -53,7 +53,7 @@ void ADC_Function_Init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     ADC_DeInit(ADC1);
-    Calibrattion_Val=Get_CalibrationValue(ADC1);
+    Calibration_Val=Get_CalibrationValue(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
     ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
@@ -117,7 +117,7 @@ u16 Get_ADC_Val(u8 ch)
 {
     u16 val;
 
-	ADC_RegularChannelConfig(ADC1, ch, 1, ADC_SampleTime_CyclesMode7);
+    ADC_RegularChannelConfig(ADC1, ch, 1, ADC_SampleTime_CyclesMode7);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
@@ -146,13 +146,18 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
     ADC_Function_Init();
-    printf("CalibrattionValue:%d\n", Calibrattion_Val);
+    printf("CalibrattionValue:%d\n", Calibration_Val);
 
     while(1)
     {
         ADC_val = Get_ADC_Val(ADC_Channel_1);
         printf("%04d\r\n", ADC_val);
         Delay_Ms(500);
+        if(IntResponse == 1)
+        {
+            printf( "Enter AnalogWatchdog Interrupt\r\n" );
+            IntResponse = 0;
+        }
     }
 }
 
@@ -160,7 +165,7 @@ int main(void)
 void ADC_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 /*********************************************************************
- * @fn      ADC1_2_IRQHandler
+ * @fn      ADC_IRQHandler
  *
  * @brief   This function handles analog wathdog exception.
  *
@@ -169,7 +174,7 @@ void ADC_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void ADC_IRQHandler(void)
 {
     if(ADC_GetITStatus( ADC1, ADC_IT_AWD)){
-        printf( "Enter AnalogWatchdog Interrupt\r\n" );
+        IntResponse = 1;
     }
 
     ADC_ClearITPendingBit( ADC1, ADC_IT_AWD);

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : M6_CurrentLoop.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/04
+ * Version            : V1.0.1
+ * Date               : 2026/10/08
  * Description        : ADC sampling result reading, current loop processing, FOC calculation, overcurrent phaseloss protection processing
 
 *********************************************************************************
@@ -39,7 +39,7 @@ void ADC_IRQHandler(void)
         ADsample_int1 = (int32_t)(ADC_M.OffsetValue1) - (int32_t)((ADC1->IDATAR1)<<1);
         ADsample_int2 = (int32_t)(ADC_M.OffsetValue2) - (int32_t)((ADC1->IDATAR2)<<1);
 
-        //оч╥Ы
+        //amplitude limiting
         ADsample_int1=( (ADsample_int1) < (S16_MIN) ? (S16_MIN) : \
                                       ( (ADsample_int1) > (S16_MAX) ? (S16_MAX) : (ADsample_int1)));
 

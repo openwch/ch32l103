@@ -10,10 +10,14 @@
 			"rtos": "NoneOS",
 			"mcu": "CH32L103C8T",
 			"description": "ROM(byte): 64K, SRAM(byte): 20K, CHIP PINS: 48, GPIO PORTS: 37.\\nCH32L103 is an industrial-grade low-power general purpose microcontroller based on Highland Barley RISC-V core design. The CH32L103 has built-in USB and PD PHY, support PDUSB, including USB Host host and USB Device device function, USB PD and type C fast charge function, built-in low power timer, It provides a set of OPA operation amplifier, 3 sets of CMP voltage comparators, 4 sets of USART serial ports, 2 I2C interfaces, 2 SPI interfaces, 1 set of CAN interfaces, multiple sets of timers, 12-bit ADC, 10 Touchkeys and other peripheral resources.",
+			"tempratureScope": "",
+			"artifactType": "executable",
 			"link": "WCH-Link",
 			"peripheral_version": "1.0",
 			"calibrateSupport": false,
+			"calibrateCommand": "",
 			"UIConfigSupport": false,
+			"UIConfigCommand": "",
 			"externalFlashSupport": false
 		},
 		"linkedFolders": [
@@ -43,6 +47,21 @@
 				"parentLogicPath": "",
 				"type": "file",
 				"name": "*.wvproj"
+			},
+			{
+				"parentLogicPath": "",
+				"type": "file",
+				"name": "*.7z"
+			},
+			{
+				"parentLogicPath": "",
+				"type": "file",
+				"name": "*.zip"
+			},
+			{
+				"parentLogicPath": "",
+				"type": "file",
+				"name": "*.tar"
 			}
 		],
 		"projectName": "ExtLines_Trigger",
@@ -52,14 +71,15 @@
 	"buildConfig": {
 		"configurations": [
 			{
+				"parallelizationNumber": "optimal",
 				"buildArtifact": {
 					"artifact_name": "${ProjName}",
 					"artifact_extension": "elf",
 					"output_prefix": "",
 					"artifact_type": "Executable"
 				},
-				"parallelizationNumber": "optimal",
 				"stop_on_first_build_error": true,
+				"usingCacheAccelerate": false,
 				"pre_script": "",
 				"pre_script_description": "",
 				"post_script": "",

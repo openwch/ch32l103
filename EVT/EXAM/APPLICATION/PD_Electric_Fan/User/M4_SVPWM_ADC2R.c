@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : M4_SVPWM_ADC2R.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2024/11/04
+ * Version            : V1.0.1
+ * Date               : 2026/10/08
  * Description        : SVPWM parameter calculation, state initialization, related timer and pin configuration,
  *                      ADC parameter calculation, state initialization, related timer and pin configuration,
  *                      zero offset read, ADC trigger time configuration
@@ -47,11 +47,11 @@ void SVPWM_2R_Paramter_Init(SVPWM_2R_Type *SVPWM_Cal,Motor_Base_Type *Mbase)
 
     SVPWM_Cal->OPA_POLL_EN = 0x4101;//4101
 
-//  P4 P5通道轮训
-//  SVPWM_Cal->DMA_Trig1 = SVPWM_Cal_M.HALF_T-9.5*(SYSTEM_CLOCK_FREQ/1000000);//轮询间隔2us，开关频率15k
+//  P4 P5 channel polling
+//  SVPWM_Cal->DMA_Trig1 = SVPWM_Cal_M.HALF_T-9.5*(SYSTEM_CLOCK_FREQ/1000000);//Polling interval 2us, switching frequency 15k
 
-//  P3 P4通道轮训
-    SVPWM_Cal->DMA_Trig1 = SVPWM_Cal_M.HALF_T-7.5*(SYSTEM_CLOCK_FREQ/1000000);//轮询间隔2us，开关频率15k
+//  P3 P4 channel polling
+    SVPWM_Cal->DMA_Trig1 = SVPWM_Cal_M.HALF_T-7.5*(SYSTEM_CLOCK_FREQ/1000000);//Polling interval 2us, switching frequency 15k
 }
 
 /*********************************************************************
@@ -159,13 +159,13 @@ void SVPWM_2R_Timer_Configure(void)
 
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 
-    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;     //正逻辑
-//    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_Low;    //反逻辑
+    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;     //Positive logic
+//    TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_Low;    //Negative logic
 
     TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
 
-    TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;   //正逻辑
-//    TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;    //反逻辑
+    TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;   //Positive logic
+//    TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;    //Negative logic
 
     TIM_OC1Init(TIM1, &TIM_OCInitStructure);
     TIM_OC2Init(TIM1, &TIM_OCInitStructure);
@@ -295,7 +295,7 @@ void ADC_OPA_Configure(ADCStruc_Type *ADCStruc)
     CMP_InitTypeDef CMP_InitTypeDef={0};
 
     OPCM_Unlock();
-    RCC_ADCCLKConfig(RCC_PCLK2_Div4);//ADC时钟为PCLK2的2分频 24M
+    RCC_ADCCLKConfig(RCC_PCLK2_Div4);//ADC clock is PCLK2 divided by 2, 24M
 
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA|RCC_PB2Periph_GPIOB|RCC_PB2Periph_GPIOC\
                           |RCC_PB2Periph_AFIO | RCC_PB2Periph_ADC1, ENABLE);
@@ -342,8 +342,8 @@ void ADC_OPA_Configure(ADCStruc_Type *ADCStruc)
 
 /******************************************************************************
 * Function Name  : ADC_Trigger
-* Description    : ADC触发时刻计算
-* Input          : SVPWM计算结构体指针，ADC寄存器指针，定时器指针
+* Description    : ADC trigger timing calculation
+* Input          : SVPWM calculation structure pointer, ADC register pointer, timer pointer
 * Output         : None
 * Return         : None
 ******************************************************************************/
@@ -357,8 +357,8 @@ void ADC_Trigger(SVPWM_2R_Type *SVPWM_Cal)
 
 /******************************************************************************
 * Function Name  : DCBUS_Volt_Cal
-* Description    : 母线电压计算
-* Input          : ADC计算结构体指针，ADC寄存器指针
+* Description    : Bus voltage calculation
+* Input          : ADC calculation structure pointer, ADC register pointer
 * Output         : None
 * Return         : None
 ******************************************************************************/

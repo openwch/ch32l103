@@ -265,19 +265,19 @@ typedef struct __PACKED _USB_ENDPOINT_DESCR {
 
 typedef struct
 {
-    UINT8 heartBeat;        //---心跳包---
-    UINT8 delayNum;         //---延迟传输---
- volatile  UINT8 sendDataLen;       //----数据长度---
-    //UINT8 frameByteNum;         //---发送包字节序列---
-    UINT8 curWriteFrame;         //----当前写数据帧---
+    UINT8 heartBeat;        //---heartbeat packet---
+    UINT8 delayNum;         //---delayed transmission---
+ volatile  UINT8 sendDataLen;       //----data length---
+    //UINT8 frameByteNum;         //---transmit packet byte sequence---
+    UINT8 curWriteFrame;         //----current write data frame---
 
-    UINT8 recDataLen;          //----接收上位机数据长度---
+    UINT8 recDataLen;          //----received host data length---
     UINT8 end;
     UINT8V head;
 
-    UINT8 recDataBuf[16];          //---接收数据缓冲区---
-    UINT8 sendDataType[MaxUsbDataLen];    //---发送数据类型---
-    UINT16 sendDataBuf[USB_SENDBUF_LEN];    //---发送数据缓冲区---
+    UINT8 recDataBuf[16];          //---receive data buffer---
+    UINT8 sendDataType[MaxUsbDataLen];    //---transmit data type---
+    UINT16 sendDataBuf[USB_SENDBUF_LEN];    //---transmit data buffer---
 }t_sendUsbData;
 
 extern t_sendUsbData sendUsbData;
@@ -409,7 +409,7 @@ extern t_sendUsbData sendUsbData;
 
 
 /******************************************************************************/
-/* USBHS PHY Clock Config (RCC_CFGR2) 使用USBHS PHY时钟的情况下，需要用到这些宏定义 */
+/* USBHS PHY Clock Config (RCC_CFGR2) these macros are needed when using the USBHS PHY clock */
 #ifndef  USBHS_EXIST
 #define USB_48M_CLK_SRC_MASK   (1<<31)
 #define USB_48M_CLK_SRC_SYS    (0<<31)
@@ -425,34 +425,34 @@ extern t_sendUsbData sendUsbData;
 
 
 
-/* 端点大小定义 */
+/* endpoint size definition */
 #define DEF_USB_FS_EP_SIZE      64
 #endif
 
-/*使用sysclk时钟的情况下，需要用到这些宏定义 */
+/* these macros are needed when using the sysclk clock */
 #define RCC_USBFS_CLK_DIV_1   (0<<22)
 #define RCC_USBFS_CLK_DIV_2   (1<<22)
 #define RCC_USBFS_CLK_DIV_3   (2<<22)
 #define RCC_USBFS_CLK_SRC     (1<<31)
 
 /******************************************************************************/
-/* 变量外扩 */
+/* external variable declarations */
 extern PUINT8  pEP0_RAM_Addr;                                                  //ep0(64)
 extern PUINT8  pEP2_RAM_Addr;                                                  //ep2_out(64)+ep2_in(64)
 
 
-extern volatile UINT16 USBHD_Endp1_Up_Flag;                                     /* USB2.0高速设备端点1数据上传状态: 0:空闲; 1:正在上传; */
-extern volatile UINT8  USBHD_Endp1_Down_Flag;                                   /* USB2.0高速设备端点1下传成功标志 */
-extern volatile UINT8  USBHD_Endp1_Down_Len;                                    /* USB2.0高速设备端点1下传长度 */
-extern volatile BOOL   USBHD_Endp1_T_Tog;                                       /* USB2.0高速设备端点1发送tog位翻转 */
+extern volatile UINT16 USBHD_Endp1_Up_Flag;                                     /* USB2.0 high-speed device endpoint 1 data upload status: 0: idle; 1: uploading; */
+extern volatile UINT8  USBHD_Endp1_Down_Flag;                                   /* USB2.0 high-speed device endpoint 1 download success flag */
+extern volatile UINT8  USBHD_Endp1_Down_Len;                                    /* USB2.0 high-speed device endpoint 1 download length */
+extern volatile BOOL   USBHD_Endp1_T_Tog;                                       /* USB2.0 high-speed device endpoint 1 transmit tog bit toggle */
 extern volatile BOOL   USBHD_Endp1_R_Tog;
 
-extern volatile UINT16 USBHD_Endp2_Up_Flag;                                     /* USB2.0高速设备端点2数据上传状态: 0:空闲; 1:正在上传; */
-extern volatile UINT16 USBHD_Endp2_Up_LoadPtr;                                  /* USB2.0高速设备端点2数据上传装载偏移 */
-extern volatile UINT8  USBHD_Endp2_Down_Flag;                                   /* USB2.0高速设备端点2下传成功标志 */
+extern volatile UINT16 USBHD_Endp2_Up_Flag;                                     /* USB2.0 high-speed device endpoint 2 data upload status: 0: idle; 1: uploading; */
+extern volatile UINT16 USBHD_Endp2_Up_LoadPtr;                                  /* USB2.0 high-speed device endpoint 2 data upload load offset */
+extern volatile UINT8  USBHD_Endp2_Down_Flag;                                   /* USB2.0 high-speed device endpoint 2 download success flag */
 
 /******************************************************************************/
-/* DMA地址和缓冲区相关宏定义 */
+/* DMA address and buffer related macro definitions */
 #define pSetupReqPakHD      ((PUSB_SETUP_REQ)pEP0_RAM_Addr)
 #define pEP0_DataBuf        (pEP0_RAM_Addr)
 #define pEP2_OUT_DataBuf    (pEP2_RAM_Addr)
@@ -460,7 +460,7 @@ extern volatile UINT8  USBHD_Endp2_Down_Flag;                                   
 
 
 /******************************************************************************/
-/* 函数声明和外扩 */
+/* function declarations and external declarations */
 extern void DevEP2_OUT_Deal( UINT8 l );
 extern void DevEP2_IN_Deal( UINT8 l );
 extern void MOTOR_USBDeviceInit( void );

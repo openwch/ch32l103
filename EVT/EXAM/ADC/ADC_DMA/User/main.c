@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2026/10/13
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -21,8 +21,8 @@
 #include "debug.h"
 
 /* Global Variable */
-u16 TxBuf[1024];
-s16 Calibrattion_Val = 0;
+volatile u16 TxBuf[1024];
+s16 Calibration_Val = 0;
 
 /*********************************************************************
  * @fn      ADC_Function_Init
@@ -45,7 +45,7 @@ void ADC_Function_Init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     ADC_DeInit(ADC1);
-    Calibrattion_Val=Get_CalibrationValue(ADC1);
+    Calibration_Val=Get_CalibrationValue(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
     ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
@@ -84,7 +84,7 @@ void ADC_Function_Init(void)
  *            ADC_Channel_16 - ADC Channel16 selected.
  *            ADC_Channel_17 - ADC Channel17 selected.
  *
- * @return  none
+ * @return  conversion result data
  */
 u16 Get_ADC_Val(u8 ch)
 {
@@ -106,19 +106,19 @@ u16 Get_ADC_Val(u8 ch)
  *
  * @param   val - Sampling value
  *
- * @return  val+Calibrattion_Val - Conversion Value.
+ * @return  val+Calibration_Val - Conversion Value.
  */
 u16 Get_ConversionVal(s16 val)
 {
-    if((val + Calibrattion_Val) < 0 || val==0)
+    if((val + Calibration_Val) < 0 || val==0)
         return 0;
-    if((Calibrattion_Val + val) > 4095||val==4095)
+    if((Calibration_Val + val) > 4095||val==4095)
         return 4095;
-    return (val + Calibrattion_Val);
+    return (val + Calibration_Val);
 }
 
 /*********************************************************************
- * @fn      DMA_Tx_Init
+ * @fn      DMA_Adc_Init
  *
  * @brief   Initializes the DMAy Channelx configuration.
  *
@@ -129,7 +129,7 @@ u16 Get_ConversionVal(s16 val)
  *
  * @return  none
  */
-void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize)
+void DMA_Adc_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize)
 {
     DMA_InitTypeDef DMA_InitStructure = {0};
 
@@ -163,18 +163,20 @@ int main(void)
     SystemCoreClockUpdate();
     Delay_Init();
     USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
-    printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+    printf("SystemClk:%u\r\n", SystemCoreClock);
+    printf( "ChipID:%08u\r\n", DBGMCU_GetCHIPID() );
 
     ADC_Function_Init();
 
-    printf("CalibrattionValue:%d\n", Calibrattion_Val);
-    DMA_Tx_Init(DMA1_Channel1, (u32)&ADC1->RDATAR, (u32)TxBuf, 1024);
+    printf("CalibrationValue:%d\n", Calibration_Val);
+    DMA_Adc_Init(DMA1_Channel1, (u32)&ADC1->RDATAR, (u32)TxBuf, 1024);
     DMA_Cmd(DMA1_Channel1, ENABLE);
 
     ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_CyclesMode7);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-    Delay_Ms(50);
+    while(DMA_GetFlagStatus(DMA1_FLAG_TC1) == RESET) /* Wait until ADC Transfer Complete */
+    {
+    }
     ADC_SoftwareStartConvCmd(ADC1, DISABLE);
 
     for(i = 0; i < 1024; i++){
@@ -182,6 +184,9 @@ int main(void)
         Delay_Ms(10);
     }
 
-    while(1);
+    while(1)
+    {
+
+    }
 }
 

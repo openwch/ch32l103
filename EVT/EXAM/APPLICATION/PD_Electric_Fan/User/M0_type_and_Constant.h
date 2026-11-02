@@ -233,41 +233,41 @@ typedef struct
     _iq24 Beta_New;                             //Beta component present value
 
     int32_t Gain;                               //Error gain
-    uint8_t Enable;         //使能
+    uint8_t Enable;         //Enable
 } Observer_Adaptor_type;
 
-//脉冲注入定位结构体原型
+//Pulse injection positioning structure prototype
 typedef struct
 {
-    _iq24 Vmag;             //注入电压幅值
-    _iq24 Vmagmax;          //注入电压幅值最大值
-    _iq24 Vmagmin;          //注入电压幅值最小值
+    _iq24 Vmag;             //Injected voltage amplitude
+    _iq24 Vmagmax;          //Maximum injected voltage amplitude
+    _iq24 Vmagmin;          //Minimum injected voltage amplitude
 
-    //脉冲电压注入定位使用变量
-    _iq24 AngleInit;        //注入角度初始值
-    _iq24 AngleStep;        //切换角度步长
-    _iq24 AngleInj;         //注入角度
-    _iq24 Position;         //角度搜索结果
-    _iq24 Posi_Cali;        //角度计算矫正值
-    _iq24 Phaseloss_Currthre;       //缺相电流阈值
+    //Variables used for pulse voltage injection positioning
+    _iq24 AngleInit;        //Initial injected angle
+    _iq24 AngleStep;        //Angle switching step
+    _iq24 AngleInj;         //Injected angle
+    _iq24 Position;         //Angle search result
+    _iq24 Posi_Cali;        //Angle calculation correction value
+    _iq24 Phaseloss_Currthre;       //Phase loss current threshold
 
-    Component_2R_Type   Curr2R;     //两相旋转坐标系电流(标幺值)
-    Component_2R_Type   VoltRef2RC; //两相旋转坐标系电压给定值(矫正后)
-    Struct_Cossin_Type Triangle;    //注入角度正、余弦值
+    Component_2R_Type   Curr2R;     //Current in the two-phase rotating coordinate system (per unit)
+    Component_2R_Type   VoltRef2RC; //Voltage reference of the two-phase rotating coordinate system (after calibration)
+    Struct_Cossin_Type Triangle;    //Sine and cosine values of the injected angle
 
-    uint32_t Counter;       //HFVQI观测器启动计数值
+    uint32_t Counter;       //HFVQI observer start counter value
 
-    uint16_t Fixduty;       //固定占空比调制模式下的占空比数值
-    uint16_t TimeStep;      //切换时间步长
-    uint16_t TimeEffect;    //脉冲作用时间
+    uint16_t Fixduty;       //Duty cycle value in fixed duty cycle modulation mode
+    uint16_t TimeStep;      //Switching time step
+    uint16_t TimeEffect;    //Pulse action time
 
-    uint8_t Phaseloss_Cntthre;      //缺相电流判定次数阈值
-    uint8_t Phaseloss_Cnt;          //缺相电流满足条件次数
-    uint8_t Modulemode;     //调制方式0：电压调制，1：固定占空比
-    uint8_t SectorMax;      //电流幅值最大值所在扇区
-    uint8_t SectorSet;      //区间定义
-    uint8_t SectorAct;      //实际区间
-    Truth_Verify_Type Finish;   //完成标志性
+    uint8_t Phaseloss_Cntthre;      //Phase loss current determination count threshold
+    uint8_t Phaseloss_Cnt;          //Number of times the phase loss current condition is met
+    uint8_t Modulemode;     //Modulation mode: 0 - voltage modulation, 1 - fixed duty cycle
+    uint8_t SectorMax;      //Sector where the maximum current amplitude is located
+    uint8_t SectorSet;      //Interval definition
+    uint8_t SectorAct;      //Actual interval
+    Truth_Verify_Type Finish;   //Completion flag
 }HFVQI_Start_Type;
 typedef struct
 {
@@ -415,24 +415,24 @@ typedef struct
     Truth_Verify_Type Detectphase;
 } Phaseloss_Type;
 
-//欠载保护结构体原型
+//Underload protection structure prototype
 typedef struct
 {
-    LPF_First_Order_Type Curr_LPF1st;   //欠载判定电流电流低通滤波器
-    _iq24 CurrCal;                      //欠载判定电流滤波后的值(unit-A_per)
-    _iq24 Trigcurr_Thresh;              //欠载触发电流阈值(unit-A_per)
-    _iq24 Releasecurr_Thresh;           //欠载释放电流阈值(unit-A_per)
-    _iq24 Decline_Speed;                //欠载降速转速目标(unit-rpm_per)
-    _iq24 Release_Speed;                //欠载恢复速转速目标(unit-rpm_per)
-    uint32_t Declinecnt_Thresh;         //欠载降速判定时间计数阈值
-    uint32_t Releasecnt_Thresh;         //欠载降速判定时间计数阈值
-    uint32_t Faultcnt_Thresh;           //欠载故障判定时间计数阈值
-    uint32_t Trigcnt;                   //欠载触发判定计数值
-    uint32_t Releasecnt;                //欠载释放判定计数值
+    LPF_First_Order_Type Curr_LPF1st;   //Low-pass filter for the underload determination current
+    _iq24 CurrCal;                      //Filtered value of the underload determination current (unit-A_per)
+    _iq24 Trigcurr_Thresh;              //Underload trigger current threshold (unit-A_per)
+    _iq24 Releasecurr_Thresh;           //Underload release current threshold (unit-A_per)
+    _iq24 Decline_Speed;                //Underload speed reduction target (unit-rpm_per)
+    _iq24 Release_Speed;                //Underload recovery speed target (unit-rpm_per)
+    uint32_t Declinecnt_Thresh;         //Underload speed reduction determination time count threshold
+    uint32_t Releasecnt_Thresh;         //Underload release determination time count threshold
+    uint32_t Faultcnt_Thresh;           //Underload fault determination time count threshold
+    uint32_t Trigcnt;                   //Underload trigger determination count value
+    uint32_t Releasecnt;                //Underload release determination count value
 
-    Truth_Verify_Type Underload;        //欠载保护标志
-    Truth_Verify_Type Underdecline;     //欠载降转速比奥组标志
-    Truth_Verify_Type Initial;          //初始化标志
+    Truth_Verify_Type Underload;        //Underload protection flag
+    Truth_Verify_Type Underdecline;     //Underload speed reduction flag
+    Truth_Verify_Type Initial;          //Initialization flag
 } UnderLoad_Type;
 // Motor base value structure definition
 typedef struct
@@ -505,31 +505,31 @@ typedef struct
     BuffPara_Type           SpeedBuffPara;
 } Motor_LBG_Type;
 
-//功率波动抑制结构体原型
+//Power fluctuation suppression structure prototype
 typedef struct
 {
-    HPF_First_Order_Type Power_HPF1st;  //功率高通滤波器
-    LPF_First_Order_Type Power_LPF1st;  //功率低通滤波器
+    HPF_First_Order_Type Power_HPF1st;  //Power high-pass filter
+    LPF_First_Order_Type Power_LPF1st;  //Power low-pass filter
 
-    _iq24 Power;                        //总功率
-    _iq24 PowerfilterH;                 //功率经过高通滤波值
-    _iq24 PowerfilterL;                 //功率经过低通滤波值
+    _iq24 Power;                        //Total power
+    _iq24 PowerfilterH;                 //Power value after high-pass filtering
+    _iq24 PowerfilterL;                 //Power value after low-pass filtering
 
-    _iq24 Kpdefine;                     //功率波动抑制调节器比例系数定义
-    _iq24 Kidefine;                     //功率波动抑制调节器积分系数定义
-    _iq24 Kddefine;                     //功率波动抑制调节器微分系数定义
-    _iq24 Kpadj;                        //功率波动抑制调节器比例系数调整系数
+    _iq24 Kpdefine;                     //Definition of the proportional coefficient of the power fluctuation suppression regulator
+    _iq24 Kidefine;                     //Definition of the integral coefficient of the power fluctuation suppression regulator
+    _iq24 Kddefine;                     //Definition of the differential coefficient of the power fluctuation suppression regulator
+    _iq24 Kpadj;                        //Adjustment coefficient of the proportional coefficient of the power fluctuation suppression regulator
 
-    _iq24 Speederrthre;                 //转速误差阈值
+    _iq24 Speederrthre;                 //Speed error threshold
 
-    _iq24 Voltthre;                     //开始补偿电压阈值
-    _iq24 Speedcom;                     //补偿转速
-    PID_Structure_Type PowerPID;        //功率波动抑制调节器
-    uint16_t Speedcolse_cntset;         //转速误差进入阈值内的计算时间阈值
-    uint16_t Speedclose_cnt;            //转速误差进入阈值内的时间计数值
+    _iq24 Voltthre;                     //Voltage threshold for starting compensation
+    _iq24 Speedcom;                     //Compensation speed
+    PID_Structure_Type PowerPID;        //Power fluctuation suppression regulator
+    uint16_t Speedcolse_cntset;         //Calculation time threshold for the speed error staying within the threshold
+    uint16_t Speedclose_cnt;            //Time count value for the speed error staying within the threshold
 
-    uint16_t Startcom_cntset;           //开始计算时间阈值
-    uint16_t Startcom_cnt;              //开始计算时间计数值
+    uint16_t Startcom_cntset;           //Start calculation time threshold
+    uint16_t Startcom_cnt;              //Start calculation time count value
 }Powercom_type;
 typedef enum
 {

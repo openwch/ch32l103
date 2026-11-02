@@ -23,7 +23,7 @@
 #include "debug.h"
 
 /* Global Variable */
-s16 Calibrattion_Val = 0;
+s16 Calibration_Val = 0;
 
 /*********************************************************************
  * @fn      ADC_Function_Init
@@ -54,13 +54,13 @@ void ADC_Function_Init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     ADC_DeInit(ADC1);
-    Calibrattion_Val=Get_CalibrationValue(ADC1);
+    Calibration_Val=Get_CalibrationValue(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
     ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
     ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
     ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-    ADC_InitStructure.ADC_NbrOfChannel = 3;
+    ADC_InitStructure.ADC_NbrOfChannel = 1;
     ADC_Init(ADC1, &ADC_InitStructure);
 
 	ADC_ExternalTrigInjectedConvConfig(ADC1,ADC_ExternalTrigInjecConv_T1_CC4); 
@@ -84,7 +84,7 @@ void ADC_Function_Init(void)
 }
 
 /*********************************************************************
- * @fn      TIM1_PWM_In
+ * @fn      TIM1_PWM_Init
  *
  * @brief   Initializes TIM1 PWM output.
  *
@@ -94,7 +94,7 @@ void ADC_Function_Init(void)
  *
  * @return  none
  */
-void TIM1_PWM_In(u16 arr, u16 psc, u16 ccp)
+void TIM1_PWM_Init(u16 arr, u16 psc, u16 ccp)
 {
     GPIO_InitTypeDef        GPIO_InitStructure = {0};
     TIM_OCInitTypeDef       TIM_OCInitStructure = {0};
@@ -133,15 +133,15 @@ void TIM1_PWM_In(u16 arr, u16 psc, u16 ccp)
  *
  * @param   val - Sampling value
  *
- * @return  val+Calibrattion_Val - Conversion Value.
+ * @return  val+Calibration_Val - Conversion Value.
  */
 u16 Get_ConversionVal(s16 val)
 {
-    if((val + Calibrattion_Val) < 0 || val==0)
+    if((val + Calibration_Val) < 0 || val==0)
         return 0;
-    if((Calibrattion_Val + val) > 4095||val==4095)
+    if((Calibration_Val + val) > 4095||val==4095)
         return 4095;
-    return (val + Calibrattion_Val);
+    return (val + Calibration_Val);
 }
 
 /*********************************************************************
@@ -160,13 +160,11 @@ int main(void)
 
     ADC_Function_Init();
 
-    printf("CalibrattionValue:%d\n", Calibrattion_Val);
-    TIM1_PWM_In(1000, 48000 - 1, 500);
+    printf("CalibrattionValue:%d\n", Calibration_Val);
+    TIM1_PWM_Init(1000-1, 48000-1, 500);
 
     while(1)
     {
-        while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
-        ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
         while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_JEOC));
         ADC_ClearFlag(ADC1, ADC_FLAG_JEOC);
 

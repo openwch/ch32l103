@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.2
- * Date               : 2025/12/16
+ * Version            : V1.0.3
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -84,8 +84,9 @@ struct CANFilterStruct_t
     };
 }CANFilterStruct[CANSOFTFILTER_MAX_GROUP_NUM];
 
-uint8_t interrupt_rx_flag = 0;
+volatile uint8_t interrupt_rx_flag = 0;
 volatile u8 canexbuf_interrupt[8];
+volatile u8 tx_done_flag = 0;
 
 /* Global Variable */
 u8 txbuf[8];
@@ -269,18 +270,11 @@ void USB_HP_CAN1_TX_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fas
  */
 void USB_HP_CAN1_TX_IRQHandler(void)
 {
-    u8 i;
-
     if(CAN_GetITStatus(CAN1, CAN_IT_TME) != RESET)
     {
-        printf("Send Success\r\n");
-        printf("Send Data:\r\n");
-
-        for(i = 0; i < 8; i++) {
-            printf("%02x\r\n", txbuf[i]);
-        }
-
-        printf("TDTR:%08x\r\n", CAN1->sTxMailBox[0].TXMDTR);
+        /* Do not call printf in the ISR: it is blocking and not reentrant.
+         * Set a flag and print in the main loop instead. */
+        tx_done_flag = 1;
     }
 
     CAN_ClearITPendingBit(CAN1, CAN_IT_TME);
@@ -334,16 +328,19 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
     {
         rx = CAN_Receive_Msg(rxbuf);
 
+        /* Avoid printf inside the ISR (blocking, not reentrant): store the
+         * data and pending flag, print in the main loop. */
+        if(rx > 8)
+        {
+            rx = 8;
+        }
+        for(i = 0; i < rx; i++) {
+            canexbuf_interrupt[i] = rxbuf[i];
+        }
         if(rx)
         {
-            printf("Receive Data:\r\n");
-
-            for(i = 0; i < 8; i++) {
-                printf("%02x\r\n", rxbuf[i]);
-            }
+            interrupt_rx_flag = 1;
         }
-
-        printf("RDTR:%08x\r\n", CAN1->sFIFOMailBox[0].RXMDTR);
     }
 
     CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
@@ -444,9 +441,39 @@ int main(void)
             txbuf[i] = cnt + i;
         }
         tx = CAN_Send_Msg(txbuf, 8);
+        if(tx == 0)
+        {
+            /* The send print was moved from the ISR into the main loop. */
+            if(tx_done_flag)
+            {
+                tx_done_flag = 0;
+                printf("Send Success\r\n");
+                printf("Send Data:\r\n");
+
+                for(i = 0; i < 8; i++) {
+                    printf("%02x\r\n", txbuf[i]);
+                }
+
+                printf("TDTR:%08x\r\n", CAN1->sTxMailBox[0].TXMDTR);
+            }
+        }
 
         Delay_Ms(1000);
         cnt++;
+
+#elif(CAN_MODE == RX_MODE)
+        if(interrupt_rx_flag)
+        {
+            interrupt_rx_flag = 0;
+            printf("Receive Data:\r\n");
+
+            for(i = 0; i < 8; i++) {
+                printf("%02x\r\n", canexbuf_interrupt[i]);
+            }
+
+            printf("RDTR:%08x\r\n", CAN1->sFIFOMailBox[0].RXMDTR);
+        }
+        Delay_Ms(10);
 
 #endif
     }

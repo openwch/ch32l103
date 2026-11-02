@@ -12,9 +12,7 @@
 
 #include <stdio.h>
 #include "debug.h"
-#include "PD_Prot.h"
-#include "libCH32_USBPD.h"
-#include "PD_VDM.h"
+#include "PD_DEF.h"
 #include "string.h"
 
 st_VDM VDM_State = {0};

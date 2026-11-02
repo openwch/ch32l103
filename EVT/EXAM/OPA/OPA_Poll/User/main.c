@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2026/10/18
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -139,8 +139,7 @@ int main(void)
     ADC_Function_Init();
     while(1)
     {
-        while(OPA_POLL_CNT() != O1P2)
-            ;
+        while(OPA_POLL_CNT() != O1P2);
         adc_val= Get_ADC_Val(ADC_Channel_3);
         printf("adc_val  %d\r\n",adc_val);
         Delay_Ms(100);

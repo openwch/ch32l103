@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : Touch.C
  * Author             : WCH
- * Version            : V1.7
- * Date               : 2025/01/14
+ * Version            : V1.8
+ * Date               : 2026/10/13
  * Description        : Touch Key Libraries
  *******************************************************************************/
 
@@ -60,7 +60,7 @@ const TKY_CH_GPIO_S TKY_Pin[ 10 ] = {
  *  STATIC PROTOTYPES
  **********************/
 
-static KEY_FIFO_T s_tKey; /* 按键FIFO变量,结构体 */
+static KEY_FIFO_T s_tKey; 
 static void touch_InitHard(void);
 static void touch_InitVar(touch_cfg_t *p);
 static void touch_PutKey(uint8_t _KeyCode);
@@ -168,9 +168,9 @@ uint8_t touch_GetKeyState (KEY_ID_E _ucKeyID)
  */
 void touch_SetKeyParam (uint8_t _ucKeyID, uint16_t _LongTime, uint8_t _RepeatSpeed)
 {
-    p_touch_cfg->touch_button_cfg->p_stbtn[_ucKeyID].LongTime = _LongTime;          /* 长按时间 0 表示不检测长按键事件 */
-    p_touch_cfg->touch_button_cfg->p_stbtn[_ucKeyID].RepeatSpeed = _RepeatSpeed;            /* 按键连发的速度，0表示不支持连发 */
-    p_touch_cfg->touch_button_cfg->p_stbtn[_ucKeyID].RepeatCount = 0;                       /* 连发计数器 */
+    p_touch_cfg->touch_button_cfg->p_stbtn[_ucKeyID].LongTime = _LongTime;          
+    p_touch_cfg->touch_button_cfg->p_stbtn[_ucKeyID].RepeatSpeed = _RepeatSpeed;         
+    p_touch_cfg->touch_button_cfg->p_stbtn[_ucKeyID].RepeatCount = 0;                      
 }
 
 /*********************************************************************
@@ -554,7 +554,7 @@ static void touch_Baseinit (void)
     TKY_BaseInitStructure.filterGrade = TKY_FILTER_GRADE;
     TKY_BaseInitStructure.maxQueueNum = TKY_MAX_QUEUE_NUM;
     TKY_BaseInitStructure.baseRefreshOnPress = TKY_BASE_REFRESH_ON_PRESS;
-    /*---Speed of baseline update，baseRefreshSampleNum and filterGrade，Inversely proportional to the baseline update speed,
+    /*---Speed of baseline update baseRefreshSampleNum and filterGrade Inversely proportional to the baseline update speed,
     the baseline update speed is also related to the code structure, which can be observed through the function GetCurQueueBaseLine---*/
     TKY_BaseInitStructure.baseRefreshSampleNum = TKY_BASE_REFRESH_SAMPLE_NUM;
     TKY_BaseInitStructure.baseUpRefreshDouble = TKY_BASE_UP_REFRESH_DOUBLE;
@@ -612,7 +612,7 @@ static void touch_Channelinit (void)
             {
                 chx_mean = TKY_GetCurChannelMean (my_tky_ch_init[ i ].channelNum, charge_time, 16, 1000);
 
-                //  dg_log("testing .... chg : %d, baseline : %d\n",charge_time,chx_mean);//打印基线值
+                //  dg_log("testing .... chg : %d, baseline : %d\n",charge_time,chx_mean);
 
                 if ((charge_time == 0) && ((chx_mean > 3800)))
                 {

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/04/11
+ * Version            : V1.0.2
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -85,8 +85,10 @@ struct CANFilterStruct_t
     };
 }CANFilterStruct[CANSOFTFILTER_MAX_GROUP_NUM];
 
-uint8_t interrupt_rx_flag = 0;
+volatile uint8_t interrupt_rx_flag = 0;
 volatile u8 canexbuf_interrupt[8];
+volatile uint8_t wakeup_rx_flag = 0;
+volatile uint32_t wakeup_frame_id = 0;
 
 void USB_LP_CAN1_RX0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct);
@@ -108,6 +110,11 @@ u8 CAN_Receive_Msg(u8 *buf);
  */
 void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct)
 {
+    /* Validate the filter group number before indexing CANFilterStruct. */
+    if(CAN_FilterInitStruct->CAN_FilterNumber >= sizeof(CANFilterStruct) / sizeof(*CANFilterStruct))
+    {
+        return;
+    }
     if(CAN_FilterInitStruct->CAN_FilterActivation)
     {
         CANFilterStruct[CAN_FilterInitStruct->CAN_FilterNumber].en = 1;
@@ -302,6 +309,17 @@ int main(void)
 
 	while (1)
 	{
+		if ( wakeup_rx_flag )
+		{
+			wakeup_rx_flag = 0;
+			printf( "Woke up!!\r\n" );
+			printf( "Entered the CAN interrupt\r\n" );
+#if Frame_Format == Standard_Frame
+			printf( "Received freame's address is %#x\r\n" , wakeup_frame_id );
+#else
+			printf("Received freame's address is %#x\r\n", wakeup_frame_id);
+#endif
+		}
 		printf("Run in main\r\n");
 		Delay_Ms(1000);
 	}
@@ -309,20 +327,27 @@ int main(void)
 
 void __attribute__((interrupt("WCH-Interrupt-fast"))) USB_LP_CAN1_RX0_IRQHandler()
 {
+	/* Do not call printf in the ISR: blocking prints can delay the wake-up
+	 * path and re-enter; only set flags here and print in the main loop. */
 	CanRxMsg CAN_buf;
-	printf( "Woke up!!\r\n" );
+	CAN_buf.DLC = 0;
+	CAN_buf.StdId = 0;
+	CAN_buf.ExtId = 0;
+	CAN_buf.IDE = 0;
+	CAN_buf.RTR = 0;
+	CAN_buf.FMI = 0;
 	if ( CAN_GetITStatus( CAN1 , CAN_IT_FMP0 ) == SET )
 	{
-		printf( "Entered the CAN interrupt\r\n" );
 		CAN_ClearITPendingBit( CAN1 , CAN_IT_FMP0 );
 		CAN_ReceiveViaSoftFilter( CAN1 , CAN_FIFO0 , &CAN_buf );
 		if(CAN_buf.DLC)
 		{
 #if Frame_Format == Standard_Frame
-			printf( "Received freame's address is %#x\r\n" , CAN_buf.StdId );
+			wakeup_frame_id = CAN_buf.StdId;
 #else
-			printf("Received freame's address is %#x\r\n", CAN_buf.ExtId);
+			wakeup_frame_id = CAN_buf.ExtId;
 #endif
+			wakeup_rx_flag = 1;
 		}
 	}
 }

@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2023/07/08
+ * Version            : V1.0.1
+ * Date               : 2026/10/13
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -12,7 +12,7 @@
 
 /*
  *@Note
- *ADC PGA sampling routines:
+ *ADC fast conversion and low frequency calibration routines:
  *ADC channel 1 (PA1), fast frequency convent and low frequency Calibration.
  *
  */
@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /* Global Variable */
-s16 Calibrattion_Val = 0;
+s16 Calibration_Val = 0;
 
 /*********************************************************************
  * @fn      ADC_Function_Init
@@ -43,7 +43,7 @@ void ADC_Function_Init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     ADC_DeInit(ADC1);
-    Calibrattion_Val=Get_CalibrationValue(ADC1);
+    Calibration_Val=Get_CalibrationValue(ADC1);
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
     ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
@@ -107,15 +107,15 @@ u16 Get_ADC_Val(u8 ch)
  *
  * @param   val - Sampling value
  *
- * @return  val+Calibrattion_Val - Conversion Value.
+ * @return  val+Calibration_Val - Conversion Value.
  */
 u16 Get_ConversionVal(s16 val)
 {
-    if((val + Calibrattion_Val) < 0 || val==0)
+    if((val + Calibration_Val) < 0 || val==0)
         return 0;
-    if((Calibrattion_Val + val) > 4095||val==4095)
+    if((Calibration_Val + val) > 4095||val==4095)
         return 4095;
-    return (val + Calibrattion_Val);
+    return (val + Calibration_Val);
 }
 
 /*********************************************************************
@@ -127,7 +127,7 @@ u16 Get_ConversionVal(s16 val)
  */
 int main(void)
 {
-    u16 ADC_val ;
+    u16 ADC_val;
     SystemCoreClockUpdate();
     Delay_Init();
     USART_Printf_Init(115200);
@@ -135,7 +135,7 @@ int main(void)
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
     ADC_Function_Init();
-    printf("CalibrattionValue:%d\n", Calibrattion_Val);
+    printf("CalibrattionValue:%d\n", Calibration_Val);
 
     while(1)
     {

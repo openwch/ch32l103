@@ -133,7 +133,10 @@ int main(void)
     Flash_Test_Fast();
     Option_Byte_CFG();
 
-    while(1);
+    while(1)
+    {
+        
+    }
 }
 
 

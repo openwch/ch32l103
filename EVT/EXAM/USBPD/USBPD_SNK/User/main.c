@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.3
- * Date               : 2025/12/16
+ * Version            : V1.0.5
+ * Date               : 2026/10/16
  * Description        : Main program body.
 *********************************************************************************
 * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -26,9 +26,9 @@
  *
  * There is no integrated 5.1K pull-down inside the other chip,
  * CC_PD is only for status differentiation,
- * bit write 1 means SNK mode, write 0 means SCR mode
+ * bit write 1 means SNK mode, write 0 means SRC mode
  *
- * Modify "PDO_Request( PDO_INDEX_1 )" in pd process.c, line 749, to modify the request voltage.
+ * Modify "PDO_Request( PDO_INDEX_1 )" in pd process.c,  to modify the request voltage.
  *
  * According to the usage scenario of PD SNK, whether
  * it is removed or not should be determined by detecting
@@ -42,7 +42,7 @@
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 volatile UINT8  Tim_Ms_Cnt = 0x00;
-UINT8 PD_TX_BUF[30];
+
 /*********************************************************************
  * @fn      TIM1_Init
  *

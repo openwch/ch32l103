@@ -25,7 +25,7 @@ const uint8_t MyDevDescr[ ] =
     0x00,                                                   // bDeviceClass
     0x00,                                                   // bDeviceSubClass
     0x00,                                                   // bDeviceProtocol
-    DEf_USBD_LS_UEP0_SIZE,                                  // bMaxPacketSize0
+    DEF_USBD_LS_UEP0_SIZE,                                  // bMaxPacketSize0
     (uint8_t)DEF_USB_VID, (uint8_t)( DEF_USB_VID >> 8 ),    // idVendor
     (uint8_t)DEF_USB_PID, (uint8_t)( DEF_USB_PID >> 8 ),    // idProduct
     0x00, DEF_IC_PRG_VER,                                   // bcdDevice
@@ -102,7 +102,7 @@ const uint8_t MyCfgDescr[ ] =
     0x82,                                                   // bEndpointAddress: IN Endpoint 2
     0x03,                                                   // bmAttributes
     0x08, 0x00,                                             // wMaxPacketSize
-    0x01                                                    // bInterval: 1mS
+    0x0A                                                    // bInterval: 10mS
 };
 
 /* Keyboard Report Descriptor */
@@ -183,7 +183,7 @@ const uint8_t  MyQuaDesc[ ] =
     0x00,                                                   // bDeviceSubClass
     0x00,                                                   // bDeviceProtocol
     0x40,                                                   // bMaxPacketSize0
-    0x00,                                                   // bNumConfigurations
+    0x01,                                                   // bNumConfigurations
     0x00                                                    // bReserved
 };
 

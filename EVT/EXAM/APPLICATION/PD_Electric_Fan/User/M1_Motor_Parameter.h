@@ -25,11 +25,11 @@
 #define STATOR_LD_M         _IQ(0.0020299)
 #define STATOR_LQ_M         _IQ(0.0025204)
 
-//电机定子电阻+采样电阻(unit-Ω)
+//Motor stator resistance + sampling resistor (unit-ohm)
 #define STATOR_RES_TOTAL_M  (STATOR_RES_M + (CURR_SAMPLE_RESISTOR_ADC<<6))
 
-#define IDQLPF_CF_HIGH_M           400                  //观测dq轴电流低通滤波器截止频率高速(unit-Hz)400
-#define IDQLPF_PERIOD_M            LBG_CAL_PERIOD_M     //观测dq轴电流低通滤波器计算周期(unit-s)
+#define IDQLPF_CF_HIGH_M           400                  //Cutoff frequency of the observed dq-axis current low-pass filter, high speed (unit-Hz) 400
+#define IDQLPF_PERIOD_M            LBG_CAL_PERIOD_M     //Calculation period of the observed dq-axis current low-pass filter (unit-s)
 #define IDQLPF_WcT_HIGH_M          _IQmpyI32(_IQmpy(IDQLPF_PERIOD_M,PI_2_Q24),IDQLPF_CF_HIGH_M)
 
 /* Exported variables -------------------------------------------------------*/

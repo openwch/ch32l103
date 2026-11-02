@@ -16,14 +16,8 @@
 /******************************************************************************/
 
 iapfun jump2app;
-u32 Program_addr = FLASH_Base;
-u32 Verify_addr = FLASH_Base;
-u32 User_APP_Addr_offset = 0x5000;
-u8 Verify_Star_flag = 0;
-u8 Fast_Program_Buf[390];
-u32 Program_Buf[64];
-u32 CodeLen = 0;
-u8 End_Flag = 0;
+vu32 Program_Buf[64];
+
 u8 IAP_Deal_Buf[USBD_DATA_SIZE+4];
 #define  isp_cmd_t   ((isp_cmd  *)IAP_Deal_Buf)
 

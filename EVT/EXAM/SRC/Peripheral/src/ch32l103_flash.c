@@ -2,7 +2,7 @@
  * File Name          : ch32l103_flash.c
  * Author             : WCH
  * Version            : V1.0.4
- * Date               : 2026/08/18
+ * Date               : 2026/10/19
  * Description        : This file provides all the FLASH firmware functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -807,7 +807,7 @@ FLASH_Status FLASH_ROM_ERASE(uint32_t StartAddr, uint32_t Length)
         return FLASH_ADR_RANGE_ERROR;
     }
 
-    if((StartAddr + Length) > ValidAddrEnd)
+    if(Length > (ValidAddrEnd - StartAddr))
     {
         return FLASH_OP_RANGE_ERROR;
     }
@@ -954,7 +954,7 @@ FLASH_Status FLASH_ROM_WRITE(uint32_t StartAddr, uint32_t *pbuf, uint32_t Length
         return FLASH_ADR_RANGE_ERROR;
     }
 
-    if((StartAddr + Length) > ValidAddrEnd)
+    if(Length > (ValidAddrEnd - StartAddr))
     {
         return FLASH_OP_RANGE_ERROR;
     }

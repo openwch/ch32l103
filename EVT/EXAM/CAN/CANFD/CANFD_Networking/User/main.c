@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/04/17
+ * Version            : V1.0.2
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -114,8 +114,8 @@ struct CANFilterStruct_t
 u8 txbuf[64];
 u8 rxbuf[64];
 CanFDRxMsg CanFDRxStructure={0};
-uint8_t interrupt_rx_flag = 0;
-volatile u8 canexbuf_interrupt[8];
+volatile uint8_t interrupt_rx_flag = 0;
+volatile u8 canexbuf_interrupt[64];
 
 u8 CANFD_Receive_Msg(u8 *buf);
 void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct);
@@ -124,11 +124,18 @@ void USB_LP_CAN1_RX0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fa
 
 void USB_LP_CAN1_RX0_IRQHandler()
 {
-    uint8_t px,pbuf[8];
+    /* CANFD frames can carry up to 64 data bytes (DLC up to 48/64), so the
+     * receive buffer must be 64 bytes. An 8-byte buffer here caused a
+     * stack buffer overflow when receiving long frames. */
+    uint8_t px,pbuf[64];
     if (CAN_GetITStatus(CAN1,CAN_IT_FMP0))
     {
         px = CANFD_Receive_Msg(pbuf);
-        for (int i = 0; i < px; i++) 
+        if(px > 64)
+        {
+            px = 64;
+        }
+        for (int i = 0; i < px; i++)
         {
             canexbuf_interrupt[i] = pbuf[i];
         }
@@ -153,7 +160,7 @@ void USB_LP_CAN1_RX0_IRQHandler()
  */
 void CAN_SoftFilterInit(CAN_FilterInitTypeDef* CAN_FilterInitStruct)
 {
-    if(CAN_FilterInitStruct->CAN_FilterNumber > sizeof(CANFilterStruct) / sizeof(*CANFilterStruct)){
+    if(CAN_FilterInitStruct->CAN_FilterNumber >= sizeof(CANFilterStruct) / sizeof(*CANFilterStruct)){
         return;
     }
     if(CAN_FilterInitStruct->CAN_FilterActivation)
@@ -367,6 +374,10 @@ void CANFD_ReceiveViaSoftFilter(CAN_TypeDef* CANx, uint8_t FIFONumber, CanFDRxMs
                     break;
 
                 default:
+                    /* Unknown filter control byte: release the FIFO so a
+                     * stuck message cannot keep FMP0 set and re-trigger
+                     * the interrupt endlessly. */
+                    CAN_FIFORelease(CANx, CAN_FIFO0);
                     return;
                     break;
             }
@@ -395,9 +406,22 @@ u8 CANFD_Receive_Msg(u8 *buf)
         return 0;
     }
 
+    /* Initialize DLC so a soft-filter miss (which returns without filling
+     * the structure) cannot produce a random length and overflow the buffer. */
+    CanFDRxStructure.DLC = 0;
+    for( i = 0; i < 64; i++ )
+    {
+        CanFDRxStructure.Data[i] = 0;
+    }
+
     CANFD_ReceiveViaSoftFilter(CAN1, CAN_FIFO0, &CanFDRxStructure);
 
-    for( i = 0;i < CanFDRxStructure.DLC; i++ )
+    if(CanFDRxStructure.DLC > 64)
+    {
+        return 0;
+    }
+
+    for( i = 0; i < CanFDRxStructure.DLC; i++ )
     {
         buf [i] = CanFDRxStructure.Data[i];
     }

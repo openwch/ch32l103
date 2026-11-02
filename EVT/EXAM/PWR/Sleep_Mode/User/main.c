@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
  * Author             : WCH
- * Version            : V1.0.1
- * Date               : 2025/08/05
+ * Version            : V1.0.2
+ * Date               : 2026/10/16
  * Description        : Main program body.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
@@ -77,7 +77,6 @@ int main(void)
     SystemCoreClockUpdate();
     Delay_Init();
 	Delay_Ms(1000);
-    Delay_Ms(1000);
 	/* To reduce power consumption, unused GPIOs need to be set as pull-down inputs */
     RCC_PB2PeriphClockCmd(RCC_PB2Periph_GPIOA|RCC_PB2Periph_GPIOB|
                           RCC_PB2Periph_GPIOC|RCC_PB2Periph_GPIOD|RCC_PB2Periph_AFIO, ENABLE);
@@ -91,7 +90,7 @@ int main(void)
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 	
     USART_Printf_Init(115200);
-    printf("SystemClk:%d\r\n", SystemCoreClock);
+    printf("SystemClk:%u\r\n", SystemCoreClock);
     printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     printf("Sleep Mode Test\r\n");
     EXTI0_INT_INIT();
@@ -129,7 +128,6 @@ void EXTI0_IRQHandler(void)
 {
   if(EXTI_GetITStatus(EXTI_Line0)!=RESET)
   {
-    printf("EXTI0 Wake_up\r\n");
     EXTI_ClearITPendingBit(EXTI_Line0);     /* Clear Flag */
   }
 }
